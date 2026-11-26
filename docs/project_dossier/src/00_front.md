@@ -13,7 +13,7 @@
 %% All transactional data in this dossier are \textbf{simulated} for a fictional hospital (``Meridian Health System''), six fictional payers, one bank account and one drug wholesaler. Only labelled calibration figures come from public sources. Results show that the methods work and recover what the simulator planted; they are not findings about any real organisation. Every number is generated from \texttt{results/*.json} through \texttt{docs/\_numbers.md}. \ifdraft Paragraphs marked \thuctag{} are drafts the author must rewrite in his own words before using this document.\fi
 %% \end{minipage}
 %% \vfill
-%% {\small Built with AI assistance. The author reviewed and ran the code and can explain every step.\par}
+%% {\small Built with AI assistance. Every number is reproducible with run\_all.py.\par}
 %% \end{titlepage}
 %% \setcounter{tocdepth}{1}\tableofcontents
 %% \newpage
