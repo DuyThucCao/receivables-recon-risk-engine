@@ -47,13 +47,13 @@ underpayment probability lies inside the 95% interval for <!--n:q7.planted_share
 shortfall for <!--n:q7.planted_mean_inside-->6<!--/n--> of 6; formula tests cover the threshold, the deterrence penalty and the
 repeated-game bound.
 
-The economics in one paragraph: if being caught only means paying
-what was owed anyway, underpaying is a free option for the payer, because it keeps the money
-whenever the hospital does not appeal or loses. Recovery alone never deters. An interest clause
-above the payer's cost of funds removes the gain from paying late, but it is tiny next to the
-shortfall itself, so it does not deter underpricing. What changes the payer's calculation is a
-penalty that is a multiple of the shortfall, or a credible cost at contract renewal, which is why
-documented, aggregated evidence matters more than one-off appeals.
+Here is the economics in short. If the only consequence of being caught is paying what was
+owed anyway, underpaying costs the payer nothing: it keeps the money every time the hospital does
+not appeal or loses. So recovery alone never deters underpayment. An interest clause above the
+payer's cost of funds removes the gain from paying late, but it is tiny next to the shortfall, so
+it does not stop underpricing. What changes the payer's math is a penalty that is a multiple of
+the shortfall, or a real cost at contract renewal. That is why documented, aggregated evidence
+matters more than appealing claims one at a time.
 
 **Limits.** Simulated underpayments are random draws, so the data cannot show strategic behaviour;
 the real-data test would be bunching of shortfalls just below the appeal threshold. The win

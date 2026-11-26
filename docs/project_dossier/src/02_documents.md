@@ -57,11 +57,11 @@ paperwork.
 adjustment, unpivoted from the three triples), `core.dim_reason_code`; payments are rebuilt as
 `recon.remit_trace`.
 
-The most important design decision about the remittance is that
-the payment, not the line, is what reaches the bank. A payer's payment run groups many claim
-lines under one trace number and one header total. The bank sees only that total, sometimes
-merged with other payments in a lockbox deposit. So the engine reconciles in two stages: line to
-claim line, and payment to deposit, with the header total as the bridge.
+The key thing I learned about remittances is that the bank never sees claim lines. It sees
+payments. A payer bundles many claim lines into one payment with one trace number and one total,
+and a lockbox deposit can even merge several payments. That is why I reconcile in two steps:
+first each remittance line to its claim line, then each payment to a bank deposit. The payment
+total is the bridge between the two.
 
 ## Bank statement (`bank_statement.csv`)
 

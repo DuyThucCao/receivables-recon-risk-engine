@@ -44,12 +44,12 @@ Against the generator's ultimate outcome per claim, the NCV-weighted predicted P
 the ultimate write-off share <!--n:credit.wo_ncv-->21.6%<!--/n-->. Count-weighted, PD is <!--n:credit.pd_count-->20.6%<!--/n--> against <!--n:credit.wo_count-->7.8%<!--/n-->: the PD
 comes from a dollar-weighted chain, so the dollar comparison is the relevant one.
 
-The finding that expected loss exceeds the margin is the useful
-output of the certificate, not an embarrassment. It says that at a <!--n:credit.advance_rate-->85%<!--/n--> advance rate the lender is
-not protected, because many claims that look current will be denied later. A credit analyst would
-lower the advance rate, exclude payers with high denial rates, or require a reserve. The stress
-test adds that a rate shock changes the cost of the facility much more than its size, while slower
-payment shrinks availability by ageing the book.
+The most useful result of the borrowing-base certificate is that expected loss is bigger than
+the lender's margin. At an <!--n:credit.advance_rate-->85%<!--/n--> advance rate the lender is not protected, because many claims
+that look current today will be denied later. A credit analyst would respond by lowering the
+advance rate, excluding payers with high denial rates, or asking for a reserve. The stress test
+adds that a rate shock mostly changes what the facility costs, while slower payment shrinks how
+much can be borrowed, because the receivables age past the eligibility limit.
 
 **Limits.** The expected-loss backtest is not a clean hold-out: PD was switched to the
 dollar-weighted chain after that backtest. Advance rate, age limit, concentration limit, spread and cross-age threshold are

@@ -54,13 +54,13 @@ denied and appealed claims, which are larger.
 
 ![Bootstrap distribution of the total reserve (figure written by models/reserve.py).](../../../figures/reserve_bootstrap.png){width=0.7}
 
-Where chain-ladder breaks: the newest month is multiplied by a
-development factor of <!--n:q4.cdf0-->8.62<!--/n-->, so one noisy month moves the whole estimate; a change in payment speed
-would bias every factor; and a few large late claims make the true outcome lumpy. The
-retrospective test showed the first problem directly, which is why Bornhuetter-Ferguson, which
-leans on exposure for immature months, is reported beside it. Both still underestimate at
-month-end dates, because claims served but not yet submitted are missing from the exposure: that
-is true IBNR, which paid-only data cannot see.
+I know where chain-ladder breaks. The newest month is multiplied by a development factor of
+<!--n:q4.cdf0-->8.62<!--/n-->, so one noisy month moves the whole estimate. A change in payment speed would bias
+every factor, and a few large late claims make the real outcome lumpy. My retrospective test
+showed the first problem directly, so I report Bornhuetter-Ferguson next to it, because it leans
+on exposure for the youngest months. Both methods still come in low at month-end dates, because
+services that were delivered but not yet billed are missing from the data. That is true IBNR,
+and paid-only data cannot see it.
 
 **Limits.** No tail factor; a stationary simulated payment pattern; the triangle can develop only
 what is visible, and a small share of payments reach the bank without a remittance line.

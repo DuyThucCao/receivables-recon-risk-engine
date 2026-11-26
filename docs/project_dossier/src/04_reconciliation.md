@@ -37,12 +37,12 @@ control number or member id that contradicts it. And when several identical sibl
 qualify, the k-th such remittance line within one payer claim payment is paired with the k-th
 sibling by line number.
 
-The contradiction guard exists because evaluation found false
-matches during development: a transposed claim number happened to equal another real claim from
-the same day, and the line was resolved on procedure, date and charge because it was the same lab
-test at the same price. The echoed line control number and member id both disagreed. With the
-guard those lines fall through to CR30 and match correctly (decision D-010). This is the clearest
-example of the evaluation changing the rules, rather than the rules being fitted to the score.
+I added the contradiction guard after the evaluation caught a real mistake. A transposed claim
+number happened to match another real claim from the same day, and because both were the same
+lab test at the same price, the rule matched them on procedure, date and charge. But the line
+control number and the member ID both disagreed. With the guard, the rule refuses that match and
+the line goes on to CR30, where it matches correctly (decision D-010). This is my best example of
+the evaluation changing the rules, instead of the rules being tuned to the score.
 
 ## Reversals: REV10_REVERSAL_PAIR
 
@@ -98,9 +98,9 @@ postable lines missed; remittance to bank precision <!--n:recon.r2b.precision-->
 | reversal of a posting never received | ORPHAN_REVERSAL | the original remittance is missing |
 | remittance for a claim line rejected in staging | UNMATCHED_REMIT | the line never reached core; fix the claim and rerun |
 
-Recall below one on these cases is a design choice, not a defect.
-Picking the nearest date for two equal untraced payments would usually be right, but a wrong cash
-posting misstates two customer balances and is hard to find later, while a queued item costs a
-person a few minutes with the payer portal. These limits are also the reason a reconciliation
-team exists. The scores measure consistency between this project's generator and its own rules;
-they are not evidence of accuracy on real remittance files.
+I chose to leave these cases unmatched. For two equal payments with no trace number, picking
+the closest date would usually be right. But when it is wrong, cash lands on the wrong account,
+two balances are misstated, and the error is hard to find later. Sending the item to a person
+costs a few minutes on the payer portal. That trade-off is the reason reconciliation teams exist.
+I also want to be clear that these scores only show that my rules are consistent with my own
+generator. They do not prove accuracy on real remittance files.

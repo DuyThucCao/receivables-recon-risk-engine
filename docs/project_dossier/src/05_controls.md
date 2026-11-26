@@ -19,12 +19,12 @@ For cash, on the payer side and on the bank side:
 \sum \text{payer credits} = \text{allocated to payments} + \text{unapplied cash}
 \]
 
-The identities are written so that they hold whatever the
-matching rules decide. An item the rules decline to match is not dropped: it sits in an explicit
-bucket (unmatched remittance, unapplied cash, in transit), and the bucket is part of the identity.
-So the totals tie to the cent even on the hard cases, and the control totals test the
-bookkeeping, not the luck of the matching. If a total does not tie, something was lost or counted
-twice, and that is always a bug.
+I wrote the control identities so they hold no matter what the matching rules decide. If a
+rule refuses to match an item, the item is not dropped. It goes into a named bucket (unmatched
+remittance, unapplied cash or in transit), and that bucket is part of the identity. So the totals
+tie to the cent even on the hard cases, and the checks test the bookkeeping rather than how lucky
+the matching was. If a total does not tie, something was lost or counted twice, and that is
+always a bug to fix.
 
 ## The control totals
 
@@ -73,10 +73,10 @@ tamper with a claim balance, make an allocation partial and try to close out of 
 refused. A further test updates one cent of a stored balance and expects the CHECK constraint to
 raise.
 
-Why a close procedure rather than a report? In finance a day, or
-a month, is either closed or it is not. Once it is closed, later work must not silently change it.
-The procedure makes that rule executable: it is the gate between "data arrived" and "numbers we
-stand behind". It also forces order, because a day cannot close before the day before it.
+I used a close procedure instead of a report because in finance a day is either closed or
+open. Once it is closed, nothing later should quietly change it. The procedure turns that rule
+into code: it is the gate between "the data arrived" and "these are numbers we stand behind". It
+also enforces order, because a day cannot close until the day before it has closed.
 
 ## The exception queue
 
