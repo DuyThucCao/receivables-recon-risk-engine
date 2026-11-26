@@ -46,7 +46,7 @@ The project was built with AI coding assistants working from a
 written brief and a design document: the business flow, the documents, the seven questions, the
 honesty rules and the acceptance criteria came first. The assistants wrote much of the code and
 documentation. Every reported number is regenerated from the pipeline by `python run_all.py`, checked by
-183 automated tests and compared with the simulator's answer key and hand-worked examples.
+<!--n:repo.tests-->183<!--/n--> automated tests and compared with the simulator's answer key and hand-worked examples.
 
 ## Decisions that shaped the result
 
