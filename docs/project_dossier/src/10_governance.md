@@ -45,7 +45,7 @@ scripts read the truth, and they write separate files.
 I built this project with AI coding assistants. I started from a written brief and a design
 document that fixed the business flow, the documents, the seven questions, the honesty rules and
 the acceptance criteria before any code was written. The assistants wrote much of the code and
-documentation. Every number in this dossier is regenerated from the pipeline by `python run_all.py`,
+documentation. I reviewed and ran the code myself. Every number in this dossier is regenerated from the pipeline by `python run_all.py`,
 checked by <!--n:repo.tests-->183<!--/n--> automated tests, and compared with the simulator's answer key and the
 hand-worked examples.
 
