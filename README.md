@@ -1,4 +1,4 @@
-# Receivables Reconciliation & Risk Engine
+# Payment Reconciliation & Receivables Risk Engine
 
 Money owed to a business passes through several hands before it lands in the bank, and some of
 it gets lost on the way: a payment is short, a deposit arrives with no paperwork, a duplicate

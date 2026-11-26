@@ -1,4 +1,4 @@
-# Receivables Reconciliation & Risk Engine: Insurance one-pager
+# Payment Reconciliation & Receivables Risk Engine: Insurance one-pager
 
 **Summary.** Claims-to-payment engine from a payer-actuary and claims-analytics angle: a paid
 development triangle built in SQL that ties to the reconciled ledger, chain-ladder with Mack and

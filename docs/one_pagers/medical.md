@@ -1,4 +1,4 @@
-# Receivables Reconciliation & Risk Engine: Medical one-pager
+# Payment Reconciliation & Receivables Risk Engine: Medical one-pager
 
 **Summary.** A hospital revenue-cycle engine: every claim line is followed from the claim export,
 through the payer's remittance and adjustment codes, to the bank deposit, and tied to the cent.

@@ -1,4 +1,4 @@
-# Receivables Reconciliation & Risk Engine: Quant one-pager
+# Payment Reconciliation & Receivables Risk Engine: Quant one-pager
 
 **Summary.** Probability and validation work on top of an exact payment reconciliation: an
 absorbing Markov chain of the receivable life cycle, a survival-based Monte Carlo cash forecast

@@ -1,4 +1,4 @@
-# Receivables Reconciliation & Risk Engine: Consulting one-pager
+# Payment Reconciliation & Receivables Risk Engine: Consulting one-pager
 
 **Summary.** An economic-consulting style analysis on reconciled data: which payers underpay
 against contract, by how much, what payment delay is worth, and why a payer would do either. It

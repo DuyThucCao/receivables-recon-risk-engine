@@ -1,4 +1,4 @@
-# Receivables Reconciliation & Risk Engine: Bank one-pager
+# Payment Reconciliation & Receivables Risk Engine: Bank one-pager
 
 **Summary.** A working three-way payment reconciliation (billed, remitted, deposited) in
 PostgreSQL that ties to the cent, with a borrowing-base certificate and expected-loss check built

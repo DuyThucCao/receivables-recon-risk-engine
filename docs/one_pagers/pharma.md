@@ -1,4 +1,4 @@
-# Receivables Reconciliation & Risk Engine: Pharma one-pager
+# Payment Reconciliation & Receivables Risk Engine: Pharma one-pager
 
 **Summary.** The life of a physician-administered drug after it leaves the wholesaler: bought by
 lot and expiry, administered, billed and reimbursed weeks later, if the claim is not denied. FIFO
