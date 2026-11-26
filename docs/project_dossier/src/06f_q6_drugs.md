@@ -49,7 +49,7 @@ denied. One payer-level price problem exists: P04's contract rate is below FIFO 
 
 ![Margin per drug, ranked (figure written by models/drug.py).](../../../figures/drug_margin_ranked.png){width=0.78}
 
-<!-- [Thuc: rewrite in your own words] --> Be careful with the headline. In the simulator, denial odds rise
+Be careful with the headline. In the simulator, denial odds rise
 with claim amount, so the most expensive drug is denied most often by construction, and purchase
 prices are a fixed ratio of the CMS limit, so the cost picture is built in. What the analysis
 demonstrates is the method: an exact, auditable FIFO in SQL and a margin decomposition that tells

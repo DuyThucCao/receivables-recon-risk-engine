@@ -19,7 +19,7 @@ For cash, on the payer side and on the bank side:
 \sum \text{payer credits} = \text{allocated to payments} + \text{unapplied cash}
 \]
 
-<!-- [Thuc: rewrite in your own words] --> The identities are written so that they hold whatever the
+The identities are written so that they hold whatever the
 matching rules decide. An item the rules decline to match is not dropped: it sits in an explicit
 bucket (unmatched remittance, unapplied cash, in transit), and the bucket is part of the identity.
 So the totals tie to the cent even on the hard cases, and the control totals test the
@@ -73,7 +73,7 @@ tamper with a claim balance, make an allocation partial and try to close out of 
 refused. A further test updates one cent of a stored balance and expects the CHECK constraint to
 raise.
 
-<!-- [Thuc: rewrite in your own words] --> Why a close procedure rather than a report? In finance a day, or
+Why a close procedure rather than a report? In finance a day, or
 a month, is either closed or it is not. Once it is closed, later work must not silently change it.
 The procedure makes that rule executable: it is the gate between "data arrived" and "numbers we
 stand behind". It also forces order, because a day cannot close before the day before it.

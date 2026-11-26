@@ -17,7 +17,7 @@ questions below were fixed.
 
 ![Business conception map: the parties around one receivable, the document each produces, and the seven questions.](../figures/conception_map.png){width=0.8}
 
-<!-- [Thuc: rewrite in your own words] --> The core of the project is industry-neutral. Every business with
+The core of the project is industry-neutral. Every business with
 customers who owe it money has the same three documents: an invoice, a payment advice that says
 what the customer intended to pay, and a bank statement that says what actually arrived. A bank's
 settlement team does the same work on card, ACH and wire flows. Healthcare is the demonstration
@@ -74,7 +74,7 @@ can serve questions from a hospital, an insurer, a bank and a drug supplier.
 | 6 | Pharmacy manager | Which drugs lose money after reimbursement? | `mart.drug_fifo`, `mart.drug_margin` |
 | 7 | Consulting economist | Which payers underpay against contract, by how much, and why would they? | `mart.underpayment`, consulting memo |
 
-<!-- [Thuc: rewrite in your own words] --> A question is worth answering only if it changes a decision:
+A question is worth answering only if it changes a decision:
 which claims to work, how much to lend, which contract term to renegotiate. Counting claims per
 day is not such a question. Each question therefore has a named owner, a decision, and an output
 table that the app and the CFO report read directly.

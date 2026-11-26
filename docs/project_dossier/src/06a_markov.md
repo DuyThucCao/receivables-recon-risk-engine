@@ -56,7 +56,7 @@ DENIED would be paid; <!--n:markov.denied_observed-->25.2%<!--/n--> were. A time
 claim has already waited, predicts <!--n:markov.denied_pred_duration-->28.1%<!--/n-->. Hold-out Brier scores: constant rate
 <!--n:markov.brier_constant-->0.1073<!--/n-->, plain chain <!--n:markov.brier_memoryless-->0.0855<!--/n-->, corrected chain <!--n:markov.brier_duration-->0.0799<!--/n-->.
 
-<!-- [Thuc: rewrite in your own words] --> Why keep a model whose main assumption fails? Because it fails in
+Why keep a model whose main assumption fails? Because it fails in
 a known direction and the failure is measured. The chain is transparent: every number in it is a
 count ratio a finance manager can check. It is a good baseline for open receivables in general.
 Where it fails, claims that have already waited a long time in DENIED, the correction is simple

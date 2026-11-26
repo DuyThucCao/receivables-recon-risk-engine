@@ -37,7 +37,7 @@ control number or member id that contradicts it. And when several identical sibl
 qualify, the k-th such remittance line within one payer claim payment is paired with the k-th
 sibling by line number.
 
-<!-- [Thuc: rewrite in your own words] --> The contradiction guard exists because evaluation found false
+The contradiction guard exists because evaluation found false
 matches during development: a transposed claim number happened to equal another real claim from
 the same day, and the line was resolved on procedure, date and charge because it was the same lab
 test at the same price. The echoed line control number and member id both disagreed. With the
@@ -98,7 +98,7 @@ postable lines missed; remittance to bank precision <!--n:recon.r2b.precision-->
 | reversal of a posting never received | ORPHAN_REVERSAL | the original remittance is missing |
 | remittance for a claim line rejected in staging | UNMATCHED_REMIT | the line never reached core; fix the claim and rerun |
 
-<!-- [Thuc: rewrite in your own words] --> Recall below one on these cases is a design choice, not a defect.
+Recall below one on these cases is a design choice, not a defect.
 Picking the nearest date for two equal untraced payments would usually be right, but a wrong cash
 posting misstates two customer balances and is hard to find later, while a queued item costs a
 person a few minutes with the payer portal. These limits are also the reason a reconciliation

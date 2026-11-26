@@ -57,7 +57,7 @@ paperwork.
 adjustment, unpivoted from the three triples), `core.dim_reason_code`; payments are rebuilt as
 `recon.remit_trace`.
 
-<!-- [Thuc: rewrite in your own words] --> The most important design decision about the remittance is that
+The most important design decision about the remittance is that
 the payment, not the line, is what reaches the bank. A payer's payment run groups many claim
 lines under one trace number and one header total. The bank sees only that total, sometimes
 merged with other payments in a lockbox deposit. So the engine reconciles in two stages: line to

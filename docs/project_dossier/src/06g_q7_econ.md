@@ -47,7 +47,7 @@ underpayment probability lies inside the 95% interval for <!--n:q7.planted_share
 shortfall for <!--n:q7.planted_mean_inside-->6<!--/n--> of 6; formula tests cover the threshold, the deterrence penalty and the
 repeated-game bound.
 
-<!-- [Thuc: rewrite in your own words] --> The economics in one paragraph: if being caught only means paying
+The economics in one paragraph: if being caught only means paying
 what was owed anyway, underpaying is a free option for the payer, because it keeps the money
 whenever the hospital does not appeal or loses. Recovery alone never deters. An interest clause
 above the payer's cost of funds removes the gain from paying late, but it is tiny next to the

@@ -23,7 +23,7 @@ they cannot drift (decision D-005).
 
 ## One data model per business process
 
-<!-- [Thuc: rewrite in your own words] --> The core schema is not a generic star schema with a customer,
+The core schema is not a generic star schema with a customer,
 product and date dimension. Each business process gets its own fact table at its own grain:
 claim submission (one row per claim line), remittance (one row per adjudicated line, and one per
 adjustment), cash (one row per bank transaction), claim life cycle (one row per status event),

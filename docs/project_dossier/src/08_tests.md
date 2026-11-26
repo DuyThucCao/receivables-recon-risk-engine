@@ -16,7 +16,7 @@ Per file (generated from the test sources at build time):
 
 @@table:tests@@
 
-<!-- [Thuc: rewrite in your own words] --> The tests that matter most are the ones that try to break the
+The tests that matter most are the ones that try to break the
 books on purpose. A reconciliation that "passes" on clean data proves little; one that refuses to
 close a day when a single cent is moved proves the controls are real. The leakage tests matter
 for the models in the same way: they show the backtests could not have peeked at the future.

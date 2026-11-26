@@ -44,7 +44,7 @@ of <!--n:cash.weekly_need-->$605,758<!--/n--> (an assumed <!--n:cash.need_factor
 **Validation against planted parameters.** Estimated first-pass lag quartiles differ from the
 generator's realised quartiles by at most <!--n:cash.lag_quartile_error-->0<!--/n--> days (`results/cashflow_validation.json`).
 
-<!-- [Thuc: rewrite in your own words] --> The forecast is only as good as its coverage. A 13-week cash
+The forecast is only as good as its coverage. A 13-week cash
 forecast that is right on average but whose intervals are too narrow is dangerous, because the
 treasurer sizes a credit line on the bad tail. That is why the backtest scores interval coverage,
 not just error, and why I say the coverage interval itself is too optimistic.

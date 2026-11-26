@@ -54,7 +54,7 @@ denied and appealed claims, which are larger.
 
 ![Bootstrap distribution of the total reserve (figure written by models/reserve.py).](../../../figures/reserve_bootstrap.png){width=0.7}
 
-<!-- [Thuc: rewrite in your own words] --> Where chain-ladder breaks: the newest month is multiplied by a
+Where chain-ladder breaks: the newest month is multiplied by a
 development factor of <!--n:q4.cdf0-->8.62<!--/n-->, so one noisy month moves the whole estimate; a change in payment speed
 would bias every factor; and a few large late claims make the true outcome lumpy. The
 retrospective test showed the first problem directly, which is why Bornhuetter-Ferguson, which

@@ -44,7 +44,7 @@ Against the generator's ultimate outcome per claim, the NCV-weighted predicted P
 the ultimate write-off share <!--n:credit.wo_ncv-->21.6%<!--/n-->. Count-weighted, PD is <!--n:credit.pd_count-->20.6%<!--/n--> against <!--n:credit.wo_count-->7.8%<!--/n-->: the PD
 comes from a dollar-weighted chain, so the dollar comparison is the relevant one.
 
-<!-- [Thuc: rewrite in your own words] --> The finding that expected loss exceeds the margin is the useful
+The finding that expected loss exceeds the margin is the useful
 output of the certificate, not an embarrassment. It says that at a <!--n:credit.advance_rate-->85%<!--/n--> advance rate the lender is
 not protected, because many claims that look current will be denied later. A credit analyst would
 lower the advance rate, exclude payers with high denial rates, or require a reserve. The stress

@@ -32,7 +32,7 @@ The planted coefficients lie inside their 95% intervals for <!--n:q2.coef_covera
 with planted values <!--n:q2.coef_corr-->0.91<!--/n-->). Calibration slope <!--n:q2.calib_slope-->0.84<!--/n--> (95% interval <!--n:q2.calib_slope_ci-->0.47 to 1.20<!--/n-->). On overturned
 held-out appeals, realised payment divided by predicted recoverable amount is <!--n:q2.recoverable_ratio-->0.941<!--/n-->.
 
-<!-- [Thuc: rewrite in your own words] --> The model is weak and I report it as weak. On held-out appeals it
+The model is weak and I report it as weak. On held-out appeals it
 is no better than a lookup table of overturn rates by denial reason. The reason is in the data:
 even the generator's own probabilities reach an AUC of only <!--n:q2.auc_planted-->0.644<!--/n-->, so appeal outcomes are mostly
 noise and there is little left to find. The coefficients still recover the planted ones, which

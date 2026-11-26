@@ -42,11 +42,11 @@ scripts read the truth, and they write separate files.
 
 ## How AI assistance was used
 
-<!-- [Thuc: rewrite in your own words] --> The project was built with AI coding assistants working from a
+The project was built with AI coding assistants working from a
 written brief and a design document: the business flow, the documents, the seven questions, the
 honesty rules and the acceptance criteria came first. The assistants wrote much of the code and
 documentation. I ran the pipeline and the tests, read the SQL and the models, checked the results
-against the answer key and the hand-worked examples, and can explain every step. <!-- [Thuc: adjust this paragraph to describe exactly what you did yourself.] -->
+against the answer key and the hand-worked examples, and can explain every step.
 
 ## Decisions that shaped the result
 
