@@ -1,0 +1,228 @@
+{
+  "note": "Estimates compared with the generator's planted parameters and with the realised draws on the claims the model saw. Planted values are simulation inputs, not facts about real payers.",
+  "line_classification_vs_generator": {
+    "true_positive": 4137,
+    "false_positive": 5,
+    "false_negative": 0,
+    "precision": {
+      "value": 0.9988,
+      "label": "model_estimate"
+    },
+    "recall": {
+      "value": 1.0,
+      "label": "model_estimate"
+    },
+    "shortfall_usd_model": {
+      "value": 334486.29,
+      "label": "model_estimate"
+    },
+    "shortfall_usd_generator_first_price": {
+      "value": 334462.5,
+      "label": "synthetic_record"
+    },
+    "lines_without_generator_record": 0,
+    "expected_allowed_equals_generator_contract_share": {
+      "value": 1.0,
+      "label": "model_estimate"
+    }
+  },
+  "per_payer": {
+    "label": "model_estimate",
+    "rows": [
+      {
+        "payer_id": "P01",
+        "planted_probability": 0.04,
+        "realised_share_among_priced_claims": 0.04361,
+        "estimated_share": 0.04374,
+        "share_lo": 0.03914,
+        "share_hi": 0.04821,
+        "planted_inside_ci": true,
+        "planted_mean_shortfall": 0.05,
+        "realised_mean_shortfall": 0.04843,
+        "estimated_mean_shortfall": 0.04834,
+        "mean_lo": 0.04375,
+        "mean_hi": 0.05329,
+        "planted_mean_inside_ci": true,
+        "planted_overturn_target": 0.5,
+        "estimated_appeal_win_rate": 0.4827,
+        "win_rate_ci": [
+          0.4325,
+          0.5332
+        ],
+        "planted_inside_win_ci": true,
+        "generator_first_pass_lag_median": 21.0,
+        "model_first_pass_days_median": 21.0,
+        "generator_first_pass_lag_mean": 24.006,
+        "model_first_pass_days_mean": 24.299
+      },
+      {
+        "payer_id": "P02",
+        "planted_probability": 0.06,
+        "realised_share_among_priced_claims": 0.05546,
+        "estimated_share": 0.05546,
+        "share_lo": 0.05004,
+        "share_hi": 0.0612,
+        "planted_inside_ci": true,
+        "planted_mean_shortfall": 0.08,
+        "realised_mean_shortfall": 0.07852,
+        "estimated_mean_shortfall": 0.07852,
+        "mean_lo": 0.07273,
+        "mean_hi": 0.08457,
+        "planted_mean_inside_ci": true,
+        "planted_overturn_target": 0.45,
+        "estimated_appeal_win_rate": 0.4501,
+        "win_rate_ci": [
+          0.4003,
+          0.501
+        ],
+        "planted_inside_win_ci": true,
+        "generator_first_pass_lag_median": 27.0,
+        "model_first_pass_days_median": 27.0,
+        "generator_first_pass_lag_mean": 30.501,
+        "model_first_pass_days_mean": 30.521
+      },
+      {
+        "payer_id": "P03",
+        "planted_probability": 0.15,
+        "realised_share_among_priced_claims": 0.13875,
+        "estimated_share": 0.13899,
+        "share_lo": 0.12941,
+        "share_hi": 0.14926,
+        "planted_inside_ci": false,
+        "planted_mean_shortfall": 0.12,
+        "realised_mean_shortfall": 0.11869,
+        "estimated_mean_shortfall": 0.11854,
+        "mean_lo": 0.11245,
+        "mean_hi": 0.12455,
+        "planted_mean_inside_ci": true,
+        "planted_overturn_target": 0.35,
+        "estimated_appeal_win_rate": 0.356,
+        "win_rate_ci": [
+          0.3184,
+          0.3956
+        ],
+        "planted_inside_win_ci": true,
+        "generator_first_pass_lag_median": 30.0,
+        "model_first_pass_days_median": 30.0,
+        "generator_first_pass_lag_mean": 36.268,
+        "model_first_pass_days_mean": 36.128
+      },
+      {
+        "payer_id": "P04",
+        "planted_probability": 0.02,
+        "realised_share_among_priced_claims": 0.0203,
+        "estimated_share": 0.0203,
+        "share_lo": 0.01657,
+        "share_hi": 0.02444,
+        "planted_inside_ci": true,
+        "planted_mean_shortfall": 0.03,
+        "realised_mean_shortfall": 0.02577,
+        "estimated_mean_shortfall": 0.02578,
+        "mean_lo": 0.01909,
+        "mean_hi": 0.03401,
+        "planted_mean_inside_ci": true,
+        "planted_overturn_target": 0.55,
+        "estimated_appeal_win_rate": 0.4754,
+        "win_rate_ci": [
+          0.3889,
+          0.5634
+        ],
+        "planted_inside_win_ci": true,
+        "generator_first_pass_lag_median": 43.0,
+        "model_first_pass_days_median": 43.0,
+        "generator_first_pass_lag_mean": 47.973,
+        "model_first_pass_days_mean": 47.739
+      },
+      {
+        "payer_id": "P05",
+        "planted_probability": 0.08,
+        "realised_share_among_priced_claims": 0.07739,
+        "estimated_share": 0.07739,
+        "share_lo": 0.06772,
+        "share_hi": 0.08707,
+        "planted_inside_ci": true,
+        "planted_mean_shortfall": 0.07,
+        "realised_mean_shortfall": 0.06719,
+        "estimated_mean_shortfall": 0.06719,
+        "mean_lo": 0.05985,
+        "mean_hi": 0.07453,
+        "planted_mean_inside_ci": true,
+        "planted_overturn_target": 0.45,
+        "estimated_appeal_win_rate": 0.4293,
+        "win_rate_ci": [
+          0.3634,
+          0.4977
+        ],
+        "planted_inside_win_ci": true,
+        "generator_first_pass_lag_median": 29.0,
+        "model_first_pass_days_median": 29.0,
+        "generator_first_pass_lag_mean": 32.265,
+        "model_first_pass_days_mean": 32.097
+      },
+      {
+        "payer_id": "P06",
+        "planted_probability": 0.1,
+        "realised_share_among_priced_claims": 0.10614,
+        "estimated_share": 0.10614,
+        "share_lo": 0.09143,
+        "share_hi": 0.12214,
+        "planted_inside_ci": true,
+        "planted_mean_shortfall": 0.1,
+        "realised_mean_shortfall": 0.09374,
+        "estimated_mean_shortfall": 0.09374,
+        "mean_lo": 0.084,
+        "mean_hi": 0.10331,
+        "planted_mean_inside_ci": true,
+        "planted_overturn_target": 0.4,
+        "estimated_appeal_win_rate": 0.3956,
+        "win_rate_ci": [
+          0.3013,
+          0.4983
+        ],
+        "planted_inside_win_ci": true,
+        "generator_first_pass_lag_median": 39.0,
+        "model_first_pass_days_median": 40.0,
+        "generator_first_pass_lag_mean": 47.549,
+        "model_first_pass_days_mean": 47.715
+      }
+    ]
+  },
+  "planted_share_inside_ci": {
+    "value": 5,
+    "label": "model_estimate",
+    "note": "of 6 payers"
+  },
+  "planted_mean_inside_ci": {
+    "value": 6,
+    "label": "model_estimate",
+    "note": "of 6 payers"
+  },
+  "planted_win_rate_inside_ci": {
+    "value": 6,
+    "label": "model_estimate",
+    "note": "of 6 payers"
+  },
+  "ranking_by_planted_expected_shortfall": [
+    "P03",
+    "P06",
+    "P05",
+    "P02",
+    "P01",
+    "P04"
+  ],
+  "ranking_by_estimated_shortfall_rate": [
+    "P03",
+    "P06",
+    "P05",
+    "P02",
+    "P04",
+    "P01"
+  ],
+  "top_payer_recovered": {
+    "value": true,
+    "label": "model_estimate"
+  },
+  "figures": [
+    "figures/econ_underpayment_recovery.png"
+  ]
+}

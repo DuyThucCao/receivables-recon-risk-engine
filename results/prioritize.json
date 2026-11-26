@@ -1,0 +1,1858 @@
+{
+  "name": "prioritize",
+  "question": "Q2 Revenue-cycle lead: which denied claims should staff work first today?",
+  "label": "model_estimate",
+  "note": "Simulated data for a fictional hospital. Results show whether the method recovers the generator's planted behaviour and whether the decision rule behaves correctly; they are not findings about real payers.",
+  "seed": 20260331,
+  "as_of_date": "2026-03-31",
+  "validation_cutoff": "2025-07-01",
+  "inputs": {
+    "tables": [
+      "core.fact_claim_event",
+      "core.fact_claim_line",
+      "core.fact_remit_line",
+      "recon.claim_remit_match",
+      "recon.claim_line_balance"
+    ],
+    "sql": "sql/models/55_work_queue.sql",
+    "calibration_sha256": "d98261176339016264b7461bf252820ae0ec05efb147720130e473aad8ef11f6"
+  },
+  "assumptions": {
+    "appeal_window_days": {
+      "value": 90,
+      "unit": "days from the denial date",
+      "label": "financial_assumption",
+      "source": "Assumption. Provider appeal deadlines are set by each payer contract. For context, Medicare's first-level appeal (redetermination) must be filed within 120 days of receiving the initial determination (42 CFR 405.942). A single 90-day window is used for every simulated payer."
+    },
+    "handling_minutes_base": {
+      "value": 35.0,
+      "label": "financial_assumption",
+      "source": "config/calibration.yaml financial_assumptions.appeal_handling_minutes"
+    },
+    "handling_cost_per_appeal_usd": {
+      "value": 45.0,
+      "label": "financial_assumption",
+      "source": "config/calibration.yaml financial_assumptions.appeal_handling_cost_usd"
+    },
+    "loaded_hourly_cost_usd": {
+      "value": 77.14,
+      "label": "financial_assumption",
+      "note": "implied: cost per appeal / minutes per appeal x 60"
+    },
+    "effort_multiplier_by_reason": {
+      "value": {
+        "ADMINISTRATIVE": 0.6,
+        "ELIGIBILITY": 0.7,
+        "CODING": 0.8,
+        "PRIOR_AUTH": 1.2,
+        "MEDICAL_NECESSITY": 1.6,
+        "NON_COVERED": 1.0
+      },
+      "label": "financial_assumption",
+      "source": "Assumption, illustrative and not measured. Relative staff effort per appeal by denial category (clinical-record appeals take longer than demographic corrections). Multiplies the configured minutes per appeal. A uniform-effort sensitivity (all multipliers 1) is reported alongside."
+    },
+    "staff_hours_per_day": {
+      "value": 24.0,
+      "label": "financial_assumption",
+      "source": "config/calibration.yaml financial_assumptions.denial_staff_hours_per_day"
+    },
+    "business_days": "weekdays (public holidays ignored in the replay)",
+    "timing_independence": "The backtest assumes an appeal's outcome does not depend on the day it is filed inside the window, so a claim worked on another day than in reality keeps its realised outcome."
+  },
+  "data": {
+    "train_appeals": {
+      "value": 1079,
+      "label": "synthetic_record",
+      "note": "appeals decided on or before 2025-07-01"
+    },
+    "train_overturn_rate": {
+      "value": 0.4319,
+      "label": "synthetic_record"
+    },
+    "test_appeals": {
+      "value": 442,
+      "label": "synthetic_record",
+      "note": "appeals on denials dated on or after the cutoff, outcome known by the as-of date"
+    },
+    "test_overturn_rate": {
+      "value": 0.4186,
+      "label": "synthetic_record"
+    },
+    "test_levels_unseen_in_training": {
+      "value": 0,
+      "label": "synthetic_record"
+    },
+    "held_out_denials": {
+      "value": 1980,
+      "label": "synthetic_record"
+    },
+    "held_out_denials_per_business_day": {
+      "value": 10.1,
+      "label": "synthetic_record"
+    },
+    "appeals_resolved_by_as_of": {
+      "value": 1751,
+      "label": "synthetic_record"
+    }
+  },
+  "model": {
+    "formula": "overturned ~ C(payer_id, Treatment(reference='P03')) + C(reason_category, Treatment(reference='PRIOR_AUTH')) + C(service_line_code, Treatment(reference='INFUSION')) + ln_amount_c + age_months",
+    "reference_levels": {
+      "payer_id": "P03",
+      "reason_category": "PRIOR_AUTH",
+      "service_line_code": "INFUSION"
+    },
+    "ln_amount_center": 8.186148,
+    "coefficients_fit_at_cutoff": [
+      {
+        "term": "Intercept",
+        "estimate": -0.4204165822977774,
+        "std_error": 0.22608347795400047,
+        "ci_low": -0.8635320565871736,
+        "ci_high": 0.02269889199161884,
+        "p_value": 0.06294730818772327,
+        "odds_ratio": 0.6567731627454139,
+        "label": "model_estimate"
+      },
+      {
+        "term": "payer_id=P01",
+        "estimate": 0.5973411408446397,
+        "std_error": 0.17745858157909958,
+        "ci_low": 0.24952871220204148,
+        "ci_high": 0.9451535694872379,
+        "p_value": 0.0007624247648199409,
+        "odds_ratio": 1.8172804781949587,
+        "label": "model_estimate"
+      },
+      {
+        "term": "payer_id=P02",
+        "estimate": 0.2133852051802094,
+        "std_error": 0.18197819384035707,
+        "ci_low": -0.14328550071853915,
+        "ci_high": 0.5700559110789579,
+        "p_value": 0.24096159562568797,
+        "odds_ratio": 1.2378613900364026,
+        "label": "model_estimate"
+      },
+      {
+        "term": "payer_id=P04",
+        "estimate": 0.6175684654595269,
+        "std_error": 0.2695309893553722,
+        "ci_low": 0.08929743360554876,
+        "ci_high": 1.145839497313505,
+        "p_value": 0.02194776066243534,
+        "odds_ratio": 1.8544134849791245,
+        "label": "model_estimate"
+      },
+      {
+        "term": "payer_id=P05",
+        "estimate": 0.39893231303425636,
+        "std_error": 0.22146538060616255,
+        "ci_low": -0.035131856776277615,
+        "ci_high": 0.8329964828447903,
+        "p_value": 0.07165082586360788,
+        "odds_ratio": 1.490232745860737,
+        "label": "model_estimate"
+      },
+      {
+        "term": "payer_id=P06",
+        "estimate": -0.32612470339174304,
+        "std_error": 0.3038895751973586,
+        "ci_low": -0.9217373260557424,
+        "ci_high": 0.26948791927225635,
+        "p_value": 0.283195545076934,
+        "odds_ratio": 0.7217151814888052,
+        "label": "model_estimate"
+      },
+      {
+        "term": "reason_category=ADMINISTRATIVE",
+        "estimate": 0.5536600520150302,
+        "std_error": 0.19729779926712104,
+        "ci_low": 0.1669634712224599,
+        "ci_high": 0.9403566328076005,
+        "p_value": 0.00501272271166618,
+        "odds_ratio": 1.7396084375565628,
+        "label": "model_estimate"
+      },
+      {
+        "term": "reason_category=CODING",
+        "estimate": 0.27346904770001146,
+        "std_error": 0.20286202300940326,
+        "ci_low": -0.12413321122935467,
+        "ci_high": 0.6710713066293776,
+        "p_value": 0.17764087848839016,
+        "odds_ratio": 1.31451667126802,
+        "label": "model_estimate"
+      },
+      {
+        "term": "reason_category=ELIGIBILITY",
+        "estimate": -0.5306153652555303,
+        "std_error": 0.28631246067615307,
+        "ci_low": -1.0917774765058308,
+        "ci_high": 0.03054674599477014,
+        "p_value": 0.06384313284207531,
+        "odds_ratio": 0.5882428740527426,
+        "label": "model_estimate"
+      },
+      {
+        "term": "reason_category=MEDICAL_NECESSITY",
+        "estimate": -0.1694906080004229,
+        "std_error": 0.1696332399264193,
+        "ci_low": -0.5019656488370466,
+        "ci_high": 0.16298443283620087,
+        "p_value": 0.3177175891647118,
+        "odds_ratio": 0.844094682180032,
+        "label": "model_estimate"
+      },
+      {
+        "term": "reason_category=NON_COVERED",
+        "estimate": -1.3900572312624901,
+        "std_error": 0.2925109270334081,
+        "ci_low": -1.9633681133323937,
+        "ci_high": -0.8167463491925866,
+        "p_value": 2.012601024143425e-06,
+        "odds_ratio": 0.249061050145434,
+        "label": "model_estimate"
+      },
+      {
+        "term": "service_line_code=CARDIOLOGY",
+        "estimate": 0.015933468071716708,
+        "std_error": 0.28763747314405647,
+        "ci_low": -0.547825619894741,
+        "ci_high": 0.5796925560381744,
+        "p_value": 0.9558243600923222,
+        "odds_ratio": 1.0160610826541665,
+        "label": "model_estimate"
+      },
+      {
+        "term": "service_line_code=EMERGENCY",
+        "estimate": 0.09370287097093831,
+        "std_error": 0.2807852343607634,
+        "ci_low": -0.4566260757667965,
+        "ci_high": 0.6440318177086731,
+        "p_value": 0.7385929456818543,
+        "odds_ratio": 1.0982333804152367,
+        "label": "model_estimate"
+      },
+      {
+        "term": "service_line_code=LABORATORY",
+        "estimate": -0.29528029984633,
+        "std_error": 0.46580457843438644,
+        "ci_low": -1.2082404974115901,
+        "ci_high": 0.6176798977189302,
+        "p_value": 0.5261365893265959,
+        "odds_ratio": 0.7443229246218026,
+        "label": "model_estimate"
+      },
+      {
+        "term": "service_line_code=OPHTHALMOLOGY",
+        "estimate": -0.10965882847268135,
+        "std_error": 0.31242051421905037,
+        "ci_low": -0.721991784373504,
+        "ci_high": 0.5026741274281412,
+        "p_value": 0.7255902022526183,
+        "odds_ratio": 0.896139820539277,
+        "label": "model_estimate"
+      },
+      {
+        "term": "service_line_code=ORTHOPEDICS",
+        "estimate": 0.15340792070771486,
+        "std_error": 0.22932547764023054,
+        "ci_low": -0.29606175620458247,
+        "ci_high": 0.6028775976200123,
+        "p_value": 0.5035255864602447,
+        "odds_ratio": 1.1658004361006833,
+        "label": "model_estimate"
+      },
+      {
+        "term": "service_line_code=PRIMARY_CARE",
+        "estimate": -0.2448645307963415,
+        "std_error": 0.3835351790623343,
+        "ci_low": -0.9965796685626374,
+        "ci_high": 0.5068506069699543,
+        "p_value": 0.5231867379311426,
+        "odds_ratio": 0.7828105777847477,
+        "label": "model_estimate"
+      },
+      {
+        "term": "service_line_code=RADIOLOGY",
+        "estimate": -0.022942660606214693,
+        "std_error": 0.27924405044106526,
+        "ci_low": -0.5702509423677888,
+        "ci_high": 0.5243656211553593,
+        "p_value": 0.9345195683162801,
+        "odds_ratio": 0.9773185210182213,
+        "label": "model_estimate"
+      },
+      {
+        "term": "ln_amount_c",
+        "estimate": -0.10334791747806549,
+        "std_error": 0.06577640988715232,
+        "ci_low": -0.23226731188922836,
+        "ci_high": 0.025571476933097387,
+        "p_value": 0.11613612149877788,
+        "odds_ratio": 0.9018131623333651,
+        "label": "model_estimate"
+      },
+      {
+        "term": "age_months",
+        "estimate": -0.02635634389923645,
+        "std_error": 0.04001207621406017,
+        "ci_low": -0.10477857222546615,
+        "ci_high": 0.05206588442699324,
+        "p_value": 0.5100821839757682,
+        "odds_ratio": 0.9739879530974176,
+        "label": "model_estimate"
+      }
+    ],
+    "coefficients_fit_at_as_of": [
+      {
+        "term": "Intercept",
+        "estimate": -0.5195405212297903,
+        "std_error": 0.17508577996278643,
+        "ci_low": -0.8627023441619563,
+        "ci_high": -0.17637869829762426,
+        "p_value": 0.0030038030466222223,
+        "odds_ratio": 0.5947937803078622,
+        "label": "model_estimate"
+      },
+      {
+        "term": "payer_id=P01",
+        "estimate": 0.5301777587047984,
+        "std_error": 0.14106781897399578,
+        "ci_low": 0.2536899141381506,
+        "ci_high": 0.8066656032714463,
+        "p_value": 0.00017105922338381792,
+        "odds_ratio": 1.6992343354684265,
+        "label": "model_estimate"
+      },
+      {
+        "term": "payer_id=P02",
+        "estimate": 0.3625749393753828,
+        "std_error": 0.14117224296009487,
+        "ci_low": 0.08588242755685871,
+        "ci_high": 0.6392674511939069,
+        "p_value": 0.010219393064439237,
+        "odds_ratio": 1.4370249067000416,
+        "label": "model_estimate"
+      },
+      {
+        "term": "payer_id=P04",
+        "estimate": 0.48634577128636947,
+        "std_error": 0.21114393211257748,
+        "ci_low": 0.07251126879154746,
+        "ci_high": 0.9001802737811915,
+        "p_value": 0.021257189567731382,
+        "odds_ratio": 1.6263622483671347,
+        "label": "model_estimate"
+      },
+      {
+        "term": "payer_id=P05",
+        "estimate": 0.3035112380367809,
+        "std_error": 0.17156578889638568,
+        "ci_low": -0.03275152917933699,
+        "ci_high": 0.6397740052528987,
+        "p_value": 0.07688282785500787,
+        "odds_ratio": 1.3546068139776881,
+        "label": "model_estimate"
+      },
+      {
+        "term": "payer_id=P06",
+        "estimate": 0.1889852235699711,
+        "std_error": 0.2377691837066603,
+        "ci_low": -0.27703381312857095,
+        "ci_high": 0.6550042602685131,
+        "p_value": 0.42671449372063386,
+        "odds_ratio": 1.2080231020821783,
+        "label": "model_estimate"
+      },
+      {
+        "term": "reason_category=ADMINISTRATIVE",
+        "estimate": 0.5658987176267588,
+        "std_error": 0.15340197623078752,
+        "ci_low": 0.2652363690571458,
+        "ci_high": 0.8665610661963719,
+        "p_value": 0.0002251439831959211,
+        "odds_ratio": 1.7610297402175739,
+        "label": "model_estimate"
+      },
+      {
+        "term": "reason_category=CODING",
+        "estimate": 0.24667562475843147,
+        "std_error": 0.1585975449144473,
+        "ci_low": -0.06416985131035885,
+        "ci_high": 0.5575211008272218,
+        "p_value": 0.1198613345737411,
+        "odds_ratio": 1.2797639217118033,
+        "label": "model_estimate"
+      },
+      {
+        "term": "reason_category=ELIGIBILITY",
+        "estimate": -0.2875673302407392,
+        "std_error": 0.22672498811654027,
+        "ci_low": -0.7319401413444299,
+        "ci_high": 0.15680548086295143,
+        "p_value": 0.2046718999986512,
+        "odds_ratio": 0.7500860615956357,
+        "label": "model_estimate"
+      },
+      {
+        "term": "reason_category=MEDICAL_NECESSITY",
+        "estimate": -0.17737322758558377,
+        "std_error": 0.13309367095529542,
+        "ci_low": -0.43823202922818744,
+        "ci_high": 0.0834855740570199,
+        "p_value": 0.1826320189269891,
+        "odds_ratio": 0.8374671603403789,
+        "label": "model_estimate"
+      },
+      {
+        "term": "reason_category=NON_COVERED",
+        "estimate": -1.402870612048803,
+        "std_error": 0.2302494552604343,
+        "ci_low": -1.8541512518192207,
+        "ci_high": -0.9515899722783854,
+        "p_value": 1.1093238096268653e-09,
+        "odds_ratio": 0.24589009478468463,
+        "label": "model_estimate"
+      },
+      {
+        "term": "service_line_code=CARDIOLOGY",
+        "estimate": 0.020513581628191193,
+        "std_error": 0.22644167078091304,
+        "ci_low": -0.4233039377014743,
+        "ci_high": 0.4643311009578566,
+        "p_value": 0.9278175686406551,
+        "odds_ratio": 1.0207254312623448,
+        "label": "model_estimate"
+      },
+      {
+        "term": "service_line_code=EMERGENCY",
+        "estimate": 0.17678487866461823,
+        "std_error": 0.21608591336004748,
+        "ci_low": -0.24673572908751734,
+        "ci_high": 0.6003054864167539,
+        "p_value": 0.41328689622643,
+        "odds_ratio": 1.1933743452293977,
+        "label": "model_estimate"
+      },
+      {
+        "term": "service_line_code=LABORATORY",
+        "estimate": -0.17515929359757287,
+        "std_error": 0.35324481570664656,
+        "ci_low": -0.8675064101080889,
+        "ci_high": 0.5171878229129432,
+        "p_value": 0.6199945489219867,
+        "odds_ratio": 0.8393233112901759,
+        "label": "model_estimate"
+      },
+      {
+        "term": "service_line_code=OPHTHALMOLOGY",
+        "estimate": -0.03355370734239313,
+        "std_error": 0.24629578240821928,
+        "ci_low": -0.5162845704066168,
+        "ci_high": 0.4491771557218305,
+        "p_value": 0.8916367863652631,
+        "odds_ratio": 0.9670029746768721,
+        "label": "model_estimate"
+      },
+      {
+        "term": "service_line_code=ORTHOPEDICS",
+        "estimate": 0.17225048844278976,
+        "std_error": 0.1790203028530897,
+        "ci_low": -0.17862285765071914,
+        "ci_high": 0.5231238345362986,
+        "p_value": 0.33595713610488886,
+        "odds_ratio": 1.1879753700480968,
+        "label": "model_estimate"
+      },
+      {
+        "term": "service_line_code=PRIMARY_CARE",
+        "estimate": -0.12839318177256664,
+        "std_error": 0.29283943511680416,
+        "ci_low": -0.7023479278545568,
+        "ci_high": 0.4455615643094235,
+        "p_value": 0.66106572247541,
+        "odds_ratio": 0.8795075048336262,
+        "label": "model_estimate"
+      },
+      {
+        "term": "service_line_code=RADIOLOGY",
+        "estimate": -0.01771389873525097,
+        "std_error": 0.21156186616116554,
+        "ci_low": -0.4323675369132186,
+        "ci_high": 0.39693973944271665,
+        "p_value": 0.9332717669797919,
+        "odds_ratio": 0.9824420700725514,
+        "label": "model_estimate"
+      },
+      {
+        "term": "ln_amount_c",
+        "estimate": -0.08805568649218717,
+        "std_error": 0.04974418091176784,
+        "ci_low": -0.18555248951969697,
+        "ci_high": 0.009441116535322619,
+        "p_value": 0.0766987256453547,
+        "odds_ratio": 0.9157098826322728,
+        "label": "model_estimate"
+      },
+      {
+        "term": "age_months",
+        "estimate": -0.030976914707684013,
+        "std_error": 0.02956214197448842,
+        "ci_low": -0.08891764828354112,
+        "ci_high": 0.026963818868173093,
+        "p_value": 0.2947042264546492,
+        "odds_ratio": 0.9694979539613573,
+        "label": "model_estimate"
+      }
+    ],
+    "deviance": 1396.921,
+    "null_deviance": 1475.722,
+    "aic": 1436.921
+  },
+  "validation": {
+    "held_out_metrics": {
+      "logistic_model": {
+        "n": 442,
+        "observed_rate": 0.4186,
+        "mean_predicted": 0.4314,
+        "brier": 0.2317,
+        "log_loss": 0.6554,
+        "auc": 0.6306,
+        "calibration_intercept": -0.0959,
+        "calibration_slope": 0.8367,
+        "calibration_slope_ci95": [
+          0.4747031167483213,
+          1.1987657846078574
+        ]
+      },
+      "baseline_overall_rate": {
+        "n": 442,
+        "observed_rate": 0.4186,
+        "mean_predicted": 0.4319,
+        "brier": 0.2435,
+        "log_loss": 0.6802,
+        "auc": 0.5
+      },
+      "baseline_reason_rate": {
+        "n": 442,
+        "observed_rate": 0.4186,
+        "mean_predicted": 0.4341,
+        "brier": 0.2317,
+        "log_loss": 0.6551,
+        "auc": 0.6259,
+        "calibration_intercept": -0.0514,
+        "calibration_slope": 1.0642,
+        "calibration_slope_ci95": [
+          0.5905738605450981,
+          1.5379249313409737
+        ]
+      }
+    },
+    "metrics_label": "model_estimate",
+    "reliability_model": [
+      {
+        "n": 45,
+        "mean_predicted": 0.18874408302649137,
+        "observed_rate": 0.24444444444444444,
+        "se": 0.06406443943833971
+      },
+      {
+        "n": 44,
+        "mean_predicted": 0.295455914427525,
+        "observed_rate": 0.22727272727272727,
+        "se": 0.06317721012983742
+      },
+      {
+        "n": 44,
+        "mean_predicted": 0.3461146139433582,
+        "observed_rate": 0.38636363636363635,
+        "se": 0.07340528480781205
+      },
+      {
+        "n": 44,
+        "mean_predicted": 0.3881106597647832,
+        "observed_rate": 0.2727272727272727,
+        "se": 0.06714081326145421
+      },
+      {
+        "n": 44,
+        "mean_predicted": 0.41684021132874033,
+        "observed_rate": 0.4772727272727273,
+        "se": 0.07529992621546248
+      },
+      {
+        "n": 44,
+        "mean_predicted": 0.4555060339745837,
+        "observed_rate": 0.4318181818181818,
+        "se": 0.07467372053099669
+      },
+      {
+        "n": 44,
+        "mean_predicted": 0.4934985619688694,
+        "observed_rate": 0.5681818181818182,
+        "se": 0.0746737205309967
+      },
+      {
+        "n": 44,
+        "mean_predicted": 0.5251690756513333,
+        "observed_rate": 0.5,
+        "se": 0.07537783614444091
+      },
+      {
+        "n": 44,
+        "mean_predicted": 0.5651398257297596,
+        "observed_rate": 0.5,
+        "se": 0.07537783614444091
+      },
+      {
+        "n": 45,
+        "mean_predicted": 0.6397142026645517,
+        "observed_rate": 0.5777777777777777,
+        "se": 0.07362828823578772
+      }
+    ],
+    "reliability_reason_baseline": [
+      {
+        "n": 45,
+        "mean_predicted": 0.2064070934419521,
+        "observed_rate": 0.2222222222222222,
+        "se": 0.06197481678030189
+      },
+      {
+        "n": 44,
+        "mean_predicted": 0.3766932925331224,
+        "observed_rate": 0.38636363636363635,
+        "se": 0.07340528480781205
+      },
+      {
+        "n": 44,
+        "mean_predicted": 0.3985392117922238,
+        "observed_rate": 0.3181818181818182,
+        "se": 0.07021754325605963
+      },
+      {
+        "n": 44,
+        "mean_predicted": 0.4013119667680058,
+        "observed_rate": 0.3409090909090909,
+        "se": 0.07146042812198869
+      },
+      {
+        "n": 44,
+        "mean_predicted": 0.4392062847703592,
+        "observed_rate": 0.4318181818181818,
+        "se": 0.07467372053099669
+      },
+      {
+        "n": 44,
+        "mean_predicted": 0.4392062847703592,
+        "observed_rate": 0.3181818181818182,
+        "se": 0.07021754325605963
+      },
+      {
+        "n": 44,
+        "mean_predicted": 0.4392062847703592,
+        "observed_rate": 0.5227272727272727,
+        "se": 0.07529992621546248
+      },
+      {
+        "n": 44,
+        "mean_predicted": 0.49746762000321687,
+        "observed_rate": 0.5,
+        "se": 0.07537783614444091
+      },
+      {
+        "n": 44,
+        "mean_predicted": 0.558042141200863,
+        "observed_rate": 0.5,
+        "se": 0.07537783614444091
+      },
+      {
+        "n": 45,
+        "mean_predicted": 0.5865334246685739,
+        "observed_rate": 0.6444444444444445,
+        "se": 0.07135759750395435
+      }
+    ],
+    "recoverable_amount_check": {
+      "n_overturned": 185,
+      "predicted_recoverable": 1343628.6432,
+      "realised_paid": 1264589.81,
+      "realised_over_predicted": 0.9412
+    },
+    "payer_paid_ratio_at_cutoff": {
+      "P01": 0.8838,
+      "P02": 0.8769,
+      "P03": 0.8643,
+      "P04": 0.9883,
+      "P05": 0.8505,
+      "P06": 0.8914
+    }
+  },
+  "backtest": {
+    "description": "Every weekday from the cutoff to the as-of date each policy picks claims inside the appeal window under the daily budget; a worked claim leaves the pool. ALL_DENIALS scores choices with the model's expected value (circular for the knapsack, which maximises it by construction); APPEALED_WITH_OUTCOME scores them with the realised outcome and paid amount.",
+    "expected_net_all_denials": [
+      {
+        "hours_per_day": 0.75,
+        "model_knapsack": 3319278.18,
+        "oldest_first": 768762.38,
+        "largest_first": 3173828.23,
+        "knapsack_minus_oldest": 2550515.8,
+        "knapsack_minus_largest": 145449.94
+      },
+      {
+        "hours_per_day": 1.0,
+        "model_knapsack": 3727609.01,
+        "oldest_first": 813221.2,
+        "largest_first": 3579898.8,
+        "knapsack_minus_oldest": 2914387.81,
+        "knapsack_minus_largest": 147710.21
+      },
+      {
+        "hours_per_day": 1.5,
+        "model_knapsack": 4351844.8,
+        "oldest_first": 1322677.34,
+        "largest_first": 4130171.69,
+        "knapsack_minus_oldest": 3029167.47,
+        "knapsack_minus_largest": 221673.11
+      },
+      {
+        "hours_per_day": 2.0,
+        "model_knapsack": 4643874.22,
+        "oldest_first": 1823490.99,
+        "largest_first": 4505017.7,
+        "knapsack_minus_oldest": 2820383.23,
+        "knapsack_minus_largest": 138856.52
+      },
+      {
+        "hours_per_day": 3.0,
+        "model_knapsack": 4907668.63,
+        "oldest_first": 2868834.32,
+        "largest_first": 4864943.66,
+        "knapsack_minus_oldest": 2038834.31,
+        "knapsack_minus_largest": 42724.97
+      },
+      {
+        "hours_per_day": 4.0,
+        "model_knapsack": 5004864.22,
+        "oldest_first": 3710826.1,
+        "largest_first": 4988867.58,
+        "knapsack_minus_oldest": 1294038.12,
+        "knapsack_minus_largest": 15996.63
+      },
+      {
+        "hours_per_day": 6.0,
+        "model_knapsack": 5038759.1,
+        "oldest_first": 5035907.02,
+        "largest_first": 5036788.84,
+        "knapsack_minus_oldest": 2852.08,
+        "knapsack_minus_largest": 1970.27
+      },
+      {
+        "hours_per_day": 8.0,
+        "model_knapsack": 5038759.1,
+        "oldest_first": 5035907.02,
+        "largest_first": 5035907.02,
+        "knapsack_minus_oldest": 2852.08,
+        "knapsack_minus_largest": 2852.08
+      },
+      {
+        "hours_per_day": 24.0,
+        "model_knapsack": 5038759.1,
+        "oldest_first": 5035907.02,
+        "largest_first": 5035907.02,
+        "knapsack_minus_oldest": 2852.08,
+        "knapsack_minus_largest": 2852.08
+      }
+    ],
+    "realised_net_appealed_with_outcome": [
+      {
+        "hours_per_day": 0.75,
+        "model_knapsack": 889058.52,
+        "oldest_first": 630084.94,
+        "largest_first": 881959.74,
+        "knapsack_minus_oldest": 258973.57,
+        "knapsack_minus_largest": 7098.77
+      },
+      {
+        "hours_per_day": 1.0,
+        "model_knapsack": 1203966.78,
+        "oldest_first": 779388.2,
+        "largest_first": 1182127.31,
+        "knapsack_minus_oldest": 424578.58,
+        "knapsack_minus_largest": 21839.47
+      },
+      {
+        "hours_per_day": 1.5,
+        "model_knapsack": 1238614.49,
+        "oldest_first": 1170936.72,
+        "largest_first": 1235377.0,
+        "knapsack_minus_oldest": 67677.77,
+        "knapsack_minus_largest": 3237.49
+      },
+      {
+        "hours_per_day": 2.0,
+        "model_knapsack": 1242539.94,
+        "oldest_first": 1242328.95,
+        "largest_first": 1242579.54,
+        "knapsack_minus_oldest": 210.99,
+        "knapsack_minus_largest": -39.6
+      },
+      {
+        "hours_per_day": 3.0,
+        "model_knapsack": 1242939.13,
+        "oldest_first": 1242328.95,
+        "largest_first": 1242328.95,
+        "knapsack_minus_oldest": 610.18,
+        "knapsack_minus_largest": 610.18
+      },
+      {
+        "hours_per_day": 4.0,
+        "model_knapsack": 1242939.13,
+        "oldest_first": 1242328.95,
+        "largest_first": 1242328.95,
+        "knapsack_minus_oldest": 610.18,
+        "knapsack_minus_largest": 610.18
+      },
+      {
+        "hours_per_day": 6.0,
+        "model_knapsack": 1242939.13,
+        "oldest_first": 1242328.95,
+        "largest_first": 1242328.95,
+        "knapsack_minus_oldest": 610.18,
+        "knapsack_minus_largest": 610.18
+      },
+      {
+        "hours_per_day": 8.0,
+        "model_knapsack": 1242939.13,
+        "oldest_first": 1242328.95,
+        "largest_first": 1242328.95,
+        "knapsack_minus_oldest": 610.18,
+        "knapsack_minus_largest": 610.18
+      },
+      {
+        "hours_per_day": 24.0,
+        "model_knapsack": 1242939.13,
+        "oldest_first": 1242328.95,
+        "largest_first": 1242328.95,
+        "knapsack_minus_oldest": 610.18,
+        "knapsack_minus_largest": 610.18
+      }
+    ],
+    "uniform_effort_sensitivity_expected_net": [
+      {
+        "hours_per_day": 0.75,
+        "model_knapsack": 3052113.76,
+        "oldest_first": 495066.54,
+        "largest_first": 2873931.55,
+        "knapsack_minus_oldest": 2557047.22,
+        "knapsack_minus_largest": 178182.21
+      },
+      {
+        "hours_per_day": 1.0,
+        "model_knapsack": 3052113.76,
+        "oldest_first": 495066.54,
+        "largest_first": 2873931.55,
+        "knapsack_minus_oldest": 2557047.22,
+        "knapsack_minus_largest": 178182.21
+      },
+      {
+        "hours_per_day": 1.5,
+        "model_knapsack": 3931409.02,
+        "oldest_first": 1057115.89,
+        "largest_first": 3831613.93,
+        "knapsack_minus_oldest": 2874293.13,
+        "knapsack_minus_largest": 99795.1
+      },
+      {
+        "hours_per_day": 2.0,
+        "model_knapsack": 4387430.32,
+        "oldest_first": 1517178.73,
+        "largest_first": 4313327.81,
+        "knapsack_minus_oldest": 2870251.59,
+        "knapsack_minus_largest": 74102.51
+      },
+      {
+        "hours_per_day": 3.0,
+        "model_knapsack": 4828045.81,
+        "oldest_first": 2532784.1,
+        "largest_first": 4802082.14,
+        "knapsack_minus_oldest": 2295261.71,
+        "knapsack_minus_largest": 25963.67
+      },
+      {
+        "hours_per_day": 4.0,
+        "model_knapsack": 4922393.35,
+        "oldest_first": 3146738.7,
+        "largest_first": 4909424.14,
+        "knapsack_minus_oldest": 1775654.65,
+        "knapsack_minus_largest": 12969.22
+      },
+      {
+        "hours_per_day": 6.0,
+        "model_knapsack": 5028140.97,
+        "oldest_first": 4947399.08,
+        "largest_first": 5026270.59,
+        "knapsack_minus_oldest": 80741.89,
+        "knapsack_minus_largest": 1870.38
+      },
+      {
+        "hours_per_day": 8.0,
+        "model_knapsack": 5030077.37,
+        "oldest_first": 5027582.02,
+        "largest_first": 5027582.02,
+        "knapsack_minus_oldest": 2495.35,
+        "knapsack_minus_largest": 2495.35
+      },
+      {
+        "hours_per_day": 24.0,
+        "model_knapsack": 5030077.37,
+        "oldest_first": 5027582.02,
+        "largest_first": 5027582.02,
+        "knapsack_minus_oldest": 2495.35,
+        "knapsack_minus_largest": 2495.35
+      }
+    ],
+    "uniform_effort_sensitivity_realised_net": [
+      {
+        "hours_per_day": 0.75,
+        "model_knapsack": 1156763.51,
+        "oldest_first": 631813.3,
+        "largest_first": 1133006.74,
+        "knapsack_minus_oldest": 524950.21,
+        "knapsack_minus_largest": 23756.77
+      },
+      {
+        "hours_per_day": 1.0,
+        "model_knapsack": 1156763.51,
+        "oldest_first": 631813.3,
+        "largest_first": 1133006.74,
+        "knapsack_minus_oldest": 524950.21,
+        "knapsack_minus_largest": 23756.77
+      },
+      {
+        "hours_per_day": 1.5,
+        "model_knapsack": 1232616.55,
+        "oldest_first": 1088883.85,
+        "largest_first": 1235146.46,
+        "knapsack_minus_oldest": 143732.7,
+        "knapsack_minus_largest": -2529.91
+      },
+      {
+        "hours_per_day": 2.0,
+        "model_knapsack": 1244747.75,
+        "oldest_first": 1244699.81,
+        "largest_first": 1244617.01,
+        "knapsack_minus_oldest": 47.94,
+        "knapsack_minus_largest": 130.74
+      },
+      {
+        "hours_per_day": 3.0,
+        "model_knapsack": 1244979.42,
+        "oldest_first": 1244699.81,
+        "largest_first": 1244699.81,
+        "knapsack_minus_oldest": 279.61,
+        "knapsack_minus_largest": 279.61
+      },
+      {
+        "hours_per_day": 4.0,
+        "model_knapsack": 1244979.42,
+        "oldest_first": 1244699.81,
+        "largest_first": 1244699.81,
+        "knapsack_minus_oldest": 279.61,
+        "knapsack_minus_largest": 279.61
+      },
+      {
+        "hours_per_day": 6.0,
+        "model_knapsack": 1244979.42,
+        "oldest_first": 1244699.81,
+        "largest_first": 1244699.81,
+        "knapsack_minus_oldest": 279.61,
+        "knapsack_minus_largest": 279.61
+      },
+      {
+        "hours_per_day": 8.0,
+        "model_knapsack": 1244979.42,
+        "oldest_first": 1244699.81,
+        "largest_first": 1244699.81,
+        "knapsack_minus_oldest": 279.61,
+        "knapsack_minus_largest": 279.61
+      },
+      {
+        "hours_per_day": 24.0,
+        "model_knapsack": 1244979.42,
+        "oldest_first": 1244699.81,
+        "largest_first": 1244699.81,
+        "knapsack_minus_oldest": 279.61,
+        "knapsack_minus_largest": 279.61
+      }
+    ],
+    "rows": [
+      {
+        "pool": "ALL_DENIALS",
+        "policy": "MODEL_KNAPSACK",
+        "hours_per_day": 0.75,
+        "n_pool": 1980,
+        "n_worked": 301,
+        "minutes_used": 7541,
+        "expected_net": 3319278.18,
+        "n_expired_unworked": 1356,
+        "expected_value_lost_to_expiry": 1462251.95,
+        "realised_net": NaN,
+        "realised_overturns": NaN
+      },
+      {
+        "pool": "ALL_DENIALS",
+        "policy": "OLDEST_FIRST",
+        "hours_per_day": 0.75,
+        "n_pool": 1980,
+        "n_worked": 281,
+        "minutes_used": 7560,
+        "expected_net": 768762.38,
+        "n_expired_unworked": 1307,
+        "expected_value_lost_to_expiry": 3398068.75,
+        "realised_net": NaN,
+        "realised_overturns": NaN
+      },
+      {
+        "pool": "ALL_DENIALS",
+        "policy": "LARGEST_FIRST",
+        "hours_per_day": 0.75,
+        "n_pool": 1980,
+        "n_worked": 270,
+        "minutes_used": 7378,
+        "expected_net": 3173828.23,
+        "n_expired_unworked": 1379,
+        "expected_value_lost_to_expiry": 1563208.14,
+        "realised_net": NaN,
+        "realised_overturns": NaN
+      },
+      {
+        "pool": "ALL_DENIALS",
+        "policy": "MODEL_KNAPSACK",
+        "hours_per_day": 1.0,
+        "n_pool": 1980,
+        "n_worked": 344,
+        "minutes_used": 9463,
+        "expected_net": 3727609.01,
+        "n_expired_unworked": 1329,
+        "expected_value_lost_to_expiry": 1128475.03,
+        "realised_net": NaN,
+        "realised_overturns": NaN
+      },
+      {
+        "pool": "ALL_DENIALS",
+        "policy": "OLDEST_FIRST",
+        "hours_per_day": 1.0,
+        "n_pool": 1980,
+        "n_worked": 318,
+        "minutes_used": 9692,
+        "expected_net": 813221.2,
+        "n_expired_unworked": 1269,
+        "expected_value_lost_to_expiry": 3348020.94,
+        "realised_net": NaN,
+        "realised_overturns": NaN
+      },
+      {
+        "pool": "ALL_DENIALS",
+        "policy": "LARGEST_FIRST",
+        "hours_per_day": 1.0,
+        "n_pool": 1980,
+        "n_worked": 316,
+        "minutes_used": 9815,
+        "expected_net": 3579898.8,
+        "n_expired_unworked": 1348,
+        "expected_value_lost_to_expiry": 1233037.58,
+        "realised_net": NaN,
+        "realised_overturns": NaN
+      },
+      {
+        "pool": "ALL_DENIALS",
+        "policy": "MODEL_KNAPSACK",
+        "hours_per_day": 1.5,
+        "n_pool": 1980,
+        "n_worked": 589,
+        "minutes_used": 16374,
+        "expected_net": 4351844.8,
+        "n_expired_unworked": 1145,
+        "expected_value_lost_to_expiry": 611192.3,
+        "realised_net": NaN,
+        "realised_overturns": NaN
+      },
+      {
+        "pool": "ALL_DENIALS",
+        "policy": "OLDEST_FIRST",
+        "hours_per_day": 1.5,
+        "n_pool": 1980,
+        "n_worked": 524,
+        "minutes_used": 15906,
+        "expected_net": 1322677.34,
+        "n_expired_unworked": 1064,
+        "expected_value_lost_to_expiry": 2838487.35,
+        "realised_net": NaN,
+        "realised_overturns": NaN
+      },
+      {
+        "pool": "ALL_DENIALS",
+        "policy": "LARGEST_FIRST",
+        "hours_per_day": 1.5,
+        "n_pool": 1980,
+        "n_worked": 500,
+        "minutes_used": 15701,
+        "expected_net": 4130171.69,
+        "n_expired_unworked": 1213,
+        "expected_value_lost_to_expiry": 793737.68,
+        "realised_net": NaN,
+        "realised_overturns": NaN
+      },
+      {
+        "pool": "ALL_DENIALS",
+        "policy": "MODEL_KNAPSACK",
+        "hours_per_day": 2.0,
+        "n_pool": 1980,
+        "n_worked": 792,
+        "minutes_used": 22710,
+        "expected_net": 4643874.22,
+        "n_expired_unworked": 991,
+        "expected_value_lost_to_expiry": 360805.46,
+        "realised_net": NaN,
+        "realised_overturns": NaN
+      },
+      {
+        "pool": "ALL_DENIALS",
+        "policy": "OLDEST_FIRST",
+        "hours_per_day": 2.0,
+        "n_pool": 1980,
+        "n_worked": 704,
+        "minutes_used": 21779,
+        "expected_net": 1823490.99,
+        "n_expired_unworked": 885,
+        "expected_value_lost_to_expiry": 2343061.83,
+        "realised_net": NaN,
+        "realised_overturns": NaN
+      },
+      {
+        "pool": "ALL_DENIALS",
+        "policy": "LARGEST_FIRST",
+        "hours_per_day": 2.0,
+        "n_pool": 1980,
+        "n_worked": 704,
+        "minutes_used": 21961,
+        "expected_net": 4505017.7,
+        "n_expired_unworked": 1066,
+        "expected_value_lost_to_expiry": 491601.13,
+        "realised_net": NaN,
+        "realised_overturns": NaN
+      },
+      {
+        "pool": "ALL_DENIALS",
+        "policy": "MODEL_KNAPSACK",
+        "hours_per_day": 3.0,
+        "n_pool": 1980,
+        "n_worked": 1140,
+        "minutes_used": 34248,
+        "expected_net": 4907668.63,
+        "n_expired_unworked": 739,
+        "expected_value_lost_to_expiry": 127354.19,
+        "realised_net": NaN,
+        "realised_overturns": NaN
+      },
+      {
+        "pool": "ALL_DENIALS",
+        "policy": "OLDEST_FIRST",
+        "hours_per_day": 3.0,
+        "n_pool": 1980,
+        "n_worked": 1062,
+        "minutes_used": 33411,
+        "expected_net": 2868834.32,
+        "n_expired_unworked": 528,
+        "expected_value_lost_to_expiry": 1297298.77,
+        "realised_net": NaN,
+        "realised_overturns": NaN
+      },
+      {
+        "pool": "ALL_DENIALS",
+        "policy": "LARGEST_FIRST",
+        "hours_per_day": 3.0,
+        "n_pool": 1980,
+        "n_worked": 1061,
+        "minutes_used": 33470,
+        "expected_net": 4864943.66,
+        "n_expired_unworked": 808,
+        "expected_value_lost_to_expiry": 168191.18,
+        "realised_net": NaN,
+        "realised_overturns": NaN
+      },
+      {
+        "pool": "ALL_DENIALS",
+        "policy": "MODEL_KNAPSACK",
+        "hours_per_day": 4.0,
+        "n_pool": 1980,
+        "n_worked": 1478,
+        "minutes_used": 45219,
+        "expected_net": 5004864.22,
+        "n_expired_unworked": 475,
+        "expected_value_lost_to_expiry": 33894.89,
+        "realised_net": NaN,
+        "realised_overturns": NaN
+      },
+      {
+        "pool": "ALL_DENIALS",
+        "policy": "OLDEST_FIRST",
+        "hours_per_day": 4.0,
+        "n_pool": 1980,
+        "n_worked": 1433,
+        "minutes_used": 45194,
+        "expected_net": 3710826.1,
+        "n_expired_unworked": 163,
+        "expected_value_lost_to_expiry": 461486.6,
+        "realised_net": NaN,
+        "realised_overturns": NaN
+      },
+      {
+        "pool": "ALL_DENIALS",
+        "policy": "LARGEST_FIRST",
+        "hours_per_day": 4.0,
+        "n_pool": 1980,
+        "n_worked": 1438,
+        "minutes_used": 45288,
+        "expected_net": 4988867.58,
+        "n_expired_unworked": 528,
+        "expected_value_lost_to_expiry": 49556.89,
+        "realised_net": NaN,
+        "realised_overturns": NaN
+      },
+      {
+        "pool": "ALL_DENIALS",
+        "policy": "MODEL_KNAPSACK",
+        "hours_per_day": 6.0,
+        "n_pool": 1980,
+        "n_worked": 1841,
+        "minutes_used": 57284,
+        "expected_net": 5038759.1,
+        "n_expired_unworked": 112,
+        "expected_value_lost_to_expiry": 0.0,
+        "realised_net": NaN,
+        "realised_overturns": NaN
+      },
+      {
+        "pool": "ALL_DENIALS",
+        "policy": "OLDEST_FIRST",
+        "hours_per_day": 6.0,
+        "n_pool": 1980,
+        "n_worked": 1980,
+        "minutes_used": 62825,
+        "expected_net": 5035907.02,
+        "n_expired_unworked": 0,
+        "expected_value_lost_to_expiry": 0.0,
+        "realised_net": NaN,
+        "realised_overturns": NaN
+      },
+      {
+        "pool": "ALL_DENIALS",
+        "policy": "LARGEST_FIRST",
+        "hours_per_day": 6.0,
+        "n_pool": 1980,
+        "n_worked": 1905,
+        "minutes_used": 60335,
+        "expected_net": 5036788.84,
+        "n_expired_unworked": 75,
+        "expected_value_lost_to_expiry": 394.46,
+        "realised_net": NaN,
+        "realised_overturns": NaN
+      },
+      {
+        "pool": "ALL_DENIALS",
+        "policy": "MODEL_KNAPSACK",
+        "hours_per_day": 8.0,
+        "n_pool": 1980,
+        "n_worked": 1841,
+        "minutes_used": 57284,
+        "expected_net": 5038759.1,
+        "n_expired_unworked": 112,
+        "expected_value_lost_to_expiry": 0.0,
+        "realised_net": NaN,
+        "realised_overturns": NaN
+      },
+      {
+        "pool": "ALL_DENIALS",
+        "policy": "OLDEST_FIRST",
+        "hours_per_day": 8.0,
+        "n_pool": 1980,
+        "n_worked": 1980,
+        "minutes_used": 62825,
+        "expected_net": 5035907.02,
+        "n_expired_unworked": 0,
+        "expected_value_lost_to_expiry": 0.0,
+        "realised_net": NaN,
+        "realised_overturns": NaN
+      },
+      {
+        "pool": "ALL_DENIALS",
+        "policy": "LARGEST_FIRST",
+        "hours_per_day": 8.0,
+        "n_pool": 1980,
+        "n_worked": 1980,
+        "minutes_used": 62825,
+        "expected_net": 5035907.02,
+        "n_expired_unworked": 0,
+        "expected_value_lost_to_expiry": 0.0,
+        "realised_net": NaN,
+        "realised_overturns": NaN
+      },
+      {
+        "pool": "ALL_DENIALS",
+        "policy": "MODEL_KNAPSACK",
+        "hours_per_day": 24.0,
+        "n_pool": 1980,
+        "n_worked": 1841,
+        "minutes_used": 57284,
+        "expected_net": 5038759.1,
+        "n_expired_unworked": 112,
+        "expected_value_lost_to_expiry": 0.0,
+        "realised_net": NaN,
+        "realised_overturns": NaN
+      },
+      {
+        "pool": "ALL_DENIALS",
+        "policy": "OLDEST_FIRST",
+        "hours_per_day": 24.0,
+        "n_pool": 1980,
+        "n_worked": 1980,
+        "minutes_used": 62825,
+        "expected_net": 5035907.02,
+        "n_expired_unworked": 0,
+        "expected_value_lost_to_expiry": 0.0,
+        "realised_net": NaN,
+        "realised_overturns": NaN
+      },
+      {
+        "pool": "ALL_DENIALS",
+        "policy": "LARGEST_FIRST",
+        "hours_per_day": 24.0,
+        "n_pool": 1980,
+        "n_worked": 1980,
+        "minutes_used": 62825,
+        "expected_net": 5035907.02,
+        "n_expired_unworked": 0,
+        "expected_value_lost_to_expiry": 0.0,
+        "realised_net": NaN,
+        "realised_overturns": NaN
+      },
+      {
+        "pool": "APPEALED_WITH_OUTCOME",
+        "policy": "MODEL_KNAPSACK",
+        "hours_per_day": 0.75,
+        "n_pool": 442,
+        "n_worked": 206,
+        "minutes_used": 6502,
+        "expected_net": 836458.93,
+        "n_expired_unworked": 234,
+        "expected_value_lost_to_expiry": 272236.07,
+        "realised_net": 889058.52,
+        "realised_overturns": 95.0
+      },
+      {
+        "pool": "APPEALED_WITH_OUTCOME",
+        "policy": "OLDEST_FIRST",
+        "hours_per_day": 0.75,
+        "n_pool": 442,
+        "n_worked": 231,
+        "minutes_used": 7631,
+        "expected_net": 644082.67,
+        "n_expired_unworked": 205,
+        "expected_value_lost_to_expiry": 462742.44,
+        "realised_net": 630084.94,
+        "realised_overturns": 102.0
+      },
+      {
+        "pool": "APPEALED_WITH_OUTCOME",
+        "policy": "LARGEST_FIRST",
+        "hours_per_day": 0.75,
+        "n_pool": 442,
+        "n_worked": 206,
+        "minutes_used": 6653,
+        "expected_net": 835611.88,
+        "n_expired_unworked": 235,
+        "expected_value_lost_to_expiry": 272995.22,
+        "realised_net": 881959.74,
+        "realised_overturns": 90.0
+      },
+      {
+        "pool": "APPEALED_WITH_OUTCOME",
+        "policy": "MODEL_KNAPSACK",
+        "hours_per_day": 1.0,
+        "n_pool": 442,
+        "n_worked": 232,
+        "minutes_used": 8529,
+        "expected_net": 1052334.78,
+        "n_expired_unworked": 209,
+        "expected_value_lost_to_expiry": 57287.33,
+        "realised_net": 1203966.78,
+        "realised_overturns": 101.0
+      },
+      {
+        "pool": "APPEALED_WITH_OUTCOME",
+        "policy": "OLDEST_FIRST",
+        "hours_per_day": 1.0,
+        "n_pool": 442,
+        "n_worked": 243,
+        "minutes_used": 9544,
+        "expected_net": 634054.61,
+        "n_expired_unworked": 191,
+        "expected_value_lost_to_expiry": 472503.05,
+        "realised_net": 779388.2,
+        "realised_overturns": 99.0
+      },
+      {
+        "pool": "APPEALED_WITH_OUTCOME",
+        "policy": "LARGEST_FIRST",
+        "hours_per_day": 1.0,
+        "n_pool": 442,
+        "n_worked": 232,
+        "minutes_used": 8722,
+        "expected_net": 1046490.25,
+        "n_expired_unworked": 210,
+        "expected_value_lost_to_expiry": 62976.0,
+        "realised_net": 1182127.31,
+        "realised_overturns": 94.0
+      },
+      {
+        "pool": "APPEALED_WITH_OUTCOME",
+        "policy": "MODEL_KNAPSACK",
+        "hours_per_day": 1.5,
+        "n_pool": 442,
+        "n_worked": 333,
+        "minutes_used": 12446,
+        "expected_net": 1100044.1,
+        "n_expired_unworked": 108,
+        "expected_value_lost_to_expiry": 9578.01,
+        "realised_net": 1238614.49,
+        "realised_overturns": 143.0
+      },
+      {
+        "pool": "APPEALED_WITH_OUTCOME",
+        "policy": "OLDEST_FIRST",
+        "hours_per_day": 1.5,
+        "n_pool": 442,
+        "n_worked": 400,
+        "minutes_used": 15491,
+        "expected_net": 1037318.73,
+        "n_expired_unworked": 42,
+        "expected_value_lost_to_expiry": 71429.96,
+        "realised_net": 1170936.72,
+        "realised_overturns": 162.0
+      },
+      {
+        "pool": "APPEALED_WITH_OUTCOME",
+        "policy": "LARGEST_FIRST",
+        "hours_per_day": 1.5,
+        "n_pool": 442,
+        "n_worked": 344,
+        "minutes_used": 13037,
+        "expected_net": 1099706.57,
+        "n_expired_unworked": 98,
+        "expected_value_lost_to_expiry": 9647.83,
+        "realised_net": 1235377.0,
+        "realised_overturns": 142.0
+      },
+      {
+        "pool": "APPEALED_WITH_OUTCOME",
+        "policy": "MODEL_KNAPSACK",
+        "hours_per_day": 2.0,
+        "n_pool": 442,
+        "n_worked": 391,
+        "minutes_used": 14899,
+        "expected_net": 1109317.92,
+        "n_expired_unworked": 50,
+        "expected_value_lost_to_expiry": 304.19,
+        "realised_net": 1242539.94,
+        "realised_overturns": 160.0
+      },
+      {
+        "pool": "APPEALED_WITH_OUTCOME",
+        "policy": "OLDEST_FIRST",
+        "hours_per_day": 2.0,
+        "n_pool": 442,
+        "n_worked": 442,
+        "minutes_used": 17314,
+        "expected_net": 1108630.93,
+        "n_expired_unworked": 0,
+        "expected_value_lost_to_expiry": 0.0,
+        "realised_net": 1242328.95,
+        "realised_overturns": 185.0
+      },
+      {
+        "pool": "APPEALED_WITH_OUTCOME",
+        "policy": "LARGEST_FIRST",
+        "hours_per_day": 2.0,
+        "n_pool": 442,
+        "n_worked": 407,
+        "minutes_used": 15732,
+        "expected_net": 1108854.82,
+        "n_expired_unworked": 35,
+        "expected_value_lost_to_expiry": 384.92,
+        "realised_net": 1242579.54,
+        "realised_overturns": 169.0
+      },
+      {
+        "pool": "APPEALED_WITH_OUTCOME",
+        "policy": "MODEL_KNAPSACK",
+        "hours_per_day": 3.0,
+        "n_pool": 442,
+        "n_worked": 402,
+        "minutes_used": 15403,
+        "expected_net": 1109622.11,
+        "n_expired_unworked": 39,
+        "expected_value_lost_to_expiry": 0.0,
+        "realised_net": 1242939.13,
+        "realised_overturns": 166.0
+      },
+      {
+        "pool": "APPEALED_WITH_OUTCOME",
+        "policy": "OLDEST_FIRST",
+        "hours_per_day": 3.0,
+        "n_pool": 442,
+        "n_worked": 442,
+        "minutes_used": 17314,
+        "expected_net": 1108630.93,
+        "n_expired_unworked": 0,
+        "expected_value_lost_to_expiry": 0.0,
+        "realised_net": 1242328.95,
+        "realised_overturns": 185.0
+      },
+      {
+        "pool": "APPEALED_WITH_OUTCOME",
+        "policy": "LARGEST_FIRST",
+        "hours_per_day": 3.0,
+        "n_pool": 442,
+        "n_worked": 442,
+        "minutes_used": 17314,
+        "expected_net": 1108630.93,
+        "n_expired_unworked": 0,
+        "expected_value_lost_to_expiry": 0.0,
+        "realised_net": 1242328.95,
+        "realised_overturns": 185.0
+      },
+      {
+        "pool": "APPEALED_WITH_OUTCOME",
+        "policy": "MODEL_KNAPSACK",
+        "hours_per_day": 4.0,
+        "n_pool": 442,
+        "n_worked": 402,
+        "minutes_used": 15403,
+        "expected_net": 1109622.11,
+        "n_expired_unworked": 39,
+        "expected_value_lost_to_expiry": 0.0,
+        "realised_net": 1242939.13,
+        "realised_overturns": 166.0
+      },
+      {
+        "pool": "APPEALED_WITH_OUTCOME",
+        "policy": "OLDEST_FIRST",
+        "hours_per_day": 4.0,
+        "n_pool": 442,
+        "n_worked": 442,
+        "minutes_used": 17314,
+        "expected_net": 1108630.93,
+        "n_expired_unworked": 0,
+        "expected_value_lost_to_expiry": 0.0,
+        "realised_net": 1242328.95,
+        "realised_overturns": 185.0
+      },
+      {
+        "pool": "APPEALED_WITH_OUTCOME",
+        "policy": "LARGEST_FIRST",
+        "hours_per_day": 4.0,
+        "n_pool": 442,
+        "n_worked": 442,
+        "minutes_used": 17314,
+        "expected_net": 1108630.93,
+        "n_expired_unworked": 0,
+        "expected_value_lost_to_expiry": 0.0,
+        "realised_net": 1242328.95,
+        "realised_overturns": 185.0
+      },
+      {
+        "pool": "APPEALED_WITH_OUTCOME",
+        "policy": "MODEL_KNAPSACK",
+        "hours_per_day": 6.0,
+        "n_pool": 442,
+        "n_worked": 402,
+        "minutes_used": 15403,
+        "expected_net": 1109622.11,
+        "n_expired_unworked": 39,
+        "expected_value_lost_to_expiry": 0.0,
+        "realised_net": 1242939.13,
+        "realised_overturns": 166.0
+      },
+      {
+        "pool": "APPEALED_WITH_OUTCOME",
+        "policy": "OLDEST_FIRST",
+        "hours_per_day": 6.0,
+        "n_pool": 442,
+        "n_worked": 442,
+        "minutes_used": 17314,
+        "expected_net": 1108630.93,
+        "n_expired_unworked": 0,
+        "expected_value_lost_to_expiry": 0.0,
+        "realised_net": 1242328.95,
+        "realised_overturns": 185.0
+      },
+      {
+        "pool": "APPEALED_WITH_OUTCOME",
+        "policy": "LARGEST_FIRST",
+        "hours_per_day": 6.0,
+        "n_pool": 442,
+        "n_worked": 442,
+        "minutes_used": 17314,
+        "expected_net": 1108630.93,
+        "n_expired_unworked": 0,
+        "expected_value_lost_to_expiry": 0.0,
+        "realised_net": 1242328.95,
+        "realised_overturns": 185.0
+      },
+      {
+        "pool": "APPEALED_WITH_OUTCOME",
+        "policy": "MODEL_KNAPSACK",
+        "hours_per_day": 8.0,
+        "n_pool": 442,
+        "n_worked": 402,
+        "minutes_used": 15403,
+        "expected_net": 1109622.11,
+        "n_expired_unworked": 39,
+        "expected_value_lost_to_expiry": 0.0,
+        "realised_net": 1242939.13,
+        "realised_overturns": 166.0
+      },
+      {
+        "pool": "APPEALED_WITH_OUTCOME",
+        "policy": "OLDEST_FIRST",
+        "hours_per_day": 8.0,
+        "n_pool": 442,
+        "n_worked": 442,
+        "minutes_used": 17314,
+        "expected_net": 1108630.93,
+        "n_expired_unworked": 0,
+        "expected_value_lost_to_expiry": 0.0,
+        "realised_net": 1242328.95,
+        "realised_overturns": 185.0
+      },
+      {
+        "pool": "APPEALED_WITH_OUTCOME",
+        "policy": "LARGEST_FIRST",
+        "hours_per_day": 8.0,
+        "n_pool": 442,
+        "n_worked": 442,
+        "minutes_used": 17314,
+        "expected_net": 1108630.93,
+        "n_expired_unworked": 0,
+        "expected_value_lost_to_expiry": 0.0,
+        "realised_net": 1242328.95,
+        "realised_overturns": 185.0
+      },
+      {
+        "pool": "APPEALED_WITH_OUTCOME",
+        "policy": "MODEL_KNAPSACK",
+        "hours_per_day": 24.0,
+        "n_pool": 442,
+        "n_worked": 402,
+        "minutes_used": 15403,
+        "expected_net": 1109622.11,
+        "n_expired_unworked": 39,
+        "expected_value_lost_to_expiry": 0.0,
+        "realised_net": 1242939.13,
+        "realised_overturns": 166.0
+      },
+      {
+        "pool": "APPEALED_WITH_OUTCOME",
+        "policy": "OLDEST_FIRST",
+        "hours_per_day": 24.0,
+        "n_pool": 442,
+        "n_worked": 442,
+        "minutes_used": 17314,
+        "expected_net": 1108630.93,
+        "n_expired_unworked": 0,
+        "expected_value_lost_to_expiry": 0.0,
+        "realised_net": 1242328.95,
+        "realised_overturns": 185.0
+      },
+      {
+        "pool": "APPEALED_WITH_OUTCOME",
+        "policy": "LARGEST_FIRST",
+        "hours_per_day": 24.0,
+        "n_pool": 442,
+        "n_worked": 442,
+        "minutes_used": 17314,
+        "expected_net": 1108630.93,
+        "n_expired_unworked": 0,
+        "expected_value_lost_to_expiry": 0.0,
+        "realised_net": 1242328.95,
+        "realised_overturns": 185.0
+      }
+    ],
+    "label": "model_estimate"
+  },
+  "todays_queue": {
+    "as_of_date": "2026-03-31",
+    "candidates": {
+      "value": 151,
+      "label": "synthetic_record",
+      "note": "claims whose latest status is DENIED with no action yet"
+    },
+    "past_appeal_window": {
+      "value": 10,
+      "label": "synthetic_record"
+    },
+    "non_positive_value": {
+      "value": 8,
+      "label": "model_estimate"
+    },
+    "budget_minutes": {
+      "value": 1440,
+      "label": "financial_assumption"
+    },
+    "selected": {
+      "value": 48,
+      "label": "model_estimate"
+    },
+    "selected_minutes": {
+      "value": 1439,
+      "label": "model_estimate"
+    },
+    "selected_expected_net": {
+      "value": 324590.51,
+      "label": "model_estimate"
+    },
+    "policies_same_budget": {
+      "MODEL_KNAPSACK": {
+        "n_worked": 48,
+        "minutes": 1439,
+        "expected_net": 324590.51
+      },
+      "OLDEST_FIRST": {
+        "n_worked": 44,
+        "minutes": 1434,
+        "expected_net": 30948.23
+      },
+      "LARGEST_FIRST": {
+        "n_worked": 43,
+        "minutes": 1437,
+        "expected_net": 311467.93
+      }
+    },
+    "uniform_effort_selected": {
+      "value": 41,
+      "label": "model_estimate"
+    },
+    "uniform_effort_expected_net": {
+      "value": 315626.34,
+      "label": "model_estimate"
+    },
+    "top10": [
+      {
+        "rank": 1,
+        "claim_id": "MHS250013050",
+        "payer_id": "P02",
+        "reason_category": "ADMINISTRATIVE",
+        "p_overturn": 0.479,
+        "expected_value": 35879.93,
+        "reason": "Work today. P(overturn)=0.48 x $74,928 recoverable - $27 handling = $35,880; administrative denial, 77 days left to appeal."
+      },
+      {
+        "rank": 2,
+        "claim_id": "MHS250006701",
+        "payer_id": "P02",
+        "reason_category": "CODING",
+        "p_overturn": 0.361,
+        "expected_value": 28814.77,
+        "reason": "Work today. P(overturn)=0.36 x $79,986 recoverable - $36 handling = $28,815; coding denial, 74 days left to appeal."
+      },
+      {
+        "rank": 3,
+        "claim_id": "MHS250013474",
+        "payer_id": "P03",
+        "reason_category": "ADMINISTRATIVE",
+        "p_overturn": 0.4,
+        "expected_value": 23857.36,
+        "reason": "Work today. P(overturn)=0.40 x $59,766 recoverable - $27 handling = $23,857; administrative denial, 57 days left to appeal."
+      },
+      {
+        "rank": 4,
+        "claim_id": "MHS250012308",
+        "payer_id": "P05",
+        "reason_category": "ELIGIBILITY",
+        "p_overturn": 0.27,
+        "expected_value": 21025.61,
+        "reason": "Work today. P(overturn)=0.27 x $78,035 recoverable - $31 handling = $21,026; eligibility denial, 44 days left to appeal."
+      },
+      {
+        "rank": 5,
+        "claim_id": "MHS250013298",
+        "payer_id": "P04",
+        "reason_category": "ELIGIBILITY",
+        "p_overturn": 0.315,
+        "expected_value": 20201.18,
+        "reason": "Work today. P(overturn)=0.32 x $64,154 recoverable - $31 handling = $20,201; eligibility denial, 45 days left to appeal."
+      },
+      {
+        "rank": 6,
+        "claim_id": "MHS250005390",
+        "payer_id": "P05",
+        "reason_category": "ADMINISTRATIVE",
+        "p_overturn": 0.441,
+        "expected_value": 14808.5,
+        "reason": "Work today. P(overturn)=0.44 x $33,619 recoverable - $27 handling = $14,808; administrative denial, 61 days left to appeal."
+      },
+      {
+        "rank": 7,
+        "claim_id": "MHS250011449",
+        "payer_id": "P03",
+        "reason_category": "MEDICAL_NECESSITY",
+        "p_overturn": 0.234,
+        "expected_value": 14741.3,
+        "reason": "Work today. P(overturn)=0.23 x $63,274 recoverable - $72 handling = $14,741; medical necessity denial, 33 days left to appeal."
+      },
+      {
+        "rank": 8,
+        "claim_id": "MHS250013614",
+        "payer_id": "P04",
+        "reason_category": "ELIGIBILITY",
+        "p_overturn": 0.33,
+        "expected_value": 12546.87,
+        "reason": "Work today. P(overturn)=0.33 x $38,069 recoverable - $31 handling = $12,547; eligibility denial, 52 days left to appeal."
+      },
+      {
+        "rank": 9,
+        "claim_id": "MHS250014842",
+        "payer_id": "P04",
+        "reason_category": "ELIGIBILITY",
+        "p_overturn": 0.34,
+        "expected_value": 11872.16,
+        "reason": "Work today. P(overturn)=0.34 x $35,050 recoverable - $31 handling = $11,872; eligibility denial, 50 days left to appeal."
+      },
+      {
+        "rank": 10,
+        "claim_id": "MHS250012913",
+        "payer_id": "P02",
+        "reason_category": "ADMINISTRATIVE",
+        "p_overturn": 0.56,
+        "expected_value": 9926.2,
+        "reason": "Work today. P(overturn)=0.56 x $17,779 recoverable - $27 handling = $9,926; administrative denial, 77 days left to appeal."
+      }
+    ]
+  },
+  "marts": [
+    "mart.work_queue",
+    "mart.work_queue_coef",
+    "mart.work_queue_backtest",
+    "mart.work_queue_backtest_selection"
+  ],
+  "figures": [
+    "figures/prioritize_reliability.png",
+    "figures/prioritize_backtest.png",
+    "figures/prioritize_coefficients.png"
+  ],
+  "seconds": 9.3
+}

@@ -1,0 +1,887 @@
+{
+  "label": "synthetic_record",
+  "note": "Evaluation of the reconciliation rules against ground truth planted by this project's generator. Counts over simulated records; not evidence about real-world matching performance.",
+  "as_of_date": "2026-03-31",
+  "tie_out": {
+    "all_control_totals_passed": true,
+    "checks": 24,
+    "max_abs_difference": 0.0,
+    "days_closed": 820,
+    "days_in_calendar": 820,
+    "control_totals": [
+      {
+        "check_name": "RAW_ROWS_ACCOUNTED",
+        "scope": "raw.claims_export",
+        "expected": 72336.0,
+        "actual": 72336.0,
+        "difference": 0.0,
+        "passed": true,
+        "detail": "raw 72336 = staged 72256 + rejected 80"
+      },
+      {
+        "check_name": "RAW_ROWS_ACCOUNTED",
+        "scope": "raw.remittance_advice",
+        "expected": 89051.0,
+        "actual": 89051.0,
+        "difference": 0.0,
+        "passed": true,
+        "detail": "raw 89051 = staged 89041 + rejected 10"
+      },
+      {
+        "check_name": "RAW_ROWS_ACCOUNTED",
+        "scope": "raw.bank_statement",
+        "expected": 1831.0,
+        "actual": 1831.0,
+        "difference": 0.0,
+        "passed": true,
+        "detail": "raw 1831 = staged 1825 + rejected 6"
+      },
+      {
+        "check_name": "RAW_ROWS_ACCOUNTED",
+        "scope": "raw.payer_contracts",
+        "expected": 505.0,
+        "actual": 505.0,
+        "difference": 0.0,
+        "passed": true,
+        "detail": "raw 505 = staged 502 + rejected 3"
+      },
+      {
+        "check_name": "RAW_ROWS_ACCOUNTED",
+        "scope": "raw.drug_purchase_invoices",
+        "expected": 1292.0,
+        "actual": 1292.0,
+        "difference": 0.0,
+        "passed": true,
+        "detail": "raw 1292 = staged 1292 + rejected 0"
+      },
+      {
+        "check_name": "RAW_ROWS_ACCOUNTED",
+        "scope": "raw.drug_dispense_log",
+        "expected": 6298.0,
+        "actual": 6298.0,
+        "difference": 0.0,
+        "passed": true,
+        "detail": "raw 6298 = staged 6293 + rejected 5"
+      },
+      {
+        "check_name": "RAW_ROWS_ACCOUNTED",
+        "scope": "raw.claim_status_history",
+        "expected": 104695.0,
+        "actual": 104695.0,
+        "difference": 0.0,
+        "passed": true,
+        "detail": "raw 104695 = staged 104280 + rejected 415"
+      },
+      {
+        "check_name": "STG_TO_CORE_ROWS",
+        "scope": "claim lines",
+        "expected": 72256.0,
+        "actual": 72256.0,
+        "difference": 0.0,
+        "passed": true,
+        "detail": null
+      },
+      {
+        "check_name": "STG_TO_CORE_ROWS",
+        "scope": "remittance lines",
+        "expected": 89041.0,
+        "actual": 89041.0,
+        "difference": 0.0,
+        "passed": true,
+        "detail": null
+      },
+      {
+        "check_name": "STG_TO_CORE_ROWS",
+        "scope": "bank transactions",
+        "expected": 1825.0,
+        "actual": 1825.0,
+        "difference": 0.0,
+        "passed": true,
+        "detail": null
+      },
+      {
+        "check_name": "BILLED_ACCOUNTED",
+        "scope": "claim line charges",
+        "expected": 208063973.4,
+        "actual": 208063973.4,
+        "difference": 0.0,
+        "passed": true,
+        "detail": "sum of parseable raw line_charge = core + rejected rows"
+      },
+      {
+        "check_name": "REMIT_PAID_ACCOUNTED",
+        "scope": "remittance paid amounts",
+        "expected": 61477380.53,
+        "actual": 61477380.53,
+        "difference": 0.0,
+        "passed": true,
+        "detail": "sum of parseable raw line_paid_amount = core + rejected rows"
+      },
+      {
+        "check_name": "REMIT_POSTING_SPLIT",
+        "scope": "remittance paid amounts",
+        "expected": 61476996.86,
+        "actual": 61476996.86,
+        "difference": 0.0,
+        "passed": true,
+        "detail": "core paid = posted to claim lines + excluded duplicates + unmatched (exception queue) + provider-level suspense"
+      },
+      {
+        "check_name": "CONTROL_IDENTITY_TOTAL",
+        "scope": "all claim lines",
+        "expected": 207967496.01,
+        "actual": 207967496.01,
+        "difference": 0.0,
+        "passed": true,
+        "detail": "sum billed = sum(paid + contractual + denied + patient_resp + open)"
+      },
+      {
+        "check_name": "CONTROL_IDENTITY_LINES_BROKEN",
+        "scope": "claim lines",
+        "expected": 0.0,
+        "actual": 0.0,
+        "difference": 0.0,
+        "passed": true,
+        "detail": "lines where the identity fails"
+      },
+      {
+        "check_name": "BALANCE_RECOMPUTE_MISMATCH",
+        "scope": "claim lines",
+        "expected": 0.0,
+        "actual": 0.0,
+        "difference": 0.0,
+        "passed": true,
+        "detail": "lines whose stored components differ from a fresh sum of their postings"
+      },
+      {
+        "check_name": "BILLED_TIES_TO_CORE",
+        "scope": "claim lines",
+        "expected": 207967496.01,
+        "actual": 207967496.01,
+        "difference": 0.0,
+        "passed": true,
+        "detail": null
+      },
+      {
+        "check_name": "BANK_BALANCE_CHAIN_BREAKS",
+        "scope": "bank rows",
+        "expected": 0.0,
+        "actual": 0.0,
+        "difference": 0.0,
+        "passed": true,
+        "detail": "rows where previous balance + amount <> running balance"
+      },
+      {
+        "check_name": "BANK_OPENING_PLUS_ACTIVITY",
+        "scope": "statement",
+        "expected": 3119869.46,
+        "actual": 3119869.46,
+        "difference": 0.0,
+        "passed": true,
+        "detail": "opening + sum(amounts) = final running balance"
+      },
+      {
+        "check_name": "CASH_REMIT_SIDE",
+        "scope": "payments dated <= as-of",
+        "expected": 61195660.83,
+        "actual": 61195660.83,
+        "difference": 0.0,
+        "passed": true,
+        "detail": "sum(remittance paid by trace) = matched bank deposits + unmatched remittance + timing differences"
+      },
+      {
+        "check_name": "CASH_BANK_SIDE",
+        "scope": "payer credits",
+        "expected": 61647762.86,
+        "actual": 61647762.86,
+        "difference": 0.0,
+        "passed": true,
+        "detail": "payer credits = allocated to remittances + unapplied cash"
+      },
+      {
+        "check_name": "ALLOCATION_INTEGRITY",
+        "scope": "matched deposits",
+        "expected": 0.0,
+        "actual": 0.0,
+        "difference": 0.0,
+        "passed": true,
+        "detail": "deposits whose allocations do not sum to the deposit"
+      },
+      {
+        "check_name": "PAYMENT_ALLOCATION_INTEGRITY",
+        "scope": "matched payments",
+        "expected": 0.0,
+        "actual": 0.0,
+        "difference": 0.0,
+        "passed": true,
+        "detail": "payments whose allocations do not sum to the payment"
+      },
+      {
+        "check_name": "TRACE_HEADER_EXPLAINED",
+        "scope": "all traces",
+        "expected": 61195660.83,
+        "actual": 61195660.83,
+        "difference": 0.0,
+        "passed": true,
+        "detail": "sum of payment headers = sum of posted lines (net of duplicates) + queued header/line mismatches"
+      }
+    ]
+  },
+  "claim_to_remittance": {
+    "universe": {
+      "remittance_rows": 89051,
+      "expected_to_post": 88485,
+      "outcomes": {
+        "MATCHED": 88467,
+        "EXCLUDED_DUPLICATE": 356,
+        "UNMATCHED": 208,
+        "REJECTED_IN_STAGING": 10,
+        "QUEUED_AMBIGUOUS": 10
+      }
+    },
+    "overall": {
+      "matched": 88467,
+      "correct": 88467,
+      "of_which_identical_sibling_line": 1,
+      "precision": 1.0,
+      "recall_on_postable_lines": 0.999797,
+      "exception_queue_share_of_postable": 0.000192
+    },
+    "per_rule": {
+      "CR10_EXACT_CLAIM_ID": {
+        "matched": 83241,
+        "correct": 83241,
+        "of_which_identical_sibling_line": 1,
+        "wrong": 0,
+        "precision": 1.0
+      },
+      "CR20_NORMALISED_CLAIM_ID": {
+        "matched": 4800,
+        "correct": 4800,
+        "of_which_identical_sibling_line": 0,
+        "wrong": 0,
+        "precision": 1.0
+      },
+      "CR30_MEMBER_DATE_AMOUNT": {
+        "matched": 426,
+        "correct": 426,
+        "of_which_identical_sibling_line": 0,
+        "wrong": 0,
+        "precision": 1.0
+      }
+    },
+    "by_case": {
+      "lowercase": {
+        "description": "claim number in lower case",
+        "lines": 871,
+        "matched_correct": 871,
+        "matched_wrong": 0,
+        "wrongly_excluded_as_duplicate": 0,
+        "sent_to_exception_queue": 0,
+        "of_which_ambiguous": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "exception_queue_share": 0.0,
+        "rules_used": {
+          "CR20_NORMALISED_CLAIM_ID": 871
+        }
+      },
+      "none": {
+        "description": "claim number echoed as sent",
+        "lines": 82207,
+        "matched_correct": 82207,
+        "matched_wrong": 0,
+        "wrongly_excluded_as_duplicate": 0,
+        "sent_to_exception_queue": 0,
+        "of_which_ambiguous": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "exception_queue_share": 0.0,
+        "rules_used": {
+          "CR10_EXACT_CLAIM_ID": 82207
+        }
+      },
+      "padding": {
+        "description": "claim number left-padded with zeros",
+        "lines": 1170,
+        "matched_correct": 1170,
+        "matched_wrong": 0,
+        "wrongly_excluded_as_duplicate": 0,
+        "sent_to_exception_queue": 0,
+        "of_which_ambiguous": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "exception_queue_share": 0.0,
+        "rules_used": {
+          "CR20_NORMALISED_CLAIM_ID": 1170
+        }
+      },
+      "prefix": {
+        "description": "claim number with a PCN / CLM# prefix",
+        "lines": 1759,
+        "matched_correct": 1759,
+        "matched_wrong": 0,
+        "wrongly_excluded_as_duplicate": 0,
+        "sent_to_exception_queue": 0,
+        "of_which_ambiguous": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "exception_queue_share": 0.0,
+        "rules_used": {
+          "CR20_NORMALISED_CLAIM_ID": 1759
+        }
+      },
+      "punctuation": {
+        "description": "claim number with inserted hyphens",
+        "lines": 952,
+        "matched_correct": 952,
+        "matched_wrong": 0,
+        "wrongly_excluded_as_duplicate": 0,
+        "sent_to_exception_queue": 0,
+        "of_which_ambiguous": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "exception_queue_share": 0.0,
+        "rules_used": {
+          "CR20_NORMALISED_CLAIM_ID": 952
+        }
+      },
+      "repeated_service_with_line_control": {
+        "description": "claim legitimately bills the same service twice; payer echoes line control numbers",
+        "lines": 833,
+        "matched_correct": 833,
+        "matched_wrong": 0,
+        "wrongly_excluded_as_duplicate": 0,
+        "sent_to_exception_queue": 0,
+        "of_which_ambiguous": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "exception_queue_share": 0.0,
+        "rules_used": {
+          "CR10_EXACT_CLAIM_ID": 797,
+          "CR20_NORMALISED_CLAIM_ID": 30,
+          "CR30_MEMBER_DATE_AMOUNT": 6
+        }
+      },
+      "repeated_service_without_line_control": {
+        "description": "claim legitimately bills the same service twice; payer echoes no line control number, so both remittance lines are verbatim identical",
+        "lines": 257,
+        "matched_correct": 255,
+        "matched_wrong": 0,
+        "wrongly_excluded_as_duplicate": 1,
+        "sent_to_exception_queue": 1,
+        "of_which_ambiguous": 0,
+        "precision": 1.0,
+        "recall": 0.992218,
+        "exception_queue_share": 0.003891,
+        "rules_used": {
+          "CR10_EXACT_CLAIM_ID": 237,
+          "CR20_NORMALISED_CLAIM_ID": 18
+        }
+      },
+      "transposed": {
+        "description": "two adjacent digits transposed; only member + date + amount is left",
+        "lines": 367,
+        "matched_correct": 367,
+        "matched_wrong": 0,
+        "wrongly_excluded_as_duplicate": 0,
+        "sent_to_exception_queue": 0,
+        "of_which_ambiguous": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "exception_queue_share": 0.0,
+        "rules_used": {
+          "CR30_MEMBER_DATE_AMOUNT": 367
+        }
+      },
+      "transposed_id_with_twin_claim": {
+        "description": "transposed claim number AND the patient has a second claim that day for the same service and charge",
+        "lines": 69,
+        "matched_correct": 53,
+        "matched_wrong": 0,
+        "wrongly_excluded_as_duplicate": 0,
+        "sent_to_exception_queue": 16,
+        "of_which_ambiguous": 10,
+        "precision": 1.0,
+        "recall": 0.768116,
+        "exception_queue_share": 0.231884,
+        "rules_used": {
+          "CR30_MEMBER_DATE_AMOUNT": 53
+        }
+      }
+    },
+    "recall_by_line_kind": {
+      "DENIAL": {
+        "lines": 13998,
+        "correct": 13997,
+        "recall": 0.999929
+      },
+      "DOUBLE_PAYMENT": {
+        "lines": 170,
+        "correct": 170,
+        "recall": 1.0
+      },
+      "LATE_ADJUSTMENT": {
+        "lines": 263,
+        "correct": 263,
+        "recall": 1.0
+      },
+      "PARTIAL": {
+        "lines": 799,
+        "correct": 799,
+        "recall": 1.0
+      },
+      "PAYMENT": {
+        "lines": 57890,
+        "correct": 57875,
+        "recall": 0.999741
+      },
+      "RECOUPMENT": {
+        "lines": 130,
+        "correct": 130,
+        "recall": 1.0
+      },
+      "REPOST": {
+        "lines": 6635,
+        "correct": 6634,
+        "recall": 0.999849
+      },
+      "REVERSAL": {
+        "lines": 8046,
+        "correct": 8045,
+        "recall": 0.999876
+      },
+      "SUPPLEMENTAL": {
+        "lines": 554,
+        "correct": 554,
+        "recall": 1.0
+      }
+    },
+    "duplicate_detection": {
+      "planted_file_duplicates": 355,
+      "flagged": 356,
+      "true_positives": 355,
+      "false_positives": 1,
+      "false_positives_by_case": {
+        "repeated_service_without_line_control": 1
+      },
+      "precision": 0.997191,
+      "recall": 1.0,
+      "missed_by_case": {}
+    },
+    "orphans_from_other_facility": {
+      "lines": 46,
+      "correctly_left_unmatched": 46,
+      "wrongly_matched": 0
+    },
+    "provider_level_rows": {
+      "lines": 129,
+      "wrongly_matched_to_claims": 0
+    },
+    "remits_for_claim_lines_rejected_in_staging": {
+      "lines": 26,
+      "outcomes": {
+        "UNMATCHED": 26
+      },
+      "note": "the claim line never reached core, so no rule can match it; it is queued as UNMATCHED_REMIT"
+    },
+    "remit_rows_with_bad_values": {
+      "lines": 10,
+      "rejected_in_staging": 10
+    },
+    "wrong_matches": {
+      "count": 0,
+      "by_rule": {},
+      "by_case": {},
+      "examples": []
+    },
+    "missed_postable_lines": {
+      "count": 18,
+      "by_outcome": {
+        "QUEUED_AMBIGUOUS": 10,
+        "UNMATCHED": 7,
+        "EXCLUDED_DUPLICATE": 1
+      },
+      "by_case": {
+        "transposed_id_with_twin_claim": 16,
+        "repeated_service_without_line_control": 2
+      },
+      "by_kind": {
+        "PAYMENT": 15,
+        "DENIAL": 1,
+        "REVERSAL": 1,
+        "REPOST": 1
+      }
+    }
+  },
+  "remittance_to_bank": {
+    "universe": {
+      "payments_with_money_in_core": 1154,
+      "expected_to_match": 1147
+    },
+    "overall": {
+      "matched": 1103,
+      "correct": 1103,
+      "precision": 1.0,
+      "recall": 0.961639,
+      "exception_queue_share": 0.038361
+    },
+    "per_rule": {
+      "RB10_TRACE_EXACT": {
+        "payments_matched": 817,
+        "correct": 817,
+        "wrong": 0,
+        "precision": 1.0
+      },
+      "RB20_TRACE_NORMALISED": {
+        "payments_matched": 89,
+        "correct": 89,
+        "wrong": 0,
+        "precision": 1.0
+      },
+      "RB25_TRACE_SPLIT": {
+        "payments_matched": 15,
+        "correct": 15,
+        "wrong": 0,
+        "precision": 1.0
+      },
+      "RB30_LOCKBOX_SUBSET": {
+        "payments_matched": 139,
+        "correct": 139,
+        "wrong": 0,
+        "precision": 1.0
+      },
+      "RB40_PAYER_AMOUNT_WINDOW": {
+        "payments_matched": 43,
+        "correct": 43,
+        "wrong": 0,
+        "precision": 1.0
+      }
+    },
+    "by_case": {
+      "clean": {
+        "description": "trace number intact in the bank description",
+        "payments": 607,
+        "matched_correct": 607,
+        "matched_wrong": 0,
+        "sent_to_exception_queue": 0,
+        "of_which_ambiguous": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "exception_queue_share": 0.0,
+        "rules_used": {
+          "RB10_TRACE_EXACT": 607
+        }
+      },
+      "deposit_missing": {
+        "description": "payer says it paid; money never arrived (should stay unmatched)",
+        "payments": 7,
+        "correctly_left_unmatched": 7,
+        "wrongly_matched": 0
+      },
+      "equal_amount_provider_payment_traced": {
+        "description": "fixed twice-weekly provider-level payment with trace",
+        "payments": 74,
+        "matched_correct": 74,
+        "matched_wrong": 0,
+        "sent_to_exception_queue": 0,
+        "of_which_ambiguous": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "exception_queue_share": 0.0,
+        "rules_used": {
+          "RB10_TRACE_EXACT": 74
+        }
+      },
+      "equal_amount_provider_payment_untraced": {
+        "description": "fixed twice-weekly provider-level payment without trace: same payer, same amount, days apart",
+        "payments": 55,
+        "matched_correct": 19,
+        "matched_wrong": 0,
+        "sent_to_exception_queue": 36,
+        "of_which_ambiguous": 36,
+        "precision": 1.0,
+        "recall": 0.345455,
+        "exception_queue_share": 0.654545,
+        "rules_used": {
+          "RB40_PAYER_AMOUNT_WINDOW": 19
+        }
+      },
+      "lockbox_bundle": {
+        "description": "several paper checks deposited as one lockbox credit",
+        "payments": 139,
+        "matched_correct": 139,
+        "matched_wrong": 0,
+        "sent_to_exception_queue": 0,
+        "of_which_ambiguous": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "exception_queue_share": 0.0,
+        "rules_used": {
+          "RB30_LOCKBOX_SUBSET": 139
+        }
+      },
+      "no_trace_in_bank_description": {
+        "description": "no trace in the bank description; payer and amount only",
+        "payments": 24,
+        "matched_correct": 24,
+        "matched_wrong": 0,
+        "sent_to_exception_queue": 0,
+        "of_which_ambiguous": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "exception_queue_share": 0.0,
+        "rules_used": {
+          "RB40_PAYER_AMOUNT_WINDOW": 24
+        }
+      },
+      "posting_date_shift": {
+        "description": "bank posts one business day after the payer's effective date",
+        "payments": 136,
+        "matched_correct": 136,
+        "matched_wrong": 0,
+        "sent_to_exception_queue": 0,
+        "of_which_ambiguous": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "exception_queue_share": 0.0,
+        "rules_used": {
+          "RB10_TRACE_EXACT": 136
+        }
+      },
+      "split_deposit_both_traced": {
+        "description": "one payment arrives as two credits, both carrying the trace",
+        "payments": 15,
+        "matched_correct": 15,
+        "matched_wrong": 0,
+        "sent_to_exception_queue": 0,
+        "of_which_ambiguous": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "exception_queue_share": 0.0,
+        "rules_used": {
+          "RB25_TRACE_SPLIT": 15
+        }
+      },
+      "split_deposit_second_untraced": {
+        "description": "one payment arrives as two credits, the second without a trace",
+        "payments": 8,
+        "matched_correct": 0,
+        "matched_wrong": 0,
+        "sent_to_exception_queue": 8,
+        "of_which_ambiguous": 0,
+        "precision": null,
+        "recall": 0.0,
+        "exception_queue_share": 1.0,
+        "rules_used": {}
+      },
+      "truncated_trace": {
+        "description": "bank description cut off inside the trace number",
+        "payments": 89,
+        "matched_correct": 89,
+        "matched_wrong": 0,
+        "sent_to_exception_queue": 0,
+        "of_which_ambiguous": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "exception_queue_share": 0.0,
+        "rules_used": {
+          "RB20_TRACE_NORMALISED": 89
+        }
+      }
+    },
+    "unapplied_cash": {
+      "planted_deposits_without_remittance": 12,
+      "queued_as_unapplied": 64,
+      "planted_and_queued": 12,
+      "queued_with_reason": {
+        "AMBIGUOUS": 36,
+        "NO REMITTANCE": 20,
+        "POSSIBLE SPLIT OR PARTIAL DEPOSIT": 8
+      }
+    }
+  },
+  "orphan_reversals": {
+    "orphan_reversals": 76,
+    "original_was_on_a_withheld_remittance": 73,
+    "original_row_rejected_in_staging": 3,
+    "unexplained": 0,
+    "note": "a reversal is 'orphan' when the posting it reverses never reached us; in this data that happens when the earlier payment's remittance file was withheld (the money arrived as unapplied cash)"
+  },
+  "what_the_rules_cannot_resolve": [
+    {
+      "case": "transposed_id_with_twin_claim (no line control number)",
+      "why": "The identifier points nowhere and two claim lines share member, date, code and charge. Nothing in the remittance says which visit was paid, so the rule queues it as AMBIGUOUS for a person to check the payer's claim number (ICN) against the payer portal."
+    },
+    {
+      "case": "repeated_service_without_line_control + transposed or mangled claim id",
+      "why": "Two verbatim-identical remittance lines are only accepted as two services when the claim can be found and has two identical lines. If the claim number is unreadable, the second copy looks like a file duplicate and is excluded; the payer's own claim totals (CLP03/CLP04) would be needed to resolve it."
+    },
+    {
+      "case": "split_deposit_second_untraced",
+      "why": "The traced credit does not equal the payment and the untraced credit matches nothing on amount, so both credits go to UNAPPLIED_CASH (reason POSSIBLE SPLIT) and the payment to REMIT_NO_DEPOSIT. A person allocates them; the cash identity still ties because all three sit in explicit buckets."
+    },
+    {
+      "case": "equal_amount_provider_payment_untraced",
+      "why": "Two untraced credits of the same amount from the same payer a few days apart fit two payments equally well. Choosing the nearest date would usually be right but is a guess, so the rule queues both as AMBIGUOUS."
+    },
+    {
+      "case": "orphan reversals",
+      "why": "A reversal whose original posting never arrived (its remittance file is missing) cannot be paired; it is queued."
+    }
+  ],
+  "line_paid_amounts": {
+    "claim_lines_compared": 72256,
+    "posted_paid_equals_paid_on_received_remittances": 72231,
+    "share_equal_to_received": 0.999654,
+    "posted_paid_equals_all_payer_payments": 71594,
+    "share_equal_to_all_payments": 0.990838,
+    "note": "the gap between the two shares is money the payer paid on remittances that never arrived (unapplied cash): the hospital cannot post it to lines until the remittance is obtained"
+  },
+  "staging_rejects_vs_planted": {
+    "bank_statement.csv": {
+      "planted_bad_rows": 6,
+      "rejected_rows": 6,
+      "planted_and_rejected": 6,
+      "rejected_not_planted": 0,
+      "reasons": {
+        "DUPLICATE_BANK_REFERENCE": 6
+      }
+    },
+    "claim_status_history.csv": {
+      "planted_bad_rows": 415,
+      "rejected_rows": 415,
+      "planted_and_rejected": 415,
+      "rejected_not_planted": 0,
+      "reasons": {
+        "DUPLICATE_EVENT": 400,
+        "UNKNOWN_STATUS": 15
+      }
+    },
+    "claims_export.csv": {
+      "planted_bad_rows": 80,
+      "rejected_rows": 80,
+      "planted_and_rejected": 80,
+      "rejected_not_planted": 0,
+      "reasons": {
+        "DUPLICATE_ROW": 60,
+        "MISSING_PROCEDURE_CODE": 12,
+        "UNPARSEABLE_AMOUNT": 8
+      }
+    },
+    "drug_dispense_log.csv": {
+      "planted_bad_rows": 5,
+      "rejected_rows": 5,
+      "planted_and_rejected": 5,
+      "rejected_not_planted": 0,
+      "reasons": {
+        "UNPARSEABLE_UNITS": 5
+      }
+    },
+    "payer_contracts.csv": {
+      "planted_bad_rows": 3,
+      "rejected_rows": 3,
+      "planted_and_rejected": 3,
+      "rejected_not_planted": 0,
+      "reasons": {
+        "DUPLICATE_ROW": 3
+      }
+    },
+    "remittance_advice.csv": {
+      "planted_bad_rows": 10,
+      "rejected_rows": 10,
+      "planted_and_rejected": 10,
+      "rejected_not_planted": 0,
+      "reasons": {
+        "UNPARSEABLE_AMOUNT": 6,
+        "UNPARSEABLE_DATE": 4
+      }
+    }
+  },
+  "open_exceptions": [
+    {
+      "exception_type": "CREDIT_BALANCE",
+      "severity": "HIGH",
+      "n": 40,
+      "amount": 95638.73
+    },
+    {
+      "exception_type": "DUPLICATE_REMIT_LINE",
+      "severity": "INFO",
+      "n": 356,
+      "amount": 281934.59
+    },
+    {
+      "exception_type": "ILLEGAL_TRANSITION",
+      "severity": "HIGH",
+      "n": 3,
+      "amount": 0.0
+    },
+    {
+      "exception_type": "NO_RESPONSE",
+      "severity": "MEDIUM",
+      "n": 587,
+      "amount": 1176353.15
+    },
+    {
+      "exception_type": "ORPHAN_REVERSAL",
+      "severity": "MEDIUM",
+      "n": 76,
+      "amount": -8522.22
+    },
+    {
+      "exception_type": "PROVIDER_LEVEL_PAYMENT",
+      "severity": "INFO",
+      "n": 129,
+      "amount": 2580000.0
+    },
+    {
+      "exception_type": "REMIT_NO_DEPOSIT",
+      "severity": "HIGH",
+      "n": 51,
+      "amount": 1596219.08
+    },
+    {
+      "exception_type": "STAGING_REJECT",
+      "severity": "LOW",
+      "n": 489,
+      "amount": 69918.62
+    },
+    {
+      "exception_type": "STAGING_REJECT",
+      "severity": "HIGH",
+      "n": 30,
+      "amount": 25241.69
+    },
+    {
+      "exception_type": "STALE_REVERSAL",
+      "severity": "MEDIUM",
+      "n": 14,
+      "amount": 314044.83
+    },
+    {
+      "exception_type": "TRACE_TOTAL_MISMATCH",
+      "severity": "HIGH",
+      "n": 8,
+      "amount": 598.56
+    },
+    {
+      "exception_type": "UNAPPLIED_CASH",
+      "severity": "HIGH",
+      "n": 64,
+      "amount": 2048321.11
+    },
+    {
+      "exception_type": "UNDERPAYMENT",
+      "severity": "MEDIUM",
+      "n": 4135,
+      "amount": 360714.43
+    },
+    {
+      "exception_type": "UNMATCHED_REMIT",
+      "severity": "HIGH",
+      "n": 89,
+      "amount": 64355.64
+    }
+  ]
+}

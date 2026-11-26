@@ -1,0 +1,295 @@
+{
+  "label_note": "Weighted Kaplan-Meier quantiles of the first-pass payment lag (submission to payment, no denial or pend) against the generator's realised quantiles over all claims, including payments after the as-of date that the model cannot see.",
+  "tolerance": "quartiles within 3 days at the as-of cutoff",
+  "first_pass_lag": {
+    "value": {
+      "2026-03-31": {
+        "per_payer": {
+          "P01": {
+            "estimated": {
+              "p25": 15.0,
+              "median": 21.0,
+              "p75": 30.0,
+              "p90": 40.0,
+              "mean_restricted_400d": 24.0
+            },
+            "planted_realised": {
+              "p25": 15.0,
+              "median": 21.0,
+              "p75": 30.0,
+              "p90": 40.0,
+              "mean": 24.006
+            },
+            "error_days": {
+              "p25": 0.0,
+              "median": 0.0,
+              "p75": 0.0,
+              "p90": 0.0,
+              "mean": -0.0
+            }
+          },
+          "P02": {
+            "estimated": {
+              "p25": 19.0,
+              "median": 27.0,
+              "p75": 38.0,
+              "p90": 53.0,
+              "mean_restricted_400d": 30.59
+            },
+            "planted_realised": {
+              "p25": 19.0,
+              "median": 27.0,
+              "p75": 38.0,
+              "p90": 53.0,
+              "mean": 30.501
+            },
+            "error_days": {
+              "p25": 0.0,
+              "median": 0.0,
+              "p75": 0.0,
+              "p90": 0.0,
+              "mean": 0.09
+            }
+          },
+          "P03": {
+            "estimated": {
+              "p25": 18.0,
+              "median": 30.0,
+              "p75": 48.0,
+              "p90": 69.0,
+              "mean_restricted_400d": 36.26
+            },
+            "planted_realised": {
+              "p25": 18.0,
+              "median": 30.0,
+              "p75": 48.0,
+              "p90": 69.0,
+              "mean": 36.268
+            },
+            "error_days": {
+              "p25": 0.0,
+              "median": 0.0,
+              "p75": 0.0,
+              "p90": 0.0,
+              "mean": -0.01
+            }
+          },
+          "P04": {
+            "estimated": {
+              "p25": 31.0,
+              "median": 43.0,
+              "p75": 60.0,
+              "p90": 80.0,
+              "mean_restricted_400d": 47.98
+            },
+            "planted_realised": {
+              "p25": 31.0,
+              "median": 43.0,
+              "p75": 60.0,
+              "p90": 80.0,
+              "mean": 47.973
+            },
+            "error_days": {
+              "p25": 0.0,
+              "median": 0.0,
+              "p75": 0.0,
+              "p90": 0.0,
+              "mean": 0.01
+            }
+          },
+          "P05": {
+            "estimated": {
+              "p25": 21.0,
+              "median": 29.0,
+              "p75": 40.0,
+              "p90": 54.0,
+              "mean_restricted_400d": 32.26
+            },
+            "planted_realised": {
+              "p25": 21.0,
+              "median": 29.0,
+              "p75": 40.0,
+              "p90": 54.0,
+              "mean": 32.265
+            },
+            "error_days": {
+              "p25": 0.0,
+              "median": 0.0,
+              "p75": 0.0,
+              "p90": 0.0,
+              "mean": -0.0
+            }
+          },
+          "P06": {
+            "estimated": {
+              "p25": 25.0,
+              "median": 39.0,
+              "p75": 62.0,
+              "p90": 90.0,
+              "mean_restricted_400d": 47.64
+            },
+            "planted_realised": {
+              "p25": 25.0,
+              "median": 39.0,
+              "p75": 62.0,
+              "p90": 89.0,
+              "mean": 47.549
+            },
+            "error_days": {
+              "p25": 0.0,
+              "median": 0.0,
+              "p75": 0.0,
+              "p90": 1.0,
+              "mean": 0.09
+            }
+          }
+        },
+        "max_abs_error_quartiles_days": 0.0
+      },
+      "2025-06-30": {
+        "per_payer": {
+          "P01": {
+            "estimated": {
+              "p25": 15.0,
+              "median": 21.0,
+              "p75": 30.0,
+              "p90": 40.0,
+              "mean_restricted_400d": 23.98
+            },
+            "planted_realised": {
+              "p25": 15.0,
+              "median": 21.0,
+              "p75": 30.0,
+              "p90": 40.0,
+              "mean": 24.006
+            },
+            "error_days": {
+              "p25": 0.0,
+              "median": 0.0,
+              "p75": 0.0,
+              "p90": 0.0,
+              "mean": -0.03
+            }
+          },
+          "P02": {
+            "estimated": {
+              "p25": 19.0,
+              "median": 27.0,
+              "p75": 38.0,
+              "p90": 52.0,
+              "mean_restricted_400d": 30.28
+            },
+            "planted_realised": {
+              "p25": 19.0,
+              "median": 27.0,
+              "p75": 38.0,
+              "p90": 53.0,
+              "mean": 30.501
+            },
+            "error_days": {
+              "p25": 0.0,
+              "median": 0.0,
+              "p75": 0.0,
+              "p90": -1.0,
+              "mean": -0.22
+            }
+          },
+          "P03": {
+            "estimated": {
+              "p25": 18.0,
+              "median": 30.0,
+              "p75": 47.0,
+              "p90": 68.0,
+              "mean_restricted_400d": 36.02
+            },
+            "planted_realised": {
+              "p25": 18.0,
+              "median": 30.0,
+              "p75": 48.0,
+              "p90": 69.0,
+              "mean": 36.268
+            },
+            "error_days": {
+              "p25": 0.0,
+              "median": 0.0,
+              "p75": -1.0,
+              "p90": -1.0,
+              "mean": -0.25
+            }
+          },
+          "P04": {
+            "estimated": {
+              "p25": 31.0,
+              "median": 43.0,
+              "p75": 60.0,
+              "p90": 81.0,
+              "mean_restricted_400d": 48.08
+            },
+            "planted_realised": {
+              "p25": 31.0,
+              "median": 43.0,
+              "p75": 60.0,
+              "p90": 80.0,
+              "mean": 47.973
+            },
+            "error_days": {
+              "p25": 0.0,
+              "median": 0.0,
+              "p75": 0.0,
+              "p90": 1.0,
+              "mean": 0.1
+            }
+          },
+          "P05": {
+            "estimated": {
+              "p25": 20.0,
+              "median": 29.0,
+              "p75": 40.0,
+              "p90": 53.0,
+              "mean_restricted_400d": 32.2
+            },
+            "planted_realised": {
+              "p25": 21.0,
+              "median": 29.0,
+              "p75": 40.0,
+              "p90": 54.0,
+              "mean": 32.265
+            },
+            "error_days": {
+              "p25": -1.0,
+              "median": 0.0,
+              "p75": 0.0,
+              "p90": -1.0,
+              "mean": -0.06
+            }
+          },
+          "P06": {
+            "estimated": {
+              "p25": 26.0,
+              "median": 41.0,
+              "p75": 62.0,
+              "p90": 91.0,
+              "mean_restricted_400d": 48.29
+            },
+            "planted_realised": {
+              "p25": 25.0,
+              "median": 39.0,
+              "p75": 62.0,
+              "p90": 89.0,
+              "mean": 47.549
+            },
+            "error_days": {
+              "p25": 1.0,
+              "median": 2.0,
+              "p75": 0.0,
+              "p90": 2.0,
+              "mean": 0.74
+            }
+          }
+        },
+        "max_abs_error_quartiles_days": 2.0
+      }
+    },
+    "label": "model_estimate"
+  }
+}

@@ -1,0 +1,678 @@
+# Generator calibration for the synthetic raw documents.
+#
+# Every entry has: value, source_class, source, retrieved.
+# source_class is one of the five data labels (DESIGN.md section 8):
+#   observed_public | published_aggregate | synthetic_record | financial_assumption | model_estimate
+#
+# Most values below are assumptions chosen so that the simulated hospital behaves plausibly.
+# They are NOT measurements. When config/public_calibration.yaml exists, the loader
+# (src/recon_engine/datagen/calibration.py) overrides three groups with public figures and
+# records each override in data/raw/generation_metadata.json and results/core_build.json:
+#   1. denial.first_pass_denial_rate  <- CMS Transparency in Coverage percentiles, read at
+#      the percentile position given in denial.denial_rate_percentile;
+#   2. drugs.reference_list           <- CMS Part B payment limits (drug_reference_prices.drugs);
+#   3. financial_assumptions.discount_rate <- SOFR (interest_rates.sofr.value_pct).
+# Payers, hospital, bank and wholesaler are fictional. No real patient data is used.
+
+simulation:
+  seed:
+    value: 20260331
+    source_class: synthetic_record
+    source: Fixed random seed so that every rebuild produces byte-identical raw files.
+    retrieved: '2026-11-16'
+  as_of_date:
+    value: '2026-03-31'
+    source_class: synthetic_record
+    source: DESIGN.md section 3 (snapshot date; later events are not exported).
+    retrieved: '2026-11-16'
+  service_start:
+    value: '2024-01-01'
+    source_class: synthetic_record
+    source: DESIGN.md section 3.
+    retrieved: '2026-11-16'
+  service_end:
+    value: '2025-12-31'
+    source_class: synthetic_record
+    source: DESIGN.md section 3.
+    retrieved: '2026-11-16'
+  n_claims:
+    value: 30000
+    source_class: synthetic_record
+    source: DESIGN.md section 3 scale target (about 30,000 claims / 70,000 lines).
+    retrieved: '2026-11-16'
+  claims_per_patient:
+    value: 2.4
+    source_class: financial_assumption
+    source: Assumption. Average encounters per synthetic patient over two years.
+    retrieved: '2026-11-16'
+
+organisation:
+  hospital:
+    value:
+      name: Meridian Health System
+      payee_npi: '9000000017'
+      facilities:
+        F01: {name: Meridian General Hospital, npi: '9000000025'}
+        F02: {name: Meridian Cancer & Infusion Center, npi: '9000000033'}
+        F03: {name: Meridian Northside Clinic, npi: '9000000041'}
+    source_class: synthetic_record
+    source: Fictional organisation (DESIGN.md section 1). Identifiers are synthetic, not registry NPIs.
+    retrieved: '2026-11-16'
+  bank:
+    value:
+      name: First Harbor Commercial Bank
+      account_mask: XXXXXX4821
+      lockbox_id: '40217'
+      opening_balance: 4250000.00
+      sweep_target_balance: 3000000.00
+      sweep_trigger_excess: 250000.00
+      earnings_rate_annual: 0.005
+      card_settlement_daily_range: [400.0, 6000.0]
+      card_settlement_probability: 0.9
+      monthly_fee_range: [180.0, 420.0]
+    source_class: financial_assumption
+    source: Fictional operating account. Balances, sweep rule, fee and earnings rate are assumptions.
+    retrieved: '2026-11-16'
+  wholesaler:
+    value: {name: Pinecrest Specialty Distribution, wholesaler_id: PSD-0042, payment_terms_days: 30}
+    source_class: financial_assumption
+    source: Fictional drug wholesaler; net-30 terms are an assumption.
+    retrieved: '2026-11-16'
+
+payers:
+  roster:
+    value:
+      - {payer_id: P01, payer_name: Alder Ridge Health Plan, payer_type: COMMERCIAL, share: 0.27,
+         member_prefix: ARH, tax_id: '1900000101', ach_company_name: ALDER RIDGE HP, timezone: America/New_York}
+      - {payer_id: P02, payer_name: Corvane Mutual Insurance Company, payer_type: COMMERCIAL, share: 0.22,
+         member_prefix: CVM, tax_id: '1900000202', ach_company_name: CORVANE MUTUAL INSURANCE CO CLAIMS DIV, timezone: America/Chicago}
+      - {payer_id: P03, payer_name: Granite Bay Health Partners, payer_type: COMMERCIAL, share: 0.17,
+         member_prefix: GBP, tax_id: '1900000303', ach_company_name: GRANITE BAY HLTH, timezone: America/Los_Angeles}
+      - {payer_id: P04, payer_name: Quarry Hill Public Health Plan, payer_type: GOVERNMENT, share: 0.18,
+         member_prefix: QHP, tax_id: '1900000404', ach_company_name: QUARRY HILL PHP, timezone: America/New_York}
+      - {payer_id: P05, payer_name: Sorrel Bay Care Plan, payer_type: COMMERCIAL, share: 0.10,
+         member_prefix: SBC, tax_id: '1900000505', ach_company_name: SORREL BAY CARE, timezone: America/Denver}
+      - {payer_id: P06, payer_name: Meadowfield Benefit Trust, payer_type: SELF_FUNDED_TPA, share: 0.06,
+         member_prefix: MBT, tax_id: '1900000606', ach_company_name: MEADOWFIELD BT, timezone: America/Chicago}
+    source_class: synthetic_record
+    source: Fictional payers. Shares are an assumption about a mid-size hospital's payer mix.
+    retrieved: '2026-11-16'
+  payment_cycle_weekdays:
+    value: {P01: [1, 4], P02: [2], P03: [0, 3], P04: [1, 3], P05: [4], P06: [2]}
+    source_class: financial_assumption
+    source: Assumption. Weekday numbers (0=Monday) on which each payer runs payments.
+    retrieved: '2026-11-16'
+  check_payment_share:
+    value: {P01: 0.0, P02: 0.0, P03: 0.0, P04: 0.0, P05: 0.3, P06: 1.0}
+    source_class: financial_assumption
+    source: Assumption. Share of payment runs paid by paper check to the lockbox (rest ACH EFT).
+    retrieved: '2026-11-16'
+
+service_mix:
+  service_line_share:
+    value: {EMERGENCY: 0.22, PRIMARY_CARE: 0.20, LABORATORY: 0.11, RADIOLOGY: 0.12,
+            CARDIOLOGY: 0.10, ORTHOPEDICS: 0.08, INFUSION: 0.13, OPHTHALMOLOGY: 0.04}
+    source_class: financial_assumption
+    source: Assumption about outpatient encounter mix.
+    retrieved: '2026-11-16'
+  templates:
+    # primary: one code drawn with these weights; ancillary: each added independently with its probability.
+    value:
+      EMERGENCY:
+        facility: F01
+        form_type: UB04
+        primary: {'99283': 0.35, '99284': 0.40, '99285': 0.25}
+        ancillary: {'80053': 0.55, '85025': 0.65, '71046': 0.40, '93000': 0.35, '74177': 0.18}
+        diagnoses: [R07.9, S93.401A, J18.9, R10.9, N39.0, R51.9]
+      PRIMARY_CARE:
+        facility: F03
+        form_type: CMS1500
+        primary: {'99213': 0.5, '99214': 0.4, '99203': 0.1}
+        ancillary: {'85025': 0.35, '80053': 0.30, '83036': 0.30, '80061': 0.25}
+        diagnoses: [I10, E11.9, Z00.00, E78.5, J06.9]
+      LABORATORY:
+        facility: F01
+        form_type: UB04
+        primary: {'80053': 0.5, '85025': 0.5}
+        ancillary: {'83036': 0.35, '80061': 0.45}
+        diagnoses: [E11.9, E78.5, Z13.1, D64.9]
+      RADIOLOGY:
+        facility: F01
+        form_type: UB04
+        primary: {'71046': 0.4, '74177': 0.35, '70553': 0.25}
+        ancillary: {'80053': 0.25}
+        diagnoses: [R10.9, G43.909, R05.9, R91.8]
+      CARDIOLOGY:
+        facility: F01
+        form_type: UB04
+        primary: {'93306': 0.5, '93458': 0.15, '99214': 0.35}
+        ancillary: {'93000': 0.65, '80061': 0.35}
+        diagnoses: [I25.10, I48.91, R00.2, I50.9]
+      ORTHOPEDICS:
+        facility: F01
+        form_type: UB04
+        primary: {'27447': 0.2, '29881': 0.35, '20610': 0.45}
+        ancillary: {'73562': 0.65, '99213': 0.35}
+        diagnoses: [M17.11, S83.241A, M25.561, M17.12]
+      INFUSION:
+        facility: F02
+        form_type: UB04
+        drug_areas: [oncology, immunology, neurology, bone health, immune globulin, hematology]
+        ancillary: {'85025': 0.70, '80053': 0.50}
+        diagnoses_by_area:
+          oncology: [C50.911, C34.90, C18.9, C90.00, C43.9]
+          immunology: [M05.79, K50.90, L40.50]
+          neurology: [G35]
+          bone health: [M81.0]
+          immune globulin: [D80.9]
+          hematology: [D59.5]
+      OPHTHALMOLOGY:
+        facility: F03
+        form_type: UB04
+        drug_areas: [ophthalmology]
+        ancillary: {'92134': 0.6}
+        diagnoses: [H35.32, E11.3291]
+    source_class: financial_assumption
+    source: Assumption. Procedure codes are public HCPCS Level I/II identifiers; descriptions in the chargemaster are this project's own plain-English paraphrases, not AMA descriptors. ICD-10-CM codes are public.
+    retrieved: '2026-11-16'
+  repeat_line_probability:
+    value: 0.03
+    source_class: financial_assumption
+    source: Assumption. Probability that an emergency, laboratory, primary-care or infusion claim legitimately bills the same lab test twice on separate lines (same code, date and charge). These are NOT duplicates.
+    retrieved: '2026-11-21'
+  twin_encounters:
+    value: 60
+    source_class: financial_assumption
+    source: Assumption. Patients with two separate claims on the same day for the same single service and charge; the payer prints a transposed claim number on one of them, so only member + date + amount is left to match on.
+    retrieved: '2026-11-21'
+  submission_lag_geometric_p:
+    value: 0.35
+    source_class: financial_assumption
+    source: Assumption. Days from service to claim submission = 1 + Geometric(p), capped at 30.
+    retrieved: '2026-11-16'
+
+pricing:
+  chargemaster_2024:
+    value:
+      - {code: '99283', description: Emergency visit moderate severity, service_line: EMERGENCY, revenue_code: '0450', charge: 450.00}
+      - {code: '99284', description: Emergency visit high severity, service_line: EMERGENCY, revenue_code: '0450', charge: 780.00}
+      - {code: '99285', description: Emergency visit highest severity, service_line: EMERGENCY, revenue_code: '0450', charge: 1350.00}
+      - {code: '99203', description: Office visit new patient, service_line: PRIMARY_CARE, revenue_code: '0510', charge: 240.00}
+      - {code: '99213', description: Office visit established low, service_line: PRIMARY_CARE, revenue_code: '0510', charge: 180.00}
+      - {code: '99214', description: Office visit established moderate, service_line: PRIMARY_CARE, revenue_code: '0510', charge: 260.00}
+      - {code: '80053', description: Comprehensive metabolic panel, service_line: LABORATORY, revenue_code: '0301', charge: 95.00}
+      - {code: '80061', description: Lipid panel, service_line: LABORATORY, revenue_code: '0301', charge: 85.00}
+      - {code: '83036', description: Hemoglobin A1c, service_line: LABORATORY, revenue_code: '0301', charge: 70.00}
+      - {code: '85025', description: Complete blood count with differential, service_line: LABORATORY, revenue_code: '0305', charge: 55.00}
+      - {code: '71046', description: Chest x-ray two views, service_line: RADIOLOGY, revenue_code: '0324', charge: 260.00}
+      - {code: '73562', description: Knee x-ray three views, service_line: RADIOLOGY, revenue_code: '0320', charge: 230.00}
+      - {code: '74177', description: CT abdomen and pelvis with contrast, service_line: RADIOLOGY, revenue_code: '0350', charge: 2400.00}
+      - {code: '70553', description: MRI brain with and without contrast, service_line: RADIOLOGY, revenue_code: '0610', charge: 3100.00}
+      - {code: '93000', description: Electrocardiogram with interpretation, service_line: CARDIOLOGY, revenue_code: '0730', charge: 140.00}
+      - {code: '93306', description: Transthoracic echocardiogram complete, service_line: CARDIOLOGY, revenue_code: '0483', charge: 1600.00}
+      - {code: '93458', description: Left heart catheterization, service_line: CARDIOLOGY, revenue_code: '0481', charge: 9500.00}
+      - {code: '27447', description: Total knee replacement, service_line: ORTHOPEDICS, revenue_code: '0360', charge: 38000.00}
+      - {code: '29881', description: Knee arthroscopy with meniscectomy, service_line: ORTHOPEDICS, revenue_code: '0360', charge: 9800.00}
+      - {code: '20610', description: Large joint injection or aspiration, service_line: ORTHOPEDICS, revenue_code: '0510', charge: 420.00}
+      - {code: '96413', description: Chemotherapy IV infusion first hour, service_line: INFUSION, revenue_code: '0335', charge: 780.00}
+      - {code: '96415', description: Chemotherapy IV infusion each additional hour, service_line: INFUSION, revenue_code: '0335', charge: 210.00}
+      - {code: '96365', description: Therapeutic IV infusion first hour, service_line: INFUSION, revenue_code: '0260', charge: 520.00}
+      - {code: '67028', description: Intravitreal injection, service_line: OPHTHALMOLOGY, revenue_code: '0510', charge: 650.00}
+      - {code: '92134', description: Retinal optical coherence tomography, service_line: OPHTHALMOLOGY, revenue_code: '0920', charge: 210.00}
+    source_class: financial_assumption
+    source: Assumed hospital list prices (chargemaster) for 2024; illustrative only, not taken from a hospital price file.
+    retrieved: '2026-11-16'
+  chargemaster_increase_2025:
+    value: 0.05
+    source_class: financial_assumption
+    source: Assumption. List-price increase applied to all charges with service dates in 2025.
+    retrieved: '2026-11-16'
+  drug_charge_markup_range:
+    value: [2.5, 3.5]
+    source_class: financial_assumption
+    source: Assumption. Drug list price per billing unit = reference price x a per-drug markup drawn in this range.
+    retrieved: '2026-11-16'
+  contract_terms:
+    value:
+      P01: {rate_type: FEE_SCHEDULE, fee_schedule_factor: 0.52, drug_pct_of_reference: 1.35}
+      P02: {rate_type: FEE_SCHEDULE, fee_schedule_factor: 0.48, drug_pct_of_reference: 1.25}
+      P03: {rate_type: FEE_SCHEDULE, fee_schedule_factor: 0.45, drug_pct_of_reference: 1.15}
+      P04: {rate_type: FEE_SCHEDULE, fee_schedule_factor: 0.32, drug_pct_of_reference: 1.00}
+      P05: {rate_type: FEE_SCHEDULE, fee_schedule_factor: 0.50, drug_pct_of_reference: 1.20}
+      P06: {rate_type: PCT_OF_CHARGE, pct_of_charge: 58.00}
+    source_class: financial_assumption
+    source: Assumption. Fee schedule = 2024 list price x factor x per-code noise; drug rate = reference price per unit x pct. P06 pays a percent of billed charges.
+    retrieved: '2026-11-16'
+  fee_schedule_code_noise:
+    value: 0.10
+    source_class: financial_assumption
+    source: Assumption. Per payer-code multiplicative noise, uniform in [1-x, 1+x].
+    retrieved: '2026-11-16'
+  contract_escalator_2025:
+    value: 0.03
+    source_class: financial_assumption
+    source: Assumption. Contract rates for 2025 onward = 2024 rate x (1 + escalator).
+    retrieved: '2026-11-16'
+  patient_responsibility:
+    value:
+      COMMERCIAL: {probability: 0.65, share_range: [0.05, 0.30]}
+      SELF_FUNDED_TPA: {probability: 0.60, share_range: [0.05, 0.25]}
+      GOVERNMENT: {probability: 0.20, share_range: [0.0, 0.10]}
+    source_class: financial_assumption
+    source: Assumption. Probability that a paid claim carries deductible/coinsurance, and the share of allowed amount.
+    retrieved: '2026-11-16'
+
+denial:
+  first_pass_denial_rate:
+    value: {P01: 0.12, P02: 0.15, P03: 0.21, P04: 0.10, P05: 0.17, P06: 0.14}
+    source_class: financial_assumption
+    source: Assumption, used only when config/public_calibration.yaml is absent. Probability that a claim leaving IN_REVIEW is denied (average over the payer's claim mix).
+    retrieved: '2026-11-16'
+  denial_rate_percentile:
+    value: {P01: 0.35, P02: 0.55, P03: 0.85, P04: 0.20, P05: 0.65, P06: 0.45}
+    source_class: financial_assumption
+    source: Assumption. Where each fictional payer sits inside the published issuer distribution of in-network denial rates (0 = lowest issuer, 1 = highest). Linear interpolation between published p10/p25/median/p75/p90.
+    retrieved: '2026-11-16'
+  service_line_logit:
+    value: {EMERGENCY: -0.30, PRIMARY_CARE: -0.50, LABORATORY: -0.20, RADIOLOGY: 0.30,
+            CARDIOLOGY: 0.10, ORTHOPEDICS: 0.45, INFUSION: 0.50, OPHTHALMOLOGY: 0.20}
+    source_class: financial_assumption
+    source: Assumption. Additive log-odds of denial by service line (prior-authorisation-heavy lines higher).
+    retrieved: '2026-11-16'
+  amount_logit:
+    value: 0.25
+    source_class: financial_assumption
+    source: Assumption. Log-odds of denial per unit of (ln claim total charge - mean ln charge).
+    retrieved: '2026-11-16'
+  pend_probability:
+    value: {P01: 0.05, P02: 0.06, P03: 0.08, P04: 0.07, P05: 0.05, P06: 0.04}
+    source_class: financial_assumption
+    source: Assumption. Probability that review is pended for additional information.
+    retrieved: '2026-11-16'
+  pended_writeoff_probability:
+    value: 0.05
+    source_class: financial_assumption
+    source: Assumption. Probability that a pended claim is never completed and is written off (timely filing).
+    retrieved: '2026-11-16'
+  reason_mix:
+    value:
+      default: {ADMINISTRATIVE: 0.30, ELIGIBILITY: 0.15, CODING: 0.20, PRIOR_AUTH: 0.15, MEDICAL_NECESSITY: 0.10, NON_COVERED: 0.10}
+      P03: {ADMINISTRATIVE: 0.22, ELIGIBILITY: 0.12, CODING: 0.18, PRIOR_AUTH: 0.25, MEDICAL_NECESSITY: 0.15, NON_COVERED: 0.08}
+      P04: {ADMINISTRATIVE: 0.35, ELIGIBILITY: 0.25, CODING: 0.20, PRIOR_AUTH: 0.05, MEDICAL_NECESSITY: 0.05, NON_COVERED: 0.10}
+    source_class: financial_assumption
+    source: Assumption. Shares loosely informed by the KFF 2024 Marketplace analysis (administrative 25%, prior authorisation 9%, medical necessity 5%, other 36%); that analysis covers enrollee claims, not hospital claims.
+    retrieved: '2026-11-16'
+  reason_codes:
+    value:
+      ADMINISTRATIVE: [['CO', '16'], ['CO', '29']]
+      ELIGIBILITY: [['CO', '27'], ['CO', '31']]
+      CODING: [['CO', '4'], ['CO', '11']]
+      PRIOR_AUTH: [['CO', '197']]
+      MEDICAL_NECESSITY: [['CO', '50']]
+      NON_COVERED: [['CO', '96']]
+    source_class: observed_public
+    source: X12 Claim Adjustment Reason Code list (public code set); mapping of codes to categories is this project's.
+    retrieved: '2026-11-16'
+  hospital_action_by_reason:
+    value:
+      ADMINISTRATIVE: {resubmit: 0.55, appeal: 0.15, write_off: 0.30}
+      ELIGIBILITY: {resubmit: 0.35, appeal: 0.10, write_off: 0.55}
+      CODING: {resubmit: 0.50, appeal: 0.20, write_off: 0.30}
+      PRIOR_AUTH: {resubmit: 0.05, appeal: 0.55, write_off: 0.40}
+      MEDICAL_NECESSITY: {resubmit: 0.05, appeal: 0.60, write_off: 0.35}
+      NON_COVERED: {resubmit: 0.02, appeal: 0.25, write_off: 0.73}
+    source_class: financial_assumption
+    source: Assumption. What the hospital's denial team historically did with each denial category. Drawn independently of claim amount (no selection on value).
+    retrieved: '2026-11-16'
+  overturn_target:
+    value: {P01: 0.50, P02: 0.45, P03: 0.35, P04: 0.55, P05: 0.45, P06: 0.40}
+    source_class: financial_assumption
+    source: "Assumption. Average probability that a provider appeal is overturned. Public context only (different populations, not used numerically; KFF reports 66% of Marketplace enrollee appeals upheld in 2024 and 80.7% of Medicare Advantage prior-authorisation appeals overturned)."
+    retrieved: '2026-11-16'
+  overturn_reason_logit:
+    value: {ADMINISTRATIVE: 0.60, ELIGIBILITY: -0.40, CODING: 0.30, PRIOR_AUTH: 0.0, MEDICAL_NECESSITY: -0.30, NON_COVERED: -1.20}
+    source_class: financial_assumption
+    source: Assumption. Additive log-odds of overturn by denial category.
+    retrieved: '2026-11-16'
+  overturn_service_line_logit:
+    value: {EMERGENCY: 0.20, PRIMARY_CARE: 0.0, LABORATORY: -0.10, RADIOLOGY: 0.0,
+            CARDIOLOGY: 0.10, ORTHOPEDICS: 0.20, INFUSION: 0.30, OPHTHALMOLOGY: 0.10}
+    source_class: financial_assumption
+    source: Assumption. Additive log-odds of overturn by service line.
+    retrieved: '2026-11-16'
+  overturn_amount_logit:
+    value: -0.15
+    source_class: financial_assumption
+    source: Assumption. Payers contest large claims harder (log-odds per unit of centred ln charge).
+    retrieved: '2026-11-16'
+
+timing:
+  ack_days_range:
+    value: [1, 3]
+    source_class: financial_assumption
+    source: Assumption. Days from submission to payer acknowledgement (IN_REVIEW), uniform integer.
+    retrieved: '2026-11-16'
+  adjudication_lag_gamma:
+    value:
+      P01: {shape: 3.0, scale_days: 6.0}
+      P02: {shape: 2.5, scale_days: 9.0}
+      P03: {shape: 2.0, scale_days: 14.0}
+      P04: {shape: 4.0, scale_days: 10.0}
+      P05: {shape: 3.0, scale_days: 8.0}
+      P06: {shape: 2.0, scale_days: 20.0}
+    source_class: financial_assumption
+    source: Assumption. Days in review before a decision ~ Gamma(shape, scale). Payment is issued on the payer's next payment-cycle day after the decision.
+    retrieved: '2026-11-16'
+  pend_resolution_days:
+    value: [10, 40]
+    source_class: financial_assumption
+    source: Assumption. Days until requested information is supplied (uniform).
+    retrieved: '2026-11-16'
+  resubmit_days:
+    value: [5, 30]
+    source_class: financial_assumption
+    source: Assumption. Days from denial to corrected resubmission (uniform).
+    retrieved: '2026-11-16'
+  appeal_filing_days:
+    value: [15, 60]
+    source_class: financial_assumption
+    source: Assumption. Days from denial to appeal filing (uniform).
+    retrieved: '2026-11-16'
+  appeal_decision_days:
+    value: [30, 75]
+    source_class: financial_assumption
+    source: Assumption. Days from appeal filing to decision (uniform).
+    retrieved: '2026-11-16'
+  write_off_days:
+    value: [30, 120]
+    source_class: financial_assumption
+    source: Assumption. Days from final denial to hospital write-off (uniform).
+    retrieved: '2026-11-16'
+  check_mail_days:
+    value: [2, 5]
+    source_class: financial_assumption
+    source: Assumption. Calendar days for a paper check to reach the lockbox (uniform).
+    retrieved: '2026-11-16'
+  bank_posting_shift_probability:
+    value: {P01: 0.05, P02: 0.05, P03: 0.50, P04: 0.05, P05: 0.15, P06: 0.0}
+    source_class: financial_assumption
+    source: Assumption. Probability that the bank posts an EFT one business day after the payer's effective date (payer time zone versus bank cut-off). P03 is on Pacific time.
+    retrieved: '2026-11-16'
+
+underpayment:
+  behaviour:
+    value:
+      P01: {probability: 0.04, mean_shortfall: 0.05}
+      P02: {probability: 0.06, mean_shortfall: 0.08}
+      P03: {probability: 0.15, mean_shortfall: 0.12}
+      P04: {probability: 0.02, mean_shortfall: 0.03}
+      P05: {probability: 0.08, mean_shortfall: 0.07}
+      P06: {probability: 0.10, mean_shortfall: 0.10}
+    source_class: financial_assumption
+    source: Assumption. Probability that a paid claim is priced below contract, and mean shortfall as a fraction of contract allowed (Beta distribution with concentration below).
+    retrieved: '2026-11-16'
+  beta_concentration:
+    value: 20.0
+    source_class: financial_assumption
+    source: Assumption. Shortfall fraction ~ Beta(m*c, (1-m)*c).
+    retrieved: '2026-11-16'
+
+remit_behaviour:
+  post_payment_events:
+    # mutually exclusive per paid claim; remaining probability = nothing further happens
+    value:
+      P01: {partial: 0.01, reversal_repost: 0.015, late_adjustment: 0.008, double_payment: 0.003}
+      P02: {partial: 0.01, reversal_repost: 0.020, late_adjustment: 0.010, double_payment: 0.003}
+      P03: {partial: 0.01, reversal_repost: 0.030, late_adjustment: 0.015, double_payment: 0.004}
+      P04: {partial: 0.01, reversal_repost: 0.010, late_adjustment: 0.005, double_payment: 0.002}
+      P05: {partial: 0.03, reversal_repost: 0.020, late_adjustment: 0.010, double_payment: 0.004}
+      P06: {partial: 0.01, reversal_repost: 0.020, late_adjustment: 0.010, double_payment: 0.005}
+    source_class: financial_assumption
+    source: Assumption. Rates of partial payment, payer reversal and corrected repost, late downward re-pricing, and duplicate payment by the payer.
+    retrieved: '2026-11-16'
+  partial_paid_fraction_range:
+    value: [0.4, 0.8]
+    source_class: financial_assumption
+    source: Assumption. Share of the expected payment sent in the first partial remittance.
+    retrieved: '2026-11-16'
+  partial_supplement_probability:
+    value: 0.7
+    source_class: financial_assumption
+    source: Assumption. Probability that the remainder of a partial payment is paid later.
+    retrieved: '2026-11-16'
+  late_adjustment_fraction_range:
+    value: [0.02, 0.10]
+    source_class: financial_assumption
+    source: Assumption. Downward re-pricing as a fraction of the line's paid amount.
+    retrieved: '2026-11-16'
+  double_payment_recoup_probability:
+    value: 0.85
+    source_class: financial_assumption
+    source: Assumption. Probability that a duplicate payer payment is recouped (reversed) later.
+    retrieved: '2026-11-16'
+  id_mangling:
+    value:
+      P01: {padding: 0.02, prefix: 0.0, punctuation: 0.01, lowercase: 0.0, transposed: 0.002}
+      P02: {padding: 0.0, prefix: 0.08, punctuation: 0.0, lowercase: 0.0, transposed: 0.003}
+      P03: {padding: 0.03, prefix: 0.0, punctuation: 0.04, lowercase: 0.0, transposed: 0.004}
+      P04: {padding: 0.0, prefix: 0.0, punctuation: 0.0, lowercase: 0.05, transposed: 0.002}
+      P05: {padding: 0.0, prefix: 0.03, punctuation: 0.0, lowercase: 0.0, transposed: 0.015}
+      P06: {padding: 0.05, prefix: 0.0, punctuation: 0.02, lowercase: 0.02, transposed: 0.005}
+    source_class: financial_assumption
+    source: Assumption. Probability that the payer echoes the hospital claim number with zero padding, a prefix such as PCN or CLM#, inserted punctuation, lower case, or two adjacent digits transposed.
+    retrieved: '2026-11-16'
+  line_control_echo_probability:
+    value: {P01: 0.97, P02: 0.97, P03: 0.0, P04: 0.95, P05: 0.90, P06: 0.80}
+    source_class: financial_assumption
+    source: Assumption. Probability that the payer echoes the hospital's line item control number on the remittance.
+    retrieved: '2026-11-16'
+  member_id_format:
+    value: {P01: plain, P02: plain, P03: plain, P04: hyphen, P05: lowercase, P06: plain}
+    source_class: financial_assumption
+    source: Assumption. How each payer prints the member identifier on remittances.
+    retrieved: '2026-11-16'
+  split_835_probability:
+    value: {P01: 0.25, P02: 0.0, P03: 0.0, P04: 0.10, P05: 0.0, P06: 0.0}
+    source_class: financial_assumption
+    source: Assumption. Probability that one payment (one trace number) is reported in several remittance files, one per facility.
+    retrieved: '2026-11-16'
+  file_duplicate_line_rate:
+    value: 0.004
+    source_class: financial_assumption
+    source: Assumption. Share of remittance lines repeated verbatim in the same remittance file.
+    retrieved: '2026-11-16'
+  orphan_remit_claims:
+    value: 30
+    source_class: financial_assumption
+    source: Assumption. Number of claims from another facility that appear on our remittances by payer error.
+    retrieved: '2026-11-16'
+
+cash_defects:
+  remit_missing_trace_rate:
+    value: 0.010
+    source_class: financial_assumption
+    source: Assumption. Share of EFT payments whose remittance file never arrives (deposit becomes unapplied cash).
+    retrieved: '2026-11-16'
+  deposit_missing_trace_rate:
+    value: 0.005
+    source_class: financial_assumption
+    source: Assumption. Share of payments whose remittance arrives but whose money never reaches the account.
+    retrieved: '2026-11-16'
+  trace_truncation_probability:
+    value: {P01: 0.02, P02: 0.60, P03: 0.02, P04: 0.02, P05: 0.05, P06: 0.0}
+    source_class: financial_assumption
+    source: Assumption. Probability that the bank description is cut off inside the trace number (long company names).
+    retrieved: '2026-11-16'
+  trace_missing_probability:
+    value: {P01: 0.01, P02: 0.01, P03: 0.02, P04: 0.03, P05: 0.05, P06: 0.0}
+    source_class: financial_assumption
+    source: Assumption. Probability that the bank description carries no TRN addenda at all.
+    retrieved: '2026-11-16'
+  split_deposit_probability:
+    value: 0.03
+    source_class: financial_assumption
+    source: Assumption. Share of EFT payments of $2,000 or more that arrive as two bank credits.
+    retrieved: '2026-11-21'
+  split_second_part_no_trace_probability:
+    value: 0.4
+    source_class: financial_assumption
+    source: Assumption. Probability that the second credit of a split payment carries no trace number in the bank description.
+    retrieved: '2026-11-21'
+  periodic_interim_payment:
+    value: {payer_id: P04, amount: 20000.00, weekdays: [0, 3], start: '2025-01-06', trace_missing_probability: 0.5}
+    source_class: financial_assumption
+    source: Assumption. A fixed provider-level advance (periodic interim payment, reported on the remittance as a PLB adjustment, not against claims) paid twice a week by the government plan. Equal amounts a few days apart make amount-and-date matching ambiguous when the bank description has no trace.
+    retrieved: '2026-11-21'
+  bank_duplicate_rows:
+    value: 6
+    source_class: financial_assumption
+    source: Assumption. Rows repeated because two statement exports overlapped.
+    retrieved: '2026-11-16'
+
+staging_defects:
+  counts:
+    value:
+      claims_duplicate_rows: 60
+      claims_missing_procedure: 12
+      claims_bad_charge: 8
+      remit_bad_amount: 6
+      remit_bad_date: 4
+      status_duplicate_events: 400
+      status_unknown_text: 15
+      contract_duplicate_rows: 3
+      dispense_bad_units: 5
+    source_class: financial_assumption
+    source: Assumption. Number of malformed or repeated export rows injected to exercise staging rejects.
+    retrieved: '2026-11-16'
+
+drugs:
+  reference_list:
+    # Used only when public_calibration.yaml is absent. Prices are ROUND ASSUMED NUMBERS, not CMS values.
+    value:
+      - {hcpcs: J9271, short_description: Inj pembrolizumab (assumed price), dosage: 1 MG, payment_limit_usd: 60.0, therapeutic_area: oncology}
+      - {hcpcs: J9299, short_description: Injection nivolumab (assumed price), dosage: 1 MG, payment_limit_usd: 33.0, therapeutic_area: oncology}
+      - {hcpcs: J9035, short_description: Bevacizumab injection (assumed price), dosage: 10 MG, payment_limit_usd: 70.0, therapeutic_area: oncology}
+      - {hcpcs: J9312, short_description: Rituximab injection (assumed price), dosage: 10 MG, payment_limit_usd: 70.0, therapeutic_area: oncology}
+      - {hcpcs: J1745, short_description: Infliximab injection (assumed price), dosage: 10 MG, payment_limit_usd: 30.0, therapeutic_area: immunology}
+      - {hcpcs: J3380, short_description: Vedolizumab injection (assumed price), dosage: 1 MG, payment_limit_usd: 20.0, therapeutic_area: immunology}
+      - {hcpcs: J2350, short_description: Ocrelizumab injection (assumed price), dosage: 1 MG, payment_limit_usd: 60.0, therapeutic_area: neurology}
+      - {hcpcs: J0178, short_description: Aflibercept injection (assumed price), dosage: 1 MG, payment_limit_usd: 700.0, therapeutic_area: ophthalmology}
+      - {hcpcs: J2778, short_description: Ranibizumab injection (assumed price), dosage: 0.1 MG, payment_limit_usd: 25.0, therapeutic_area: ophthalmology}
+    source_class: financial_assumption
+    source: Assumed fallback list; overridden by CMS Part B payment limits when config/public_calibration.yaml is present.
+    retrieved: '2026-11-16'
+  dose_units:
+    value: {J9271: 200, J9299: 240, J9035: 40, J9355: 45, J9312: 70, J9145: 120, J9022: 120, J9306: 420,
+            J9354: 270, J9358: 405, J9228: 75, J9047: 106, J1745: 40, J3380: 300, J0129: 75, J3262: 600,
+            J2357: 60, J2350: 600, J2323: 300, J0178: 2, J2778: 5, J2777: 60, J0897: 60, J1569: 60, J1303: 300}
+    source_class: financial_assumption
+    source: Approximate typical adult dose per administration in HCPCS billing units, from general prescribing practice; not verified per indication. Codes not listed get units such that one dose costs about $5,000 at reference price.
+    retrieved: '2026-11-16'
+  area_weights:
+    value: {oncology: 0.55, immunology: 0.20, neurology: 0.07, bone health: 0.06, immune globulin: 0.06, hematology: 0.06, ophthalmology: 1.0}
+    source_class: financial_assumption
+    source: Assumption. Relative frequency of drug areas within the infusion service line (ophthalmology drugs are used only by the ophthalmology line).
+    retrieved: '2026-11-16'
+  acquisition_cost_ratio_range:
+    value: [0.84, 1.06]
+    source_class: financial_assumption
+    source: Assumption. Wholesaler price per billing unit = reference price x a per-drug ratio drawn in this range (the reference price is ASP + 6%, so ratios near 0.94 mean paying about ASP).
+    retrieved: '2026-11-16'
+  acquisition_price_increase_2025:
+    value: 0.03
+    source_class: financial_assumption
+    source: Assumption. Wholesaler price increase from 2025-01-01.
+    retrieved: '2026-11-16'
+  dose_variation:
+    value: 0.15
+    source_class: financial_assumption
+    source: Assumption. Weight-based dose variation, uniform in [1-x, 1+x], for doses above 10 units.
+    retrieved: '2026-11-16'
+  inventory_policy:
+    value: {review_interval_days: 14, cover_days: 28, overstock_range: [1.0, 2.6], shelf_life_days_range: [60, 400]}
+    source_class: financial_assumption
+    source: Assumption. Periodic review every 14 days, order up to cover_days of expected use times a per-drug overstock factor; shelf life per drug drawn in range.
+    retrieved: '2026-11-16'
+
+financial_assumptions:
+  # Read by downstream models through recon_engine.datagen.calibration.model_config().
+  discount_rate:
+    value: 0.040
+    source_class: financial_assumption
+    source: Assumption, used only when public SOFR is unavailable. Annual rate for discounting and value of float.
+    retrieved: '2026-11-16'
+  appeal_handling_cost_usd:
+    value: 45.0
+    source_class: financial_assumption
+    source: Assumption. Fully loaded staff cost to work one denial appeal.
+    retrieved: '2026-11-16'
+  appeal_handling_minutes:
+    value: 35
+    source_class: financial_assumption
+    source: Assumption. Staff minutes to prepare one appeal.
+    retrieved: '2026-11-16'
+  denial_staff_hours_per_day:
+    value: 24
+    source_class: financial_assumption
+    source: Assumption. Total denial-team hours available per working day (three staff).
+    retrieved: '2026-11-16'
+  advance_rate:
+    value: 0.85
+    source_class: financial_assumption
+    source: Assumption. Lender advance rate on eligible receivables.
+    retrieved: '2026-11-16'
+  eligibility_max_age_days:
+    value: 120
+    source_class: financial_assumption
+    source: Assumption. Receivables older than this are ineligible for the borrowing base.
+    retrieved: '2026-11-16'
+  prompt_pay_window_days:
+    value: 30
+    source_class: financial_assumption
+    source: Assumption for the economics module (Q7). Days after which a clean claim counts as paid late; state prompt-pay laws differ, this is illustrative.
+    retrieved: '2026-11-21'
+  underpayment_shortfall_tolerance_usd:
+    value: 0.01
+    source_class: financial_assumption
+    source: Assumption for the economics module (Q7). Smallest shortfall versus contract counted as an underpayment in its analysis (the reconciliation exception uses rule UP10's own tolerance).
+    retrieved: '2026-11-21'
+  dispute_win_rate:
+    value: 0.90
+    source_class: financial_assumption
+    source: Assumption for the economics module (Q7). Probability that a documented contract-rate dispute is won; not measured.
+    retrieved: '2026-11-21'
+  prompt_pay_interest_rate_annual:
+    value: 0.12
+    source_class: financial_assumption
+    source: Assumption for the economics module (Q7). Illustrative statutory late-payment interest rate per year; real rates vary by state and payer type.
+    retrieved: '2026-11-21'
+  contract_renewal_discount_factor:
+    value: 0.90
+    source_class: financial_assumption
+    source: Assumption for the economics module (Q7). Per-period discount factor in the repeated-game reading of payer behaviour across contract renewals.
+    retrieved: '2026-11-21'
+  concentration_limit:
+    value: 0.30
+    source_class: financial_assumption
+    source: Assumption. Maximum share of the eligible base from a single payer.
+    retrieved: '2026-11-16'
+  cash_need_factor:
+    value: 0.95
+    source_class: financial_assumption
+    source: Assumption for the cash model (Q3). Weekly cash need = factor x median weekly payer receipts of the trailing 26 weeks (5% operating margin on the collection account; payroll is not in the simulated statement).
+    retrieved: '2026-11-22'
+  minimum_operating_balance_usd:
+    value: 1000000
+    source_class: financial_assumption
+    source: Assumption for the cash model (Q3). Balance the treasurer will not go below; shortfall = funding needed to stay above it.
+    retrieved: '2026-11-22'
+  facility_spread:
+    value: 0.0275
+    source_class: financial_assumption
+    source: Assumption for the credit model (Q5). Margin over SOFR on the receivables facility; not a market quote.
+    retrieved: '2026-11-22'
+  cross_age_pct:
+    value: 0.50
+    source_class: financial_assumption
+    source: Assumption for the credit model (Q5). If more than this share of a payer's net collectible value is past the age limit, all its receivables are ineligible.
+    retrieved: '2026-11-22'

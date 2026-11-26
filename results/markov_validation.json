@@ -1,0 +1,233 @@
+{
+  "label_note": "Comparison of estimates with parameters planted in the simulation (evaluation only).",
+  "tolerance": "each cell |error| / sqrt(p(1-p)/n_row) <= 4 (about a Bonferroni bound over 35 cells x 6 payers); planted P(PAID) inside the 95% claim-level bootstrap interval for most payers",
+  "maturity_180_days": {
+    "value": {
+      "per_payer": {
+        "P01": {
+          "max_abs_error": 0.0132,
+          "max_abs_error_cell": "APPEALED->DENIED",
+          "mean_abs_error_nonzero_cells": 0.0048,
+          "max_z": 0.66,
+          "rows_using_pooled": [],
+          "p_paid_from_submitted_est": 0.9259,
+          "p_paid_planted_mean_over_claims": 0.926645,
+          "p_paid_implied_by_planted_population_matrix": 0.9266,
+          "p_paid_abs_error_vs_mean_over_claims": 0.0007,
+          "bootstrap_95": [
+            0.9197,
+            0.9316
+          ],
+          "planted_in_bootstrap_95": true,
+          "expected_visits_max_abs_error": 0.0025
+        },
+        "P02": {
+          "max_abs_error": 0.0106,
+          "max_abs_error_cell": "DENIED->WRITTEN_OFF",
+          "mean_abs_error_nonzero_cells": 0.0046,
+          "max_z": 1.75,
+          "rows_using_pooled": [],
+          "p_paid_from_submitted_est": 0.9052,
+          "p_paid_planted_mean_over_claims": 0.904559,
+          "p_paid_implied_by_planted_population_matrix": 0.9046,
+          "p_paid_abs_error_vs_mean_over_claims": 0.0007,
+          "bootstrap_95": [
+            0.8969,
+            0.9122
+          ],
+          "planted_in_bootstrap_95": true,
+          "expected_visits_max_abs_error": 0.0104
+        },
+        "P03": {
+          "max_abs_error": 0.0364,
+          "max_abs_error_cell": "DENIED->APPEALED",
+          "mean_abs_error_nonzero_cells": 0.0133,
+          "max_z": 2.91,
+          "rows_using_pooled": [],
+          "p_paid_from_submitted_est": 0.857,
+          "p_paid_planted_mean_over_claims": 0.863518,
+          "p_paid_implied_by_planted_population_matrix": 0.8635,
+          "p_paid_abs_error_vs_mean_over_claims": 0.0065,
+          "bootstrap_95": [
+            0.8455,
+            0.8689
+          ],
+          "planted_in_bootstrap_95": true,
+          "expected_visits_max_abs_error": 0.0266
+        },
+        "P04": {
+          "max_abs_error": 0.0576,
+          "max_abs_error_cell": "APPEALED->PAID",
+          "mean_abs_error_nonzero_cells": 0.0124,
+          "max_z": 1.16,
+          "rows_using_pooled": [],
+          "p_paid_from_submitted_est": 0.9425,
+          "p_paid_planted_mean_over_claims": 0.941788,
+          "p_paid_implied_by_planted_population_matrix": 0.9418,
+          "p_paid_abs_error_vs_mean_over_claims": 0.0007,
+          "bootstrap_95": [
+            0.9364,
+            0.9487
+          ],
+          "planted_in_bootstrap_95": true,
+          "expected_visits_max_abs_error": 0.0019
+        },
+        "P05": {
+          "max_abs_error": 0.0169,
+          "max_abs_error_cell": "PENDED->IN_REVIEW",
+          "mean_abs_error_nonzero_cells": 0.0086,
+          "max_z": 0.95,
+          "rows_using_pooled": [],
+          "p_paid_from_submitted_est": 0.897,
+          "p_paid_planted_mean_over_claims": 0.895819,
+          "p_paid_implied_by_planted_population_matrix": 0.8958,
+          "p_paid_abs_error_vs_mean_over_claims": 0.0011,
+          "bootstrap_95": [
+            0.8851,
+            0.9067
+          ],
+          "planted_in_bootstrap_95": true,
+          "expected_visits_max_abs_error": 0.0105
+        },
+        "P06": {
+          "max_abs_error": 0.0346,
+          "max_abs_error_cell": "DENIED->WRITTEN_OFF",
+          "mean_abs_error_nonzero_cells": 0.0103,
+          "max_z": 2.3,
+          "rows_using_pooled": [
+            "PENDED"
+          ],
+          "p_paid_from_submitted_est": 0.9211,
+          "p_paid_planted_mean_over_claims": 0.914006,
+          "p_paid_implied_by_planted_population_matrix": 0.914,
+          "p_paid_abs_error_vs_mean_over_claims": 0.0071,
+          "bootstrap_95": [
+            0.9073,
+            0.9345
+          ],
+          "planted_in_bootstrap_95": true,
+          "expected_visits_max_abs_error": 0.0127
+        }
+      },
+      "max_abs_error_all_payers": 0.0576,
+      "max_z_all_payers": 2.91,
+      "n_planted_in_bootstrap_95": 6,
+      "n_payers": 6
+    },
+    "label": "model_estimate"
+  },
+  "figure": "figures/markov_recovery.png",
+  "maturity_0_days": {
+    "value": {
+      "per_payer": {
+        "P01": {
+          "max_abs_error": 0.0153,
+          "max_abs_error_cell": "DENIED->WRITTEN_OFF",
+          "mean_abs_error_nonzero_cells": 0.0063,
+          "max_z": 1.17,
+          "rows_using_pooled": [],
+          "p_paid_from_submitted_est": 0.9286,
+          "p_paid_planted_mean_over_claims": 0.926645,
+          "p_paid_implied_by_planted_population_matrix": 0.9266,
+          "p_paid_abs_error_vs_mean_over_claims": 0.002,
+          "bootstrap_95": [
+            0.9235,
+            0.9333
+          ],
+          "planted_in_bootstrap_95": true,
+          "expected_visits_max_abs_error": 0.0016
+        },
+        "P02": {
+          "max_abs_error": 0.0092,
+          "max_abs_error_cell": "PENDED->WRITTEN_OFF",
+          "mean_abs_error_nonzero_cells": 0.0045,
+          "max_z": 1.73,
+          "rows_using_pooled": [],
+          "p_paid_from_submitted_est": 0.9072,
+          "p_paid_planted_mean_over_claims": 0.904559,
+          "p_paid_implied_by_planted_population_matrix": 0.9046,
+          "p_paid_abs_error_vs_mean_over_claims": 0.0026,
+          "bootstrap_95": [
+            0.9007,
+            0.9138
+          ],
+          "planted_in_bootstrap_95": true,
+          "expected_visits_max_abs_error": 0.0074
+        },
+        "P03": {
+          "max_abs_error": 0.0368,
+          "max_abs_error_cell": "DENIED->APPEALED",
+          "mean_abs_error_nonzero_cells": 0.0136,
+          "max_z": 3.24,
+          "rows_using_pooled": [],
+          "p_paid_from_submitted_est": 0.8612,
+          "p_paid_planted_mean_over_claims": 0.863518,
+          "p_paid_implied_by_planted_population_matrix": 0.8635,
+          "p_paid_abs_error_vs_mean_over_claims": 0.0023,
+          "bootstrap_95": [
+            0.8516,
+            0.8701
+          ],
+          "planted_in_bootstrap_95": true,
+          "expected_visits_max_abs_error": 0.026
+        },
+        "P04": {
+          "max_abs_error": 0.0722,
+          "max_abs_error_cell": "APPEALED->PAID",
+          "mean_abs_error_nonzero_cells": 0.0139,
+          "max_z": 1.6,
+          "rows_using_pooled": [],
+          "p_paid_from_submitted_est": 0.9419,
+          "p_paid_planted_mean_over_claims": 0.941788,
+          "p_paid_implied_by_planted_population_matrix": 0.9418,
+          "p_paid_abs_error_vs_mean_over_claims": 0.0001,
+          "bootstrap_95": [
+            0.9346,
+            0.9486
+          ],
+          "planted_in_bootstrap_95": true,
+          "expected_visits_max_abs_error": 0.0007
+        },
+        "P05": {
+          "max_abs_error": 0.0271,
+          "max_abs_error_cell": "DENIED->WRITTEN_OFF",
+          "mean_abs_error_nonzero_cells": 0.0128,
+          "max_z": 1.55,
+          "rows_using_pooled": [],
+          "p_paid_from_submitted_est": 0.9001,
+          "p_paid_planted_mean_over_claims": 0.895819,
+          "p_paid_implied_by_planted_population_matrix": 0.8958,
+          "p_paid_abs_error_vs_mean_over_claims": 0.0043,
+          "bootstrap_95": [
+            0.8905,
+            0.9104
+          ],
+          "planted_in_bootstrap_95": true,
+          "expected_visits_max_abs_error": 0.0105
+        },
+        "P06": {
+          "max_abs_error": 0.0284,
+          "max_abs_error_cell": "PENDED->IN_REVIEW",
+          "mean_abs_error_nonzero_cells": 0.0131,
+          "max_z": 2.8,
+          "rows_using_pooled": [],
+          "p_paid_from_submitted_est": 0.9214,
+          "p_paid_planted_mean_over_claims": 0.914006,
+          "p_paid_implied_by_planted_population_matrix": 0.914,
+          "p_paid_abs_error_vs_mean_over_claims": 0.0074,
+          "bootstrap_95": [
+            0.9086,
+            0.9344
+          ],
+          "planted_in_bootstrap_95": true,
+          "expected_visits_max_abs_error": 0.0145
+        }
+      },
+      "max_abs_error_all_payers": 0.0722,
+      "max_z_all_payers": 3.24,
+      "n_planted_in_bootstrap_95": 6,
+      "n_payers": 6
+    },
+    "label": "model_estimate"
+  }
+}

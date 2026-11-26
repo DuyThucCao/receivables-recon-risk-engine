@@ -1,0 +1,1571 @@
+{
+  "module": "recon_engine.models.markov",
+  "question": "Shared building block: life cycle of a claim as an absorbing Markov chain (feeds Q3, Q4, Q5).",
+  "label_note": "Simulated data for a fictional hospital. Numbers show parameter recovery and decision logic only.",
+  "inputs": {
+    "tables": [
+      "core.fact_claim_event",
+      "core.fact_claim_line",
+      "core.fact_remit_line",
+      "recon.claim_remit_match",
+      "recon.remit_duplicate"
+    ],
+    "sql": "sql/models/40_chain.sql",
+    "cutoff": "2026-03-31",
+    "as_of_date": "2026-03-31",
+    "min_row_count": 50,
+    "maturity_days": 180,
+    "n_boot": 500
+  },
+  "seed": 20260331,
+  "cutoff": "2026-03-31",
+  "states": [
+    "SUBMITTED",
+    "IN_REVIEW",
+    "PENDED",
+    "DENIED",
+    "APPEALED",
+    "PAID",
+    "WRITTEN_OFF"
+  ],
+  "transition_notes": {
+    "value": {
+      "n_events": 104274,
+      "n_claims": 30058,
+      "dropped_after_absorbing": 0,
+      "dropped_self_repeat": 0,
+      "dropped_unknown_state": 0,
+      "dropped_immature_exits": 9838,
+      "censored_mature_visits": 1,
+      "n_transitions": 64378,
+      "maturity_days_used": 180
+    },
+    "label": "synthetic_record"
+  },
+  "per_payer": {
+    "ALL": {
+      "matrix": {
+        "value": {
+          "SUBMITTED": {
+            "SUBMITTED": 0.0,
+            "IN_REVIEW": 0.9997,
+            "PENDED": 0.0,
+            "DENIED": 0.0,
+            "APPEALED": 0.0,
+            "PAID": 0.0002,
+            "WRITTEN_OFF": 0.0
+          },
+          "IN_REVIEW": {
+            "SUBMITTED": 0.0,
+            "IN_REVIEW": 0.0,
+            "PENDED": 0.0605,
+            "DENIED": 0.1621,
+            "APPEALED": 0.0,
+            "PAID": 0.7774,
+            "WRITTEN_OFF": 0.0
+          },
+          "PENDED": {
+            "SUBMITTED": 0.0,
+            "IN_REVIEW": 0.9466,
+            "PENDED": 0.0,
+            "DENIED": 0.0,
+            "APPEALED": 0.0,
+            "PAID": 0.0,
+            "WRITTEN_OFF": 0.0534
+          },
+          "DENIED": {
+            "SUBMITTED": 0.0,
+            "IN_REVIEW": 0.317,
+            "PENDED": 0.0,
+            "DENIED": 0.0,
+            "APPEALED": 0.2886,
+            "PAID": 0.0,
+            "WRITTEN_OFF": 0.3944
+          },
+          "APPEALED": {
+            "SUBMITTED": 0.0,
+            "IN_REVIEW": 0.0,
+            "PENDED": 0.0,
+            "DENIED": 0.5775,
+            "APPEALED": 0.0,
+            "PAID": 0.4225,
+            "WRITTEN_OFF": 0.0
+          }
+        },
+        "label": "model_estimate"
+      },
+      "exits_observed_by_state": {
+        "value": {
+          "SUBMITTED": 26342,
+          "IN_REVIEW": 29488,
+          "PENDED": 1742,
+          "DENIED": 5360,
+          "APPEALED": 1446
+        },
+        "label": "synthetic_record"
+      },
+      "rows_using_pooled": [],
+      "fundamental_matrix_N": {
+        "value": {
+          "SUBMITTED": {
+            "SUBMITTED": 1.0,
+            "IN_REVIEW": 1.1347,
+            "PENDED": 0.0687,
+            "DENIED": 0.2208,
+            "APPEALED": 0.0637
+          },
+          "IN_REVIEW": {
+            "SUBMITTED": 0.0,
+            "IN_REVIEW": 1.135,
+            "PENDED": 0.0687,
+            "DENIED": 0.2208,
+            "APPEALED": 0.0637
+          },
+          "PENDED": {
+            "SUBMITTED": 0.0,
+            "IN_REVIEW": 1.0744,
+            "PENDED": 1.065,
+            "DENIED": 0.209,
+            "APPEALED": 0.0603
+          },
+          "DENIED": {
+            "SUBMITTED": 0.0,
+            "IN_REVIEW": 0.4317,
+            "PENDED": 0.0261,
+            "DENIED": 1.284,
+            "APPEALED": 0.3706
+          },
+          "APPEALED": {
+            "SUBMITTED": 0.0,
+            "IN_REVIEW": 0.2493,
+            "PENDED": 0.0151,
+            "DENIED": 0.7414,
+            "APPEALED": 1.214
+          }
+        },
+        "label": "model_estimate"
+      },
+      "absorption_B": {
+        "value": {
+          "SUBMITTED": {
+            "PAID": 0.9093,
+            "WRITTEN_OFF": 0.0907
+          },
+          "IN_REVIEW": {
+            "PAID": 0.9093,
+            "WRITTEN_OFF": 0.0907
+          },
+          "PENDED": {
+            "PAID": 0.8607,
+            "WRITTEN_OFF": 0.1393
+          },
+          "DENIED": {
+            "PAID": 0.4922,
+            "WRITTEN_OFF": 0.5078
+          },
+          "APPEALED": {
+            "PAID": 0.7068,
+            "WRITTEN_OFF": 0.2932
+          }
+        },
+        "label": "model_estimate"
+      },
+      "expected_transitions_to_absorption": {
+        "value": {
+          "SUBMITTED": 2.488,
+          "IN_REVIEW": 1.488,
+          "PENDED": 2.409,
+          "DENIED": 2.112,
+          "APPEALED": 2.22
+        },
+        "label": "model_estimate"
+      },
+      "sd_transitions_to_absorption": {
+        "value": {
+          "SUBMITTED": 1.106,
+          "IN_REVIEW": 1.105,
+          "PENDED": 1.126,
+          "DENIED": 1.381,
+          "APPEALED": 1.48
+        },
+        "label": "model_estimate"
+      },
+      "p_paid_from_submitted": {
+        "value": 0.9093,
+        "label": "model_estimate"
+      },
+      "p_paid_from_submitted_95": {
+        "value": [
+          0.9056,
+          0.9126
+        ],
+        "label": "model_estimate",
+        "note": "claim-level bootstrap percentile interval"
+      }
+    },
+    "P01": {
+      "matrix": {
+        "value": {
+          "SUBMITTED": {
+            "SUBMITTED": 0.0,
+            "IN_REVIEW": 0.9997,
+            "PENDED": 0.0,
+            "DENIED": 0.0001,
+            "APPEALED": 0.0,
+            "PAID": 0.0001,
+            "WRITTEN_OFF": 0.0
+          },
+          "IN_REVIEW": {
+            "SUBMITTED": 0.0,
+            "IN_REVIEW": 0.0,
+            "PENDED": 0.0506,
+            "DENIED": 0.1378,
+            "APPEALED": 0.0,
+            "PAID": 0.8116,
+            "WRITTEN_OFF": 0.0
+          },
+          "PENDED": {
+            "SUBMITTED": 0.0,
+            "IN_REVIEW": 0.9464,
+            "PENDED": 0.0,
+            "DENIED": 0.0,
+            "APPEALED": 0.0,
+            "PAID": 0.0,
+            "WRITTEN_OFF": 0.0536
+          },
+          "DENIED": {
+            "SUBMITTED": 0.0,
+            "IN_REVIEW": 0.3264,
+            "PENDED": 0.0,
+            "DENIED": 0.0,
+            "APPEALED": 0.2759,
+            "PAID": 0.0,
+            "WRITTEN_OFF": 0.3977
+          },
+          "APPEALED": {
+            "SUBMITTED": 0.0,
+            "IN_REVIEW": 0.0,
+            "PENDED": 0.0,
+            "DENIED": 0.5159,
+            "APPEALED": 0.0,
+            "PAID": 0.4841,
+            "WRITTEN_OFF": 0.0
+          }
+        },
+        "label": "model_estimate"
+      },
+      "exits_observed_by_state": {
+        "value": {
+          "SUBMITTED": 7116,
+          "IN_REVIEW": 7831,
+          "PENDED": 392,
+          "DENIED": 1207,
+          "APPEALED": 314
+        },
+        "label": "synthetic_record"
+      },
+      "rows_using_pooled": [],
+      "fundamental_matrix_N": {
+        "value": {
+          "SUBMITTED": {
+            "SUBMITTED": 1.0,
+            "IN_REVIEW": 1.1112,
+            "PENDED": 0.0562,
+            "DENIED": 0.1787,
+            "APPEALED": 0.0493
+          },
+          "IN_REVIEW": {
+            "SUBMITTED": 0.0,
+            "IN_REVIEW": 1.1115,
+            "PENDED": 0.0562,
+            "DENIED": 0.1786,
+            "APPEALED": 0.0493
+          },
+          "PENDED": {
+            "SUBMITTED": 0.0,
+            "IN_REVIEW": 1.0519,
+            "PENDED": 1.0532,
+            "DENIED": 0.169,
+            "APPEALED": 0.0466
+          },
+          "DENIED": {
+            "SUBMITTED": 0.0,
+            "IN_REVIEW": 0.423,
+            "PENDED": 0.0214,
+            "DENIED": 1.2339,
+            "APPEALED": 0.3404
+          },
+          "APPEALED": {
+            "SUBMITTED": 0.0,
+            "IN_REVIEW": 0.2183,
+            "PENDED": 0.011,
+            "DENIED": 0.6366,
+            "APPEALED": 1.1756
+          }
+        },
+        "label": "model_estimate"
+      },
+      "absorption_B": {
+        "value": {
+          "SUBMITTED": {
+            "PAID": 0.9259,
+            "WRITTEN_OFF": 0.0741
+          },
+          "IN_REVIEW": {
+            "PAID": 0.926,
+            "WRITTEN_OFF": 0.074
+          },
+          "PENDED": {
+            "PAID": 0.8764,
+            "WRITTEN_OFF": 0.1236
+          },
+          "DENIED": {
+            "PAID": 0.5081,
+            "WRITTEN_OFF": 0.4919
+          },
+          "APPEALED": {
+            "PAID": 0.7462,
+            "WRITTEN_OFF": 0.2538
+          }
+        },
+        "label": "model_estimate"
+      },
+      "expected_transitions_to_absorption": {
+        "value": {
+          "SUBMITTED": 2.395,
+          "IN_REVIEW": 1.396,
+          "PENDED": 2.321,
+          "DENIED": 2.019,
+          "APPEALED": 2.042
+        },
+        "label": "model_estimate"
+      },
+      "sd_transitions_to_absorption": {
+        "value": {
+          "SUBMITTED": 0.971,
+          "IN_REVIEW": 0.971,
+          "PENDED": 0.995,
+          "DENIED": 1.248,
+          "APPEALED": 1.35
+        },
+        "label": "model_estimate"
+      },
+      "p_paid_from_submitted": {
+        "value": 0.9259,
+        "label": "model_estimate"
+      },
+      "p_paid_from_submitted_95": {
+        "value": [
+          0.9197,
+          0.9316
+        ],
+        "label": "model_estimate",
+        "note": "claim-level bootstrap percentile interval"
+      }
+    },
+    "P02": {
+      "matrix": {
+        "value": {
+          "SUBMITTED": {
+            "SUBMITTED": 0.0,
+            "IN_REVIEW": 0.9998,
+            "PENDED": 0.0,
+            "DENIED": 0.0,
+            "APPEALED": 0.0,
+            "PAID": 0.0002,
+            "WRITTEN_OFF": 0.0
+          },
+          "IN_REVIEW": {
+            "SUBMITTED": 0.0,
+            "IN_REVIEW": 0.0,
+            "PENDED": 0.0549,
+            "DENIED": 0.1679,
+            "APPEALED": 0.0,
+            "PAID": 0.7772,
+            "WRITTEN_OFF": 0.0
+          },
+          "PENDED": {
+            "SUBMITTED": 0.0,
+            "IN_REVIEW": 0.9471,
+            "PENDED": 0.0,
+            "DENIED": 0.0,
+            "APPEALED": 0.0,
+            "PAID": 0.0,
+            "WRITTEN_OFF": 0.0529
+          },
+          "DENIED": {
+            "SUBMITTED": 0.0,
+            "IN_REVIEW": 0.3247,
+            "PENDED": 0.0,
+            "DENIED": 0.0,
+            "APPEALED": 0.2641,
+            "PAID": 0.0,
+            "WRITTEN_OFF": 0.4111
+          },
+          "APPEALED": {
+            "SUBMITTED": 0.0,
+            "IN_REVIEW": 0.0,
+            "PENDED": 0.0,
+            "DENIED": 0.5559,
+            "APPEALED": 0.0,
+            "PAID": 0.4441,
+            "WRITTEN_OFF": 0.0
+          }
+        },
+        "label": "model_estimate"
+      },
+      "exits_observed_by_state": {
+        "value": {
+          "SUBMITTED": 5929,
+          "IN_REVIEW": 6630,
+          "PENDED": 359,
+          "DENIED": 1238,
+          "APPEALED": 304
+        },
+        "label": "synthetic_record"
+      },
+      "rows_using_pooled": [],
+      "fundamental_matrix_N": {
+        "value": {
+          "SUBMITTED": {
+            "SUBMITTED": 1.0,
+            "IN_REVIEW": 1.1309,
+            "PENDED": 0.0621,
+            "DENIED": 0.2225,
+            "APPEALED": 0.0588
+          },
+          "IN_REVIEW": {
+            "SUBMITTED": 0.0,
+            "IN_REVIEW": 1.1311,
+            "PENDED": 0.0621,
+            "DENIED": 0.2226,
+            "APPEALED": 0.0588
+          },
+          "PENDED": {
+            "SUBMITTED": 0.0,
+            "IN_REVIEW": 1.0712,
+            "PENDED": 1.0588,
+            "DENIED": 0.2108,
+            "APPEALED": 0.0557
+          },
+          "DENIED": {
+            "SUBMITTED": 0.0,
+            "IN_REVIEW": 0.4305,
+            "PENDED": 0.0236,
+            "DENIED": 1.2568,
+            "APPEALED": 0.332
+          },
+          "APPEALED": {
+            "SUBMITTED": 0.0,
+            "IN_REVIEW": 0.2393,
+            "PENDED": 0.0131,
+            "DENIED": 0.6987,
+            "APPEALED": 1.1845
+          }
+        },
+        "label": "model_estimate"
+      },
+      "absorption_B": {
+        "value": {
+          "SUBMITTED": {
+            "PAID": 0.9052,
+            "WRITTEN_OFF": 0.0948
+          },
+          "IN_REVIEW": {
+            "PAID": 0.9052,
+            "WRITTEN_OFF": 0.0948
+          },
+          "PENDED": {
+            "PAID": 0.8573,
+            "WRITTEN_OFF": 0.1427
+          },
+          "DENIED": {
+            "PAID": 0.482,
+            "WRITTEN_OFF": 0.518
+          },
+          "APPEALED": {
+            "PAID": 0.712,
+            "WRITTEN_OFF": 0.288
+          }
+        },
+        "label": "model_estimate"
+      },
+      "expected_transitions_to_absorption": {
+        "value": {
+          "SUBMITTED": 2.474,
+          "IN_REVIEW": 1.475,
+          "PENDED": 2.396,
+          "DENIED": 2.043,
+          "APPEALED": 2.136
+        },
+        "label": "model_estimate"
+      },
+      "sd_transitions_to_absorption": {
+        "value": {
+          "SUBMITTED": 1.07,
+          "IN_REVIEW": 1.07,
+          "PENDED": 1.092,
+          "DENIED": 1.311,
+          "APPEALED": 1.409
+        },
+        "label": "model_estimate"
+      },
+      "p_paid_from_submitted": {
+        "value": 0.9052,
+        "label": "model_estimate"
+      },
+      "p_paid_from_submitted_95": {
+        "value": [
+          0.8969,
+          0.9122
+        ],
+        "label": "model_estimate",
+        "note": "claim-level bootstrap percentile interval"
+      }
+    },
+    "P03": {
+      "matrix": {
+        "value": {
+          "SUBMITTED": {
+            "SUBMITTED": 0.0,
+            "IN_REVIEW": 0.9998,
+            "PENDED": 0.0,
+            "DENIED": 0.0,
+            "APPEALED": 0.0,
+            "PAID": 0.0002,
+            "WRITTEN_OFF": 0.0
+          },
+          "IN_REVIEW": {
+            "SUBMITTED": 0.0,
+            "IN_REVIEW": 0.0,
+            "PENDED": 0.0882,
+            "DENIED": 0.2305,
+            "APPEALED": 0.0,
+            "PAID": 0.6813,
+            "WRITTEN_OFF": 0.0
+          },
+          "PENDED": {
+            "SUBMITTED": 0.0,
+            "IN_REVIEW": 0.9395,
+            "PENDED": 0.0,
+            "DENIED": 0.0,
+            "APPEALED": 0.0,
+            "PAID": 0.0,
+            "WRITTEN_OFF": 0.0605
+          },
+          "DENIED": {
+            "SUBMITTED": 0.0,
+            "IN_REVIEW": 0.2541,
+            "PENDED": 0.0,
+            "DENIED": 0.0,
+            "APPEALED": 0.3649,
+            "PAID": 0.0,
+            "WRITTEN_OFF": 0.3811
+          },
+          "APPEALED": {
+            "SUBMITTED": 0.0,
+            "IN_REVIEW": 0.0,
+            "PENDED": 0.0,
+            "DENIED": 0.6452,
+            "APPEALED": 0.0,
+            "PAID": 0.3548,
+            "WRITTEN_OFF": 0.0
+          }
+        },
+        "label": "model_estimate"
+      },
+      "exits_observed_by_state": {
+        "value": {
+          "SUBMITTED": 4468,
+          "IN_REVIEW": 5202,
+          "PENDED": 446,
+          "DENIED": 1417,
+          "APPEALED": 482
+        },
+        "label": "synthetic_record"
+      },
+      "rows_using_pooled": [],
+      "fundamental_matrix_N": {
+        "value": {
+          "SUBMITTED": {
+            "SUBMITTED": 1.0,
+            "IN_REVIEW": 1.1895,
+            "PENDED": 0.105,
+            "DENIED": 0.3586,
+            "APPEALED": 0.1308
+          },
+          "IN_REVIEW": {
+            "SUBMITTED": 0.0,
+            "IN_REVIEW": 1.1897,
+            "PENDED": 0.105,
+            "DENIED": 0.3587,
+            "APPEALED": 0.1309
+          },
+          "PENDED": {
+            "SUBMITTED": 0.0,
+            "IN_REVIEW": 1.1177,
+            "PENDED": 1.0986,
+            "DENIED": 0.3369,
+            "APPEALED": 0.1229
+          },
+          "DENIED": {
+            "SUBMITTED": 0.0,
+            "IN_REVIEW": 0.3953,
+            "PENDED": 0.0349,
+            "DENIED": 1.4271,
+            "APPEALED": 0.5207
+          },
+          "APPEALED": {
+            "SUBMITTED": 0.0,
+            "IN_REVIEW": 0.2551,
+            "PENDED": 0.0225,
+            "DENIED": 0.9208,
+            "APPEALED": 1.336
+          }
+        },
+        "label": "model_estimate"
+      },
+      "absorption_B": {
+        "value": {
+          "SUBMITTED": {
+            "PAID": 0.857,
+            "WRITTEN_OFF": 0.143
+          },
+          "IN_REVIEW": {
+            "PAID": 0.857,
+            "WRITTEN_OFF": 0.143
+          },
+          "PENDED": {
+            "PAID": 0.8051,
+            "WRITTEN_OFF": 0.1949
+          },
+          "DENIED": {
+            "PAID": 0.454,
+            "WRITTEN_OFF": 0.546
+          },
+          "APPEALED": {
+            "PAID": 0.6477,
+            "WRITTEN_OFF": 0.3523
+          }
+        },
+        "label": "model_estimate"
+      },
+      "expected_transitions_to_absorption": {
+        "value": {
+          "SUBMITTED": 2.784,
+          "IN_REVIEW": 1.784,
+          "PENDED": 2.676,
+          "DENIED": 2.378,
+          "APPEALED": 2.534
+        },
+        "label": "model_estimate"
+      },
+      "sd_transitions_to_absorption": {
+        "value": {
+          "SUBMITTED": 1.486,
+          "IN_REVIEW": 1.486,
+          "PENDED": 1.502,
+          "DENIED": 1.729,
+          "APPEALED": 1.796
+        },
+        "label": "model_estimate"
+      },
+      "p_paid_from_submitted": {
+        "value": 0.857,
+        "label": "model_estimate"
+      },
+      "p_paid_from_submitted_95": {
+        "value": [
+          0.8455,
+          0.8689
+        ],
+        "label": "model_estimate",
+        "note": "claim-level bootstrap percentile interval"
+      }
+    },
+    "P04": {
+      "matrix": {
+        "value": {
+          "SUBMITTED": {
+            "SUBMITTED": 0.0,
+            "IN_REVIEW": 0.9996,
+            "PENDED": 0.0,
+            "DENIED": 0.0,
+            "APPEALED": 0.0,
+            "PAID": 0.0004,
+            "WRITTEN_OFF": 0.0
+          },
+          "IN_REVIEW": {
+            "SUBMITTED": 0.0,
+            "IN_REVIEW": 0.0,
+            "PENDED": 0.0715,
+            "DENIED": 0.1035,
+            "APPEALED": 0.0,
+            "PAID": 0.825,
+            "WRITTEN_OFF": 0.0
+          },
+          "PENDED": {
+            "SUBMITTED": 0.0,
+            "IN_REVIEW": 0.9486,
+            "PENDED": 0.0,
+            "DENIED": 0.0,
+            "APPEALED": 0.0,
+            "PAID": 0.0,
+            "WRITTEN_OFF": 0.0514
+          },
+          "DENIED": {
+            "SUBMITTED": 0.0,
+            "IN_REVIEW": 0.3934,
+            "PENDED": 0.0,
+            "DENIED": 0.0,
+            "APPEALED": 0.1949,
+            "PAID": 0.0,
+            "WRITTEN_OFF": 0.4118
+          },
+          "APPEALED": {
+            "SUBMITTED": 0.0,
+            "IN_REVIEW": 0.0,
+            "PENDED": 0.0,
+            "DENIED": 0.51,
+            "APPEALED": 0.0,
+            "PAID": 0.49,
+            "WRITTEN_OFF": 0.0
+          }
+        },
+        "label": "model_estimate"
+      },
+      "exits_observed_by_state": {
+        "value": {
+          "SUBMITTED": 4590,
+          "IN_REVIEW": 5091,
+          "PENDED": 350,
+          "DENIED": 544,
+          "APPEALED": 100
+        },
+        "label": "synthetic_record"
+      },
+      "rows_using_pooled": [],
+      "fundamental_matrix_N": {
+        "value": {
+          "SUBMITTED": {
+            "SUBMITTED": 1.0,
+            "IN_REVIEW": 1.127,
+            "PENDED": 0.0806,
+            "DENIED": 0.1295,
+            "APPEALED": 0.0252
+          },
+          "IN_REVIEW": {
+            "SUBMITTED": 0.0,
+            "IN_REVIEW": 1.1274,
+            "PENDED": 0.0806,
+            "DENIED": 0.1296,
+            "APPEALED": 0.0253
+          },
+          "PENDED": {
+            "SUBMITTED": 0.0,
+            "IN_REVIEW": 1.0695,
+            "PENDED": 1.0765,
+            "DENIED": 0.1229,
+            "APPEALED": 0.024
+          },
+          "DENIED": {
+            "SUBMITTED": 0.0,
+            "IN_REVIEW": 0.4925,
+            "PENDED": 0.0352,
+            "DENIED": 1.1669,
+            "APPEALED": 0.2274
+          },
+          "APPEALED": {
+            "SUBMITTED": 0.0,
+            "IN_REVIEW": 0.2512,
+            "PENDED": 0.018,
+            "DENIED": 0.5951,
+            "APPEALED": 1.116
+          }
+        },
+        "label": "model_estimate"
+      },
+      "absorption_B": {
+        "value": {
+          "SUBMITTED": {
+            "PAID": 0.9425,
+            "WRITTEN_OFF": 0.0575
+          },
+          "IN_REVIEW": {
+            "PAID": 0.9425,
+            "WRITTEN_OFF": 0.0575
+          },
+          "PENDED": {
+            "PAID": 0.894,
+            "WRITTEN_OFF": 0.106
+          },
+          "DENIED": {
+            "PAID": 0.5177,
+            "WRITTEN_OFF": 0.4823
+          },
+          "APPEALED": {
+            "PAID": 0.754,
+            "WRITTEN_OFF": 0.246
+          }
+        },
+        "label": "model_estimate"
+      },
+      "expected_transitions_to_absorption": {
+        "value": {
+          "SUBMITTED": 2.362,
+          "IN_REVIEW": 1.363,
+          "PENDED": 2.293,
+          "DENIED": 1.922,
+          "APPEALED": 1.98
+        },
+        "label": "model_estimate"
+      },
+      "sd_transitions_to_absorption": {
+        "value": {
+          "SUBMITTED": 0.906,
+          "IN_REVIEW": 0.906,
+          "PENDED": 0.932,
+          "DENIED": 1.129,
+          "APPEALED": 1.254
+        },
+        "label": "model_estimate"
+      },
+      "p_paid_from_submitted": {
+        "value": 0.9425,
+        "label": "model_estimate"
+      },
+      "p_paid_from_submitted_95": {
+        "value": [
+          0.9364,
+          0.9487
+        ],
+        "label": "model_estimate",
+        "note": "claim-level bootstrap percentile interval"
+      }
+    },
+    "P05": {
+      "matrix": {
+        "value": {
+          "SUBMITTED": {
+            "SUBMITTED": 0.0,
+            "IN_REVIEW": 0.9996,
+            "PENDED": 0.0,
+            "DENIED": 0.0,
+            "APPEALED": 0.0,
+            "PAID": 0.0004,
+            "WRITTEN_OFF": 0.0
+          },
+          "IN_REVIEW": {
+            "SUBMITTED": 0.0,
+            "IN_REVIEW": 0.0,
+            "PENDED": 0.0499,
+            "DENIED": 0.1952,
+            "APPEALED": 0.0,
+            "PAID": 0.7548,
+            "WRITTEN_OFF": 0.0
+          },
+          "PENDED": {
+            "SUBMITTED": 0.0,
+            "IN_REVIEW": 0.9669,
+            "PENDED": 0.0,
+            "DENIED": 0.0,
+            "APPEALED": 0.0,
+            "PAID": 0.0,
+            "WRITTEN_OFF": 0.0331
+          },
+          "DENIED": {
+            "SUBMITTED": 0.0,
+            "IN_REVIEW": 0.3478,
+            "PENDED": 0.0,
+            "DENIED": 0.0,
+            "APPEALED": 0.2684,
+            "PAID": 0.0,
+            "WRITTEN_OFF": 0.3838
+          },
+          "APPEALED": {
+            "SUBMITTED": 0.0,
+            "IN_REVIEW": 0.0,
+            "PENDED": 0.0,
+            "DENIED": 0.561,
+            "APPEALED": 0.0,
+            "PAID": 0.439,
+            "WRITTEN_OFF": 0.0
+          }
+        },
+        "label": "model_estimate"
+      },
+      "exits_observed_by_state": {
+        "value": {
+          "SUBMITTED": 2742,
+          "IN_REVIEW": 3104,
+          "PENDED": 151,
+          "DENIED": 667,
+          "APPEALED": 164
+        },
+        "label": "synthetic_record"
+      },
+      "rows_using_pooled": [],
+      "fundamental_matrix_N": {
+        "value": {
+          "SUBMITTED": {
+            "SUBMITTED": 1.0,
+            "IN_REVIEW": 1.1467,
+            "PENDED": 0.0573,
+            "DENIED": 0.2635,
+            "APPEALED": 0.0707
+          },
+          "IN_REVIEW": {
+            "SUBMITTED": 0.0,
+            "IN_REVIEW": 1.1471,
+            "PENDED": 0.0573,
+            "DENIED": 0.2636,
+            "APPEALED": 0.0708
+          },
+          "PENDED": {
+            "SUBMITTED": 0.0,
+            "IN_REVIEW": 1.1091,
+            "PENDED": 1.0554,
+            "DENIED": 0.2549,
+            "APPEALED": 0.0684
+          },
+          "DENIED": {
+            "SUBMITTED": 0.0,
+            "IN_REVIEW": 0.4697,
+            "PENDED": 0.0235,
+            "DENIED": 1.2852,
+            "APPEALED": 0.3449
+          },
+          "APPEALED": {
+            "SUBMITTED": 0.0,
+            "IN_REVIEW": 0.2635,
+            "PENDED": 0.0132,
+            "DENIED": 0.721,
+            "APPEALED": 1.1935
+          }
+        },
+        "label": "model_estimate"
+      },
+      "absorption_B": {
+        "value": {
+          "SUBMITTED": {
+            "PAID": 0.897,
+            "WRITTEN_OFF": 0.103
+          },
+          "IN_REVIEW": {
+            "PAID": 0.8969,
+            "WRITTEN_OFF": 0.1031
+          },
+          "PENDED": {
+            "PAID": 0.8672,
+            "WRITTEN_OFF": 0.1328
+          },
+          "DENIED": {
+            "PAID": 0.506,
+            "WRITTEN_OFF": 0.494
+          },
+          "APPEALED": {
+            "PAID": 0.7229,
+            "WRITTEN_OFF": 0.2771
+          }
+        },
+        "label": "model_estimate"
+      },
+      "expected_transitions_to_absorption": {
+        "value": {
+          "SUBMITTED": 2.538,
+          "IN_REVIEW": 1.539,
+          "PENDED": 2.488,
+          "DENIED": 2.123,
+          "APPEALED": 2.191
+        },
+        "label": "model_estimate"
+      },
+      "sd_transitions_to_absorption": {
+        "value": {
+          "SUBMITTED": 1.157,
+          "IN_REVIEW": 1.157,
+          "PENDED": 1.17,
+          "DENIED": 1.378,
+          "APPEALED": 1.475
+        },
+        "label": "model_estimate"
+      },
+      "p_paid_from_submitted": {
+        "value": 0.897,
+        "label": "model_estimate"
+      },
+      "p_paid_from_submitted_95": {
+        "value": [
+          0.8851,
+          0.9067
+        ],
+        "label": "model_estimate",
+        "note": "claim-level bootstrap percentile interval"
+      }
+    },
+    "P06": {
+      "matrix": {
+        "value": {
+          "SUBMITTED": {
+            "SUBMITTED": 0.0,
+            "IN_REVIEW": 1.0,
+            "PENDED": 0.0,
+            "DENIED": 0.0,
+            "APPEALED": 0.0,
+            "PAID": 0.0,
+            "WRITTEN_OFF": 0.0
+          },
+          "IN_REVIEW": {
+            "SUBMITTED": 0.0,
+            "IN_REVIEW": 0.0,
+            "PENDED": 0.0288,
+            "DENIED": 0.1571,
+            "APPEALED": 0.0,
+            "PAID": 0.8141,
+            "WRITTEN_OFF": 0.0
+          },
+          "PENDED": {
+            "SUBMITTED": 0.0,
+            "IN_REVIEW": 0.9466,
+            "PENDED": 0.0,
+            "DENIED": 0.0,
+            "APPEALED": 0.0,
+            "PAID": 0.0,
+            "WRITTEN_OFF": 0.0534
+          },
+          "DENIED": {
+            "SUBMITTED": 0.0,
+            "IN_REVIEW": 0.338,
+            "PENDED": 0.0,
+            "DENIED": 0.0,
+            "APPEALED": 0.2962,
+            "PAID": 0.0,
+            "WRITTEN_OFF": 0.3659
+          },
+          "APPEALED": {
+            "SUBMITTED": 0.0,
+            "IN_REVIEW": 0.0,
+            "PENDED": 0.0,
+            "DENIED": 0.6098,
+            "APPEALED": 0.0,
+            "PAID": 0.3902,
+            "WRITTEN_OFF": 0.0
+          }
+        },
+        "label": "model_estimate"
+      },
+      "exits_observed_by_state": {
+        "value": {
+          "SUBMITTED": 1497,
+          "IN_REVIEW": 1630,
+          "PENDED": 44,
+          "DENIED": 287,
+          "APPEALED": 82
+        },
+        "label": "synthetic_record"
+      },
+      "rows_using_pooled": [
+        "PENDED"
+      ],
+      "fundamental_matrix_N": {
+        "value": {
+          "SUBMITTED": {
+            "SUBMITTED": 1.0,
+            "IN_REVIEW": 1.1014,
+            "PENDED": 0.0318,
+            "DENIED": 0.2111,
+            "APPEALED": 0.0625
+          },
+          "IN_REVIEW": {
+            "SUBMITTED": 0.0,
+            "IN_REVIEW": 1.1014,
+            "PENDED": 0.0318,
+            "DENIED": 0.2111,
+            "APPEALED": 0.0625
+          },
+          "PENDED": {
+            "SUBMITTED": 0.0,
+            "IN_REVIEW": 1.0426,
+            "PENDED": 1.0301,
+            "DENIED": 0.1998,
+            "APPEALED": 0.0592
+          },
+          "DENIED": {
+            "SUBMITTED": 0.0,
+            "IN_REVIEW": 0.4543,
+            "PENDED": 0.0131,
+            "DENIED": 1.3075,
+            "APPEALED": 0.3872
+          },
+          "APPEALED": {
+            "SUBMITTED": 0.0,
+            "IN_REVIEW": 0.277,
+            "PENDED": 0.008,
+            "DENIED": 0.7972,
+            "APPEALED": 1.2361
+          }
+        },
+        "label": "model_estimate"
+      },
+      "absorption_B": {
+        "value": {
+          "SUBMITTED": {
+            "PAID": 0.9211,
+            "WRITTEN_OFF": 0.0789
+          },
+          "IN_REVIEW": {
+            "PAID": 0.9211,
+            "WRITTEN_OFF": 0.0789
+          },
+          "PENDED": {
+            "PAID": 0.8719,
+            "WRITTEN_OFF": 0.1281
+          },
+          "DENIED": {
+            "PAID": 0.521,
+            "WRITTEN_OFF": 0.479
+          },
+          "APPEALED": {
+            "PAID": 0.7079,
+            "WRITTEN_OFF": 0.2921
+          }
+        },
+        "label": "model_estimate"
+      },
+      "expected_transitions_to_absorption": {
+        "value": {
+          "SUBMITTED": 2.407,
+          "IN_REVIEW": 1.407,
+          "PENDED": 2.332,
+          "DENIED": 2.162,
+          "APPEALED": 2.318
+        },
+        "label": "model_estimate"
+      },
+      "sd_transitions_to_absorption": {
+        "value": {
+          "SUBMITTED": 1.031,
+          "IN_REVIEW": 1.031,
+          "PENDED": 1.052,
+          "DENIED": 1.397,
+          "APPEALED": 1.517
+        },
+        "label": "model_estimate"
+      },
+      "p_paid_from_submitted": {
+        "value": 0.9211,
+        "label": "model_estimate"
+      },
+      "p_paid_from_submitted_95": {
+        "value": [
+          0.9073,
+          0.9345
+        ],
+        "label": "model_estimate",
+        "note": "claim-level bootstrap percentile interval"
+      }
+    }
+  },
+  "holdout_calibration": {
+    "value": {
+      "fit_cutoff": "2025-06-30",
+      "eval_date": "2026-03-31",
+      "new_claim_window_days": 120,
+      "n_claims_in_holdout": 6960,
+      "n_still_open_at_eval": 98,
+      "brier_score_constant_rate": 0.1073,
+      "memoryless": {
+        "brier_score": 0.0855,
+        "overall": {
+          "n": 6862,
+          "predicted_p_paid": 0.8814,
+          "observed_p_paid": 0.8777,
+          "difference": -0.0036,
+          "z": -0.98
+        },
+        "by_group": {
+          "open_at_cutoff": {
+            "n": 2074,
+            "predicted_p_paid": 0.8175,
+            "observed_p_paid": 0.7797,
+            "difference": -0.0379,
+            "z": -4.92
+          },
+          "submitted_after_cutoff": {
+            "n": 4788,
+            "predicted_p_paid": 0.909,
+            "observed_p_paid": 0.9202,
+            "difference": 0.0112,
+            "z": 2.71
+          }
+        },
+        "by_state_at_cutoff": {
+          "APPEALED": {
+            "n": 143,
+            "predicted_p_paid": 0.725,
+            "observed_p_paid": 0.6503,
+            "difference": -0.0746,
+            "z": -2.01
+          },
+          "DENIED": {
+            "n": 393,
+            "predicted_p_paid": 0.5024,
+            "observed_p_paid": 0.2519,
+            "difference": -0.2505,
+            "z": -9.95
+          },
+          "IN_REVIEW": {
+            "n": 1373,
+            "predicted_p_paid": 0.9097,
+            "observed_p_paid": 0.9279,
+            "difference": 0.0182,
+            "z": 2.36
+          },
+          "PENDED": {
+            "n": 81,
+            "predicted_p_paid": 0.8569,
+            "observed_p_paid": 0.8889,
+            "difference": 0.032,
+            "z": 0.83
+          },
+          "SUBMITTED": {
+            "n": 84,
+            "predicted_p_paid": 0.9058,
+            "observed_p_paid": 0.9405,
+            "difference": 0.0346,
+            "z": 1.09
+          }
+        },
+        "by_payer": {
+          "P01": {
+            "n": 1698,
+            "predicted_p_paid": 0.9037,
+            "observed_p_paid": 0.891,
+            "difference": -0.0127,
+            "z": -1.86
+          },
+          "P02": {
+            "n": 1471,
+            "predicted_p_paid": 0.8677,
+            "observed_p_paid": 0.8851,
+            "difference": 0.0174,
+            "z": 2.06
+          },
+          "P03": {
+            "n": 1255,
+            "predicted_p_paid": 0.8199,
+            "observed_p_paid": 0.8064,
+            "difference": -0.0136,
+            "z": -1.31
+          },
+          "P04": {
+            "n": 1273,
+            "predicted_p_paid": 0.9257,
+            "observed_p_paid": 0.9293,
+            "difference": 0.0036,
+            "z": 0.51
+          },
+          "P05": {
+            "n": 734,
+            "predicted_p_paid": 0.8724,
+            "observed_p_paid": 0.846,
+            "difference": -0.0264,
+            "z": -2.25
+          },
+          "P06": {
+            "n": 431,
+            "predicted_p_paid": 0.903,
+            "observed_p_paid": 0.9095,
+            "difference": 0.0065,
+            "z": 0.47
+          }
+        },
+        "reliability_bins": {
+          "(0.3, 0.5]": {
+            "n": 197,
+            "predicted_p_paid": 0.4748,
+            "observed_p_paid": 0.2589,
+            "difference": -0.216,
+            "z": -6.07
+          },
+          "(0.5, 0.7]": {
+            "n": 277,
+            "predicted_p_paid": 0.5759,
+            "observed_p_paid": 0.361,
+            "difference": -0.2149,
+            "z": -7.32
+          },
+          "(0.7, 0.8]": {
+            "n": 62,
+            "predicted_p_paid": 0.7747,
+            "observed_p_paid": 0.6613,
+            "difference": -0.1134,
+            "z": -2.14
+          },
+          "(0.8, 0.9]": {
+            "n": 2496,
+            "predicted_p_paid": 0.881,
+            "observed_p_paid": 0.903,
+            "difference": 0.0221,
+            "z": 3.41
+          },
+          "(0.9, 1.0]": {
+            "n": 3830,
+            "predicted_p_paid": 0.9264,
+            "observed_p_paid": 0.9339,
+            "difference": 0.0076,
+            "z": 1.8
+          }
+        }
+      },
+      "duration_adjusted": {
+        "brier_score": 0.0799,
+        "overall": {
+          "n": 6862,
+          "predicted_p_paid": 0.8707,
+          "observed_p_paid": 0.8777,
+          "difference": 0.007,
+          "z": 1.95
+        },
+        "by_group": {
+          "open_at_cutoff": {
+            "n": 2074,
+            "predicted_p_paid": 0.7823,
+            "observed_p_paid": 0.7797,
+            "difference": -0.0027,
+            "z": -0.38
+          },
+          "submitted_after_cutoff": {
+            "n": 4788,
+            "predicted_p_paid": 0.909,
+            "observed_p_paid": 0.9202,
+            "difference": 0.0112,
+            "z": 2.71
+          }
+        },
+        "by_state_at_cutoff": {
+          "APPEALED": {
+            "n": 143,
+            "predicted_p_paid": 0.7343,
+            "observed_p_paid": 0.6503,
+            "difference": -0.0839,
+            "z": -2.29
+          },
+          "DENIED": {
+            "n": 393,
+            "predicted_p_paid": 0.2809,
+            "observed_p_paid": 0.2519,
+            "difference": -0.029,
+            "z": -1.41
+          },
+          "IN_REVIEW": {
+            "n": 1373,
+            "predicted_p_paid": 0.9188,
+            "observed_p_paid": 0.9279,
+            "difference": 0.009,
+            "z": 1.23
+          },
+          "PENDED": {
+            "n": 81,
+            "predicted_p_paid": 0.8584,
+            "observed_p_paid": 0.8889,
+            "difference": 0.0305,
+            "z": 0.79
+          },
+          "SUBMITTED": {
+            "n": 84,
+            "predicted_p_paid": 0.9058,
+            "observed_p_paid": 0.9405,
+            "difference": 0.0346,
+            "z": 1.09
+          }
+        },
+        "by_payer": {
+          "P01": {
+            "n": 1698,
+            "predicted_p_paid": 0.8942,
+            "observed_p_paid": 0.891,
+            "difference": -0.0031,
+            "z": -0.47
+          },
+          "P02": {
+            "n": 1471,
+            "predicted_p_paid": 0.858,
+            "observed_p_paid": 0.8851,
+            "difference": 0.0271,
+            "z": 3.35
+          },
+          "P03": {
+            "n": 1255,
+            "predicted_p_paid": 0.8054,
+            "observed_p_paid": 0.8064,
+            "difference": 0.001,
+            "z": 0.1
+          },
+          "P04": {
+            "n": 1273,
+            "predicted_p_paid": 0.9193,
+            "observed_p_paid": 0.9293,
+            "difference": 0.01,
+            "z": 1.45
+          },
+          "P05": {
+            "n": 734,
+            "predicted_p_paid": 0.8558,
+            "observed_p_paid": 0.846,
+            "difference": -0.0097,
+            "z": -0.86
+          },
+          "P06": {
+            "n": 431,
+            "predicted_p_paid": 0.8941,
+            "observed_p_paid": 0.9095,
+            "difference": 0.0154,
+            "z": 1.14
+          }
+        },
+        "reliability_bins": {
+          "(-0.001, 0.3]": {
+            "n": 194,
+            "predicted_p_paid": 0.1119,
+            "observed_p_paid": 0.067,
+            "difference": -0.0449,
+            "z": -2.09
+          },
+          "(0.3, 0.5]": {
+            "n": 160,
+            "predicted_p_paid": 0.4264,
+            "observed_p_paid": 0.4062,
+            "difference": -0.0201,
+            "z": -0.52
+          },
+          "(0.5, 0.7]": {
+            "n": 107,
+            "predicted_p_paid": 0.6282,
+            "observed_p_paid": 0.6168,
+            "difference": -0.0113,
+            "z": -0.25
+          },
+          "(0.7, 0.8]": {
+            "n": 58,
+            "predicted_p_paid": 0.7641,
+            "observed_p_paid": 0.6207,
+            "difference": -0.1434,
+            "z": -2.58
+          },
+          "(0.8, 0.9]": {
+            "n": 2281,
+            "predicted_p_paid": 0.8802,
+            "observed_p_paid": 0.8974,
+            "difference": 0.0172,
+            "z": 2.53
+          },
+          "(0.9, 1.0]": {
+            "n": 4062,
+            "predicted_p_paid": 0.9271,
+            "observed_p_paid": 0.9345,
+            "difference": 0.0075,
+            "z": 1.83
+          }
+        }
+      }
+    },
+    "label": "model_estimate",
+    "note": "fit at holdout cutoff, outcomes observed up to the as-of date"
+  },
+  "markov_assumption_diagnostics": {
+    "value": {
+      "after_denied_by_reason": {
+        "rates": {
+          "ADMINISTRATIVE": {
+            "APPEALED": 0.152,
+            "IN_REVIEW": 0.555,
+            "WRITTEN_OFF": 0.293
+          },
+          "CODING": {
+            "APPEALED": 0.199,
+            "IN_REVIEW": 0.506,
+            "WRITTEN_OFF": 0.294
+          },
+          "ELIGIBILITY": {
+            "APPEALED": 0.112,
+            "IN_REVIEW": 0.349,
+            "WRITTEN_OFF": 0.539
+          },
+          "MEDICAL_NECESSITY": {
+            "APPEALED": 0.639,
+            "IN_REVIEW": 0.054,
+            "WRITTEN_OFF": 0.307
+          },
+          "NON_COVERED": {
+            "APPEALED": 0.268,
+            "IN_REVIEW": 0.023,
+            "WRITTEN_OFF": 0.71
+          },
+          "PRIOR_AUTH": {
+            "APPEALED": 0.575,
+            "IN_REVIEW": 0.054,
+            "WRITTEN_OFF": 0.371
+          }
+        },
+        "n": {
+          "ADMINISTRATIVE": 1801,
+          "CODING": 1250,
+          "ELIGIBILITY": 955,
+          "MEDICAL_NECESSITY": 690,
+          "NON_COVERED": 613,
+          "PRIOR_AUTH": 1053
+        },
+        "chi2": 2136.16,
+        "dof": 10,
+        "p_value": 0.0
+      },
+      "appeal_outcome_by_reason": {
+        "p_paid": {
+          "ADMINISTRATIVE": 0.578,
+          "CODING": 0.504,
+          "ELIGIBILITY": 0.37,
+          "MEDICAL_NECESSITY": 0.382,
+          "NON_COVERED": 0.17,
+          "PRIOR_AUTH": 0.425
+        },
+        "n": {
+          "ADMINISTRATIVE": 263,
+          "CODING": 234,
+          "ELIGIBILITY": 100,
+          "MEDICAL_NECESSITY": 411,
+          "NON_COVERED": 159,
+          "PRIOR_AUTH": 584
+        },
+        "chi2": 77.99,
+        "dof": 5,
+        "p_value": 2.2048028072508364e-15
+      },
+      "in_review_outcome_by_visit": {
+        "p_denied": {
+          "first": 0.157,
+          "later": 0.197
+        },
+        "n": {
+          "first": 30042,
+          "later": 3967
+        },
+        "chi2": 41.64,
+        "dof": 2,
+        "p_value": 9.08503613165984e-10
+      }
+    },
+    "label": "model_estimate",
+    "note": "chi-square tests of homogeneity; small p-value = memory beyond the current status"
+  },
+  "marts": [
+    "mart.chain_transition_count",
+    "mart.chain_matrix",
+    "mart.chain_absorption"
+  ],
+  "figures": [
+    "figures/markov_transition_matrix.png",
+    "figures/markov_absorption_by_payer.png"
+  ],
+  "seconds": 3.5
+}

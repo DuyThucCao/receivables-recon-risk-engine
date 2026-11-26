@@ -1,0 +1,2390 @@
+{
+  "module": "recon_engine.models.cashflow",
+  "question": "Q3 Treasurer: will we be short of cash in the next 13 weeks?",
+  "label_note": "Simulated data for a fictional hospital. Results show parameter recovery and that the decision logic behaves correctly; they are not findings about real payers or banks.",
+  "inputs": {
+    "tables": [
+      "core.fact_claim_event",
+      "core.fact_claim_line",
+      "core.fact_remit_line",
+      "core.fact_bank_txn",
+      "recon.claim_remit_match",
+      "recon.remit_duplicate",
+      "recon.remit_trace",
+      "recon.remit_bank_match"
+    ],
+    "sql": [
+      "sql/models/40_chain.sql",
+      "sql/models/41_cash_forecast.sql"
+    ],
+    "params": {
+      "forecast_date": null,
+      "horizon_weeks": 13,
+      "n_sims": 2000,
+      "lookback_days": 365,
+      "arrival_window_days": 91,
+      "min_risk_set": 30.0,
+      "max_lag_days": 730,
+      "backtest_start": "2024-09-02",
+      "backtest_end": "2025-09-29",
+      "backtest_step_days": 7,
+      "backtest_n_sims": 500,
+      "backtest_lag_models": [
+        "hybrid",
+        "parametric"
+      ]
+    }
+  },
+  "seed": 20260331,
+  "cutoff": "2026-03-31",
+  "forecast_date": "2026-03-31",
+  "forecast_is_run_off": {
+    "value": true,
+    "label": "synthetic_record",
+    "note": "The simulated hospital bills no services after 2025-12-31, so at the as-of date there are almost no new claims: the headline forecast is a run-off of the open book, not a going-concern forecast. The backtest is where the method is validated."
+  },
+  "assumptions": {
+    "cash_need_factor": {
+      "value": 0.95,
+      "label": "financial_assumption",
+      "source": "Assumption for the cash model (Q3). Weekly cash need = factor x median weekly payer receipts of the trailing 26 weeks (5% operating margin on the collection account; payroll is not in the simulated statement)."
+    },
+    "minimum_operating_balance_usd": {
+      "value": 1000000,
+      "label": "financial_assumption",
+      "source": "Assumption for the cash model (Q3). Balance the treasurer will not go below; shortfall = funding needed to stay above it."
+    }
+  },
+  "opening_bank_balance": {
+    "value": 3119869.46,
+    "label": "synthetic_record",
+    "note": "running balance of the collection account at the forecast date; excess is swept to a concentration account, so this is not total liquidity"
+  },
+  "open_claims": {
+    "value": {
+      "n": 287,
+      "billed": 5155146.01,
+      "expected_eventual_payment": 782077.91
+    },
+    "label": "model_estimate"
+  },
+  "arrival_rate_claims_per_day": {
+    "value": {
+      "P01": 0.615,
+      "P02": 0.407,
+      "P03": 0.385,
+      "P04": 0.374,
+      "P05": 0.198,
+      "P06": 0.11
+    },
+    "label": "model_estimate"
+  },
+  "in_transit_remitted_not_deposited": {
+    "value": {
+      "traces": 0,
+      "amount": 0.0
+    },
+    "label": "synthetic_record"
+  },
+  "weekly_forecast": {
+    "value": [
+      {
+        "week_no": 1,
+        "week_start": "2026-04-01",
+        "week_end": "2026-04-07",
+        "mean": 87180.29,
+        "p10": 35519.47,
+        "p50": 73994.85,
+        "p90": 157227.25,
+        "p02_5": 22315.39,
+        "p97_5": 217092.38,
+        "from_open_claims": 87991.7,
+        "from_new_claims": 38.01,
+        "from_in_transit": 0.0,
+        "p_balance_below_minimum": 0.0
+      },
+      {
+        "week_no": 2,
+        "week_start": "2026-04-08",
+        "week_end": "2026-04-14",
+        "mean": 75120.23,
+        "p10": 25320.04,
+        "p50": 63598.08,
+        "p90": 142921.66,
+        "p02_5": 13928.63,
+        "p97_5": 190879.81,
+        "from_open_claims": 71906.93,
+        "from_new_claims": 1359.96,
+        "from_in_transit": 0.0,
+        "p_balance_below_minimum": 0.0
+      },
+      {
+        "week_no": 3,
+        "week_start": "2026-04-15",
+        "week_end": "2026-04-21",
+        "mean": 75368.19,
+        "p10": 27729.68,
+        "p50": 63866.2,
+        "p90": 140765.41,
+        "p02_5": 15364.03,
+        "p97_5": 186893.59,
+        "from_open_claims": 67998.16,
+        "from_new_claims": 4894.18,
+        "from_in_transit": 0.0,
+        "p_balance_below_minimum": 0.0
+      },
+      {
+        "week_no": 4,
+        "week_start": "2026-04-22",
+        "week_end": "2026-04-28",
+        "mean": 72770.98,
+        "p10": 24820.05,
+        "p50": 61553.37,
+        "p90": 136164.83,
+        "p02_5": 13816.11,
+        "p97_5": 187172.94,
+        "from_open_claims": 65922.08,
+        "from_new_claims": 9587.95,
+        "from_in_transit": 0.0,
+        "p_balance_below_minimum": 0.0
+      },
+      {
+        "week_no": 5,
+        "week_start": "2026-04-29",
+        "week_end": "2026-05-05",
+        "mean": 63234.39,
+        "p10": 19341.01,
+        "p50": 51314.96,
+        "p90": 126463.37,
+        "p02_5": 9489.89,
+        "p97_5": 175477.05,
+        "from_open_claims": 50219.71,
+        "from_new_claims": 13362.86,
+        "from_in_transit": 0.0,
+        "p_balance_below_minimum": 0.8395
+      },
+      {
+        "week_no": 6,
+        "week_start": "2026-05-06",
+        "week_end": "2026-05-12",
+        "mean": 60347.58,
+        "p10": 19045.53,
+        "p50": 48403.75,
+        "p90": 119163.56,
+        "p02_5": 10757.57,
+        "p97_5": 166697.8,
+        "from_open_claims": 44923.86,
+        "from_new_claims": 16551.39,
+        "from_in_transit": 0.0,
+        "p_balance_below_minimum": 1.0
+      },
+      {
+        "week_no": 7,
+        "week_start": "2026-05-13",
+        "week_end": "2026-05-19",
+        "mean": 57032.86,
+        "p10": 18627.71,
+        "p50": 45485.28,
+        "p90": 113980.79,
+        "p02_5": 9267.12,
+        "p97_5": 159299.24,
+        "from_open_claims": 39385.85,
+        "from_new_claims": 18659.43,
+        "from_in_transit": 0.0,
+        "p_balance_below_minimum": 1.0
+      },
+      {
+        "week_no": 8,
+        "week_start": "2026-05-20",
+        "week_end": "2026-05-26",
+        "mean": 56712.9,
+        "p10": 16803.46,
+        "p50": 43534.75,
+        "p90": 111946.98,
+        "p02_5": 9274.17,
+        "p97_5": 163435.37,
+        "from_open_claims": 38110.31,
+        "from_new_claims": 20326.73,
+        "from_in_transit": 0.0,
+        "p_balance_below_minimum": 1.0
+      },
+      {
+        "week_no": 9,
+        "week_start": "2026-05-27",
+        "week_end": "2026-06-02",
+        "mean": 54635.47,
+        "p10": 16952.87,
+        "p50": 42497.84,
+        "p90": 109768.67,
+        "p02_5": 8905.98,
+        "p97_5": 163807.54,
+        "from_open_claims": 31761.71,
+        "from_new_claims": 21646.43,
+        "from_in_transit": 0.0,
+        "p_balance_below_minimum": 1.0
+      },
+      {
+        "week_no": 10,
+        "week_start": "2026-06-03",
+        "week_end": "2026-06-09",
+        "mean": 48626.3,
+        "p10": 13798.59,
+        "p50": 37665.85,
+        "p90": 103803.16,
+        "p02_5": 6250.79,
+        "p97_5": 147977.18,
+        "from_open_claims": 27636.62,
+        "from_new_claims": 22848.13,
+        "from_in_transit": 0.0,
+        "p_balance_below_minimum": 1.0
+      },
+      {
+        "week_no": 11,
+        "week_start": "2026-06-10",
+        "week_end": "2026-06-16",
+        "mean": 48248.7,
+        "p10": 13470.45,
+        "p50": 38366.32,
+        "p90": 98268.19,
+        "p02_5": 7176.95,
+        "p97_5": 149049.53,
+        "from_open_claims": 24870.36,
+        "from_new_claims": 23844.53,
+        "from_in_transit": 0.0,
+        "p_balance_below_minimum": 1.0
+      },
+      {
+        "week_no": 12,
+        "week_start": "2026-06-17",
+        "week_end": "2026-06-23",
+        "mean": 45240.01,
+        "p10": 11820.1,
+        "p50": 33990.56,
+        "p90": 95461.35,
+        "p02_5": 5770.36,
+        "p97_5": 142740.85,
+        "from_open_claims": 21008.21,
+        "from_new_claims": 24588.28,
+        "from_in_transit": 0.0,
+        "p_balance_below_minimum": 1.0
+      },
+      {
+        "week_no": 13,
+        "week_start": "2026-06-24",
+        "week_end": "2026-06-30",
+        "mean": 45208.07,
+        "p10": 12343.05,
+        "p50": 35027.47,
+        "p90": 94610.76,
+        "p02_5": 6153.16,
+        "p97_5": 138544.09,
+        "from_open_claims": 19486.24,
+        "from_new_claims": 25426.45,
+        "from_in_transit": 0.0,
+        "p_balance_below_minimum": 1.0
+      }
+    ],
+    "label": "model_estimate"
+  },
+  "shortfall": {
+    "value": {
+      "forecast_date": "2025-09-29",
+      "opening_bank_balance": 2868721.74,
+      "median_weekly_receipts_trailing_26w": 637639.55,
+      "need_factor": 0.95,
+      "weekly_cash_need": 605757.58,
+      "p_shortfall": 0.0,
+      "expected_shortfall_mean": 0.0,
+      "shortfall_var95": 0.0,
+      "shortfall_cvar95": 0.0,
+      "receipts_13w_mean": 8194148.0046,
+      "receipts_13w_p05": 7545609.9979,
+      "cash_at_risk_95": 648538.0067,
+      "actual_13w_receipts": 8263512.75,
+      "actual_shortfall_at_assumed_need": 0.0,
+      "actual_receipts_percentile_in_forecast": 0.578
+    },
+    "label": "model_estimate",
+    "note": "The Treasurer's question asked at the last backtest date, while the simulated hospital is still billing. shortfall = max(0, minimum balance - lowest cumulative position over 13 weeks); cash_at_risk_95 = mean minus 5th percentile of 13-week receipts; actual_* use the bank deposits that followed (synthetic_record); weekly_cash_need is a financial_assumption."
+  },
+  "shortfall_curve": {
+    "value": [
+      {
+        "need_factor": 0.7,
+        "weekly_cash_need": 446347.69,
+        "p_shortfall": 0.0,
+        "expected_shortfall_mean": 0.0,
+        "shortfall_var95": 0.0,
+        "shortfall_cvar95": 0.0
+      },
+      {
+        "need_factor": 0.75,
+        "weekly_cash_need": 478229.67,
+        "p_shortfall": 0.0,
+        "expected_shortfall_mean": 0.0,
+        "shortfall_var95": 0.0,
+        "shortfall_cvar95": 0.0
+      },
+      {
+        "need_factor": 0.8,
+        "weekly_cash_need": 510111.64,
+        "p_shortfall": 0.0,
+        "expected_shortfall_mean": 0.0,
+        "shortfall_var95": 0.0,
+        "shortfall_cvar95": 0.0
+      },
+      {
+        "need_factor": 0.85,
+        "weekly_cash_need": 541993.62,
+        "p_shortfall": 0.0,
+        "expected_shortfall_mean": 0.0,
+        "shortfall_var95": 0.0,
+        "shortfall_cvar95": 0.0
+      },
+      {
+        "need_factor": 0.9,
+        "weekly_cash_need": 573875.6,
+        "p_shortfall": 0.0,
+        "expected_shortfall_mean": 0.0,
+        "shortfall_var95": 0.0,
+        "shortfall_cvar95": 0.0
+      },
+      {
+        "need_factor": 0.95,
+        "weekly_cash_need": 605757.58,
+        "p_shortfall": 0.0,
+        "expected_shortfall_mean": 0.0,
+        "shortfall_var95": 0.0,
+        "shortfall_cvar95": 0.0
+      },
+      {
+        "need_factor": 1.0,
+        "weekly_cash_need": 637639.55,
+        "p_shortfall": 0.0,
+        "expected_shortfall_mean": 0.0,
+        "shortfall_var95": 0.0,
+        "shortfall_cvar95": 0.0
+      },
+      {
+        "need_factor": 1.05,
+        "weekly_cash_need": 669521.53,
+        "p_shortfall": 0.0,
+        "expected_shortfall_mean": 0.0,
+        "shortfall_var95": 0.0,
+        "shortfall_cvar95": 0.0
+      },
+      {
+        "need_factor": 1.1,
+        "weekly_cash_need": 701403.51,
+        "p_shortfall": 0.007,
+        "expected_shortfall_mean": 437.58,
+        "shortfall_var95": 0.0,
+        "shortfall_cvar95": 437.58
+      },
+      {
+        "need_factor": 1.15,
+        "weekly_cash_need": 733285.49,
+        "p_shortfall": 0.0915,
+        "expected_shortfall_mean": 15235.65,
+        "shortfall_var95": 122127.73,
+        "shortfall_cvar95": 258925.4
+      },
+      {
+        "need_factor": 1.2,
+        "weekly_cash_need": 765167.47,
+        "p_shortfall": 0.408,
+        "expected_shortfall_mean": 110317.48,
+        "shortfall_var95": 532845.32,
+        "shortfall_cvar95": 672715.58
+      }
+    ],
+    "label": "model_estimate",
+    "note": "same date; weekly cash need = factor x median weekly receipts of the trailing 26 weeks"
+  },
+  "shortfall_as_of_run_off": {
+    "value": {
+      "forecast_date": "2026-03-31",
+      "median_weekly_receipts_trailing_26w": 545363.76,
+      "weekly_cash_need": 518095.58,
+      "p_shortfall": 1.0,
+      "expected_shortfall_mean": 3825647.0702,
+      "shortfall_var95": 4018207.4254,
+      "shortfall_cvar95": 4060032.0262,
+      "receipts_13w_mean": 789725.9676,
+      "receipts_13w_p05": 597165.6123,
+      "cash_at_risk_95": 192560.3552,
+      "curve": [
+        {
+          "need_factor": 0.7,
+          "weekly_cash_need": 381754.64,
+          "p_shortfall": 1.0,
+          "expected_shortfall_mean": 2053214.83,
+          "shortfall_var95": 2245775.19,
+          "shortfall_cvar95": 2287599.79
+        },
+        {
+          "need_factor": 0.75,
+          "weekly_cash_need": 409022.82,
+          "p_shortfall": 1.0,
+          "expected_shortfall_mean": 2407701.28,
+          "shortfall_var95": 2600261.64,
+          "shortfall_cvar95": 2642086.24
+        },
+        {
+          "need_factor": 0.8,
+          "weekly_cash_need": 436291.01,
+          "p_shortfall": 1.0,
+          "expected_shortfall_mean": 2762187.73,
+          "shortfall_var95": 2954748.08,
+          "shortfall_cvar95": 2996572.68
+        },
+        {
+          "need_factor": 0.85,
+          "weekly_cash_need": 463559.2,
+          "p_shortfall": 1.0,
+          "expected_shortfall_mean": 3116674.18,
+          "shortfall_var95": 3309234.53,
+          "shortfall_cvar95": 3351059.13
+        },
+        {
+          "need_factor": 0.9,
+          "weekly_cash_need": 490827.39,
+          "p_shortfall": 1.0,
+          "expected_shortfall_mean": 3471160.62,
+          "shortfall_var95": 3663720.98,
+          "shortfall_cvar95": 3705545.58
+        },
+        {
+          "need_factor": 0.95,
+          "weekly_cash_need": 518095.58,
+          "p_shortfall": 1.0,
+          "expected_shortfall_mean": 3825647.07,
+          "shortfall_var95": 4018207.43,
+          "shortfall_cvar95": 4060032.03
+        },
+        {
+          "need_factor": 1.0,
+          "weekly_cash_need": 545363.76,
+          "p_shortfall": 1.0,
+          "expected_shortfall_mean": 4180133.52,
+          "shortfall_var95": 4372693.87,
+          "shortfall_cvar95": 4414518.47
+        },
+        {
+          "need_factor": 1.05,
+          "weekly_cash_need": 572631.95,
+          "p_shortfall": 1.0,
+          "expected_shortfall_mean": 4534619.96,
+          "shortfall_var95": 4727180.32,
+          "shortfall_cvar95": 4769004.92
+        },
+        {
+          "need_factor": 1.1,
+          "weekly_cash_need": 599900.14,
+          "p_shortfall": 1.0,
+          "expected_shortfall_mean": 4889106.41,
+          "shortfall_var95": 5081666.77,
+          "shortfall_cvar95": 5123491.37
+        },
+        {
+          "need_factor": 1.15,
+          "weekly_cash_need": 627168.33,
+          "p_shortfall": 1.0,
+          "expected_shortfall_mean": 5243592.86,
+          "shortfall_var95": 5436153.21,
+          "shortfall_cvar95": 5477977.82
+        },
+        {
+          "need_factor": 1.2,
+          "weekly_cash_need": 654436.52,
+          "p_shortfall": 1.0,
+          "expected_shortfall_mean": 5598079.31,
+          "shortfall_var95": 5790639.66,
+          "shortfall_cvar95": 5832464.26
+        }
+      ]
+    },
+    "label": "model_estimate",
+    "note": "Run-off: the simulated hospital bills nothing after 2025-12-31, so receipts fall towards zero and any need anchored to past receipts produces a shortfall. Shown for completeness; not a going-concern answer."
+  },
+  "trailing_year_arrival_rate_per_day": {
+    "value": 31.255,
+    "label": "synthetic_record"
+  },
+  "lag_model": {
+    "value": {
+      "P01": {
+        "n_claims": 3069,
+        "n_paid": 2850,
+        "km_median_days": 23.0,
+        "km_reliable_to_day": 136,
+        "best_parametric": "lognormal",
+        "fits": {
+          "lognormal": {
+            "params": {
+              "sigma": 0.7404,
+              "median_days": 26.8217
+            },
+            "aic": 24833.0,
+            "max_abs_diff_to_km": 0.0983,
+            "converged": true,
+            "median_days": 26.82
+          },
+          "gamma": {
+            "params": {
+              "shape": 1.7503,
+              "scale_days": 20.9016
+            },
+            "aic": 25532.8,
+            "max_abs_diff_to_km": 0.1543,
+            "converged": true,
+            "median_days": 29.9
+          },
+          "weibull": {
+            "params": {
+              "shape": 1.222,
+              "scale_days": 39.5489
+            },
+            "aic": 25778.1,
+            "max_abs_diff_to_km": 0.1494,
+            "converged": true,
+            "median_days": 29.3
+          }
+        }
+      },
+      "P02": {
+        "n_claims": 2529,
+        "n_paid": 2294,
+        "km_median_days": 33.0,
+        "km_reliable_to_day": 159,
+        "best_parametric": "lognormal",
+        "fits": {
+          "lognormal": {
+            "params": {
+              "sigma": 0.7304,
+              "median_days": 34.4261
+            },
+            "aic": 20891.2,
+            "max_abs_diff_to_km": 0.0808,
+            "converged": true,
+            "median_days": 34.43
+          },
+          "gamma": {
+            "params": {
+              "shape": 1.8714,
+              "scale_days": 24.5156
+            },
+            "aic": 21380.6,
+            "max_abs_diff_to_km": 0.1363,
+            "converged": true,
+            "median_days": 38.02
+          },
+          "weibull": {
+            "params": {
+              "shape": 1.2606,
+              "scale_days": 49.9708
+            },
+            "aic": 21605.2,
+            "max_abs_diff_to_km": 0.132,
+            "converged": true,
+            "median_days": 37.36
+          }
+        }
+      },
+      "P03": {
+        "n_claims": 1969,
+        "n_paid": 1651,
+        "km_median_days": 43.0,
+        "km_reliable_to_day": 181,
+        "best_parametric": "lognormal",
+        "fits": {
+          "lognormal": {
+            "params": {
+              "sigma": 0.9651,
+              "median_days": 42.227
+            },
+            "aic": 16332.7,
+            "max_abs_diff_to_km": 0.0463,
+            "converged": true,
+            "median_days": 42.23
+          },
+          "gamma": {
+            "params": {
+              "shape": 1.3062,
+              "scale_days": 49.2006
+            },
+            "aic": 16520.9,
+            "max_abs_diff_to_km": 0.0853,
+            "converged": true,
+            "median_days": 48.81
+          },
+          "weibull": {
+            "params": {
+              "shape": 1.1097,
+              "scale_days": 67.1294
+            },
+            "aic": 16558.1,
+            "max_abs_diff_to_km": 0.0809,
+            "converged": true,
+            "median_days": 48.25
+          }
+        }
+      },
+      "P04": {
+        "n_claims": 1988,
+        "n_paid": 1852,
+        "km_median_days": 49.0,
+        "km_reliable_to_day": 135,
+        "best_parametric": "lognormal",
+        "fits": {
+          "lognormal": {
+            "params": {
+              "sigma": 0.6291,
+              "median_days": 51.6432
+            },
+            "aic": 17491.2,
+            "max_abs_diff_to_km": 0.0764,
+            "converged": true,
+            "median_days": 51.64
+          },
+          "gamma": {
+            "params": {
+              "shape": 2.5256,
+              "scale_days": 25.1518
+            },
+            "aic": 17817.4,
+            "max_abs_diff_to_km": 0.0975,
+            "converged": true,
+            "median_days": 55.37
+          },
+          "weibull": {
+            "params": {
+              "shape": 1.4758,
+              "scale_days": 71.0117
+            },
+            "aic": 18068.6,
+            "max_abs_diff_to_km": 0.1037,
+            "converged": true,
+            "median_days": 55.4
+          }
+        }
+      },
+      "P05": {
+        "n_claims": 1200,
+        "n_paid": 1062,
+        "km_median_days": 41.0,
+        "km_reliable_to_day": 131,
+        "best_parametric": "lognormal",
+        "fits": {
+          "lognormal": {
+            "params": {
+              "sigma": 0.8738,
+              "median_days": 48.0959
+            },
+            "aic": 10602.6,
+            "max_abs_diff_to_km": 0.0916,
+            "converged": true,
+            "median_days": 48.1
+          },
+          "gamma": {
+            "params": {
+              "shape": 1.4897,
+              "scale_days": 46.555
+            },
+            "aic": 10742.8,
+            "max_abs_diff_to_km": 0.125,
+            "converged": true,
+            "median_days": 54.6
+          },
+          "weibull": {
+            "params": {
+              "shape": 1.1951,
+              "scale_days": 74.0943
+            },
+            "aic": 10780.1,
+            "max_abs_diff_to_km": 0.1181,
+            "converged": true,
+            "median_days": 54.53
+          }
+        }
+      },
+      "P06": {
+        "n_claims": 653,
+        "n_paid": 596,
+        "km_median_days": 54.0,
+        "km_reliable_to_day": 125,
+        "best_parametric": "lognormal",
+        "fits": {
+          "lognormal": {
+            "params": {
+              "sigma": 0.6759,
+              "median_days": 50.7656
+            },
+            "aic": 5818.7,
+            "max_abs_diff_to_km": 0.0956,
+            "converged": true,
+            "median_days": 50.77
+          },
+          "gamma": {
+            "params": {
+              "shape": 2.5476,
+              "scale_days": 24.4572
+            },
+            "aic": 5825.2,
+            "max_abs_diff_to_km": 0.1013,
+            "converged": true,
+            "median_days": 54.37
+          },
+          "weibull": {
+            "params": {
+              "shape": 1.6107,
+              "scale_days": 69.7882
+            },
+            "aic": 5864.5,
+            "max_abs_diff_to_km": 0.1215,
+            "converged": true,
+            "median_days": 55.59
+          }
+        }
+      }
+    },
+    "label": "model_estimate"
+  },
+  "deposit_lag_mean_days": {
+    "value": {
+      "ALL": 0.74,
+      "P01": 0.21,
+      "P02": 0.04,
+      "P03": 0.64,
+      "P04": 0.12,
+      "P05": 0.94,
+      "P06": 4.56
+    },
+    "label": "model_estimate"
+  },
+  "backtest": {
+    "value": {
+      "dates": [
+        "2024-09-02",
+        "2024-09-09",
+        "2024-09-16",
+        "2024-09-23",
+        "2024-09-30",
+        "2024-10-07",
+        "2024-10-14",
+        "2024-10-21",
+        "2024-10-28",
+        "2024-11-04",
+        "2024-11-11",
+        "2024-11-18",
+        "2024-11-25",
+        "2024-12-02",
+        "2024-12-09",
+        "2024-12-16",
+        "2024-12-23",
+        "2024-12-30",
+        "2025-01-06",
+        "2025-01-13",
+        "2025-01-20",
+        "2025-01-27",
+        "2025-02-03",
+        "2025-02-10",
+        "2025-02-17",
+        "2025-02-24",
+        "2025-03-03",
+        "2025-03-10",
+        "2025-03-17",
+        "2025-03-24",
+        "2025-03-31",
+        "2025-04-07",
+        "2025-04-14",
+        "2025-04-21",
+        "2025-04-28",
+        "2025-05-05",
+        "2025-05-12",
+        "2025-05-19",
+        "2025-05-26",
+        "2025-06-02",
+        "2025-06-09",
+        "2025-06-16",
+        "2025-06-23",
+        "2025-06-30",
+        "2025-07-07",
+        "2025-07-14",
+        "2025-07-21",
+        "2025-07-28",
+        "2025-08-04",
+        "2025-08-11",
+        "2025-08-18",
+        "2025-08-25",
+        "2025-09-01",
+        "2025-09-08",
+        "2025-09-15",
+        "2025-09-22",
+        "2025-09-29"
+      ],
+      "summary": {
+        "hybrid": {
+          "n_origins": 57,
+          "origin_step_days": 7,
+          "note": "Wilson intervals treat points as independent. Overlapping 13-week windows (and the 13 weeks of one origin) are dependent, so those intervals are too narrow; the week-1 and non-overlapping rows use distinct target periods.",
+          "weekly_80": {
+            "coverage": 0.791,
+            "n": 741,
+            "wilson_95": [
+              0.76,
+              0.819
+            ]
+          },
+          "weekly_95": {
+            "coverage": 0.961,
+            "n": 741,
+            "wilson_95": [
+              0.944,
+              0.973
+            ]
+          },
+          "week1_80": {
+            "coverage": 0.754,
+            "n": 57,
+            "wilson_95": [
+              0.629,
+              0.848
+            ]
+          },
+          "week1_95": {
+            "coverage": 0.947,
+            "n": 57,
+            "wilson_95": [
+              0.856,
+              0.982
+            ]
+          },
+          "total_13w_80_all_origins": {
+            "coverage": 0.877,
+            "n": 57,
+            "wilson_95": [
+              0.768,
+              0.939
+            ]
+          },
+          "total_13w_95_all_origins": {
+            "coverage": 0.912,
+            "n": 57,
+            "wilson_95": [
+              0.811,
+              0.962
+            ]
+          },
+          "total_13w_80_non_overlapping": {
+            "coverage": 1.0,
+            "n": 5,
+            "wilson_95": [
+              0.566,
+              1.0
+            ]
+          },
+          "total_13w_95_non_overlapping": {
+            "coverage": 1.0,
+            "n": 5,
+            "wilson_95": [
+              0.566,
+              1.0
+            ]
+          },
+          "weekly_mape": 0.185,
+          "weekly_bias_mean_minus_actual": -3313.23,
+          "total_13w_mape": 0.034,
+          "total_13w_bias_pct": -0.005,
+          "weekly_coverage_80_by_horizon": {
+            "1": 0.754,
+            "2": 0.737,
+            "3": 0.754,
+            "4": 0.807,
+            "5": 0.842,
+            "6": 0.825,
+            "7": 0.86,
+            "8": 0.807,
+            "9": 0.825,
+            "10": 0.807,
+            "11": 0.772,
+            "12": 0.737,
+            "13": 0.754
+          }
+        },
+        "parametric": {
+          "n_origins": 57,
+          "origin_step_days": 7,
+          "note": "Wilson intervals treat points as independent. Overlapping 13-week windows (and the 13 weeks of one origin) are dependent, so those intervals are too narrow; the week-1 and non-overlapping rows use distinct target periods.",
+          "weekly_80": {
+            "coverage": 0.796,
+            "n": 741,
+            "wilson_95": [
+              0.766,
+              0.824
+            ]
+          },
+          "weekly_95": {
+            "coverage": 0.955,
+            "n": 741,
+            "wilson_95": [
+              0.938,
+              0.968
+            ]
+          },
+          "week1_80": {
+            "coverage": 0.737,
+            "n": 57,
+            "wilson_95": [
+              0.61,
+              0.834
+            ]
+          },
+          "week1_95": {
+            "coverage": 0.947,
+            "n": 57,
+            "wilson_95": [
+              0.856,
+              0.982
+            ]
+          },
+          "total_13w_80_all_origins": {
+            "coverage": 0.86,
+            "n": 57,
+            "wilson_95": [
+              0.747,
+              0.927
+            ]
+          },
+          "total_13w_95_all_origins": {
+            "coverage": 0.947,
+            "n": 57,
+            "wilson_95": [
+              0.856,
+              0.982
+            ]
+          },
+          "total_13w_80_non_overlapping": {
+            "coverage": 0.8,
+            "n": 5,
+            "wilson_95": [
+              0.376,
+              0.964
+            ]
+          },
+          "total_13w_95_non_overlapping": {
+            "coverage": 1.0,
+            "n": 5,
+            "wilson_95": [
+              0.566,
+              1.0
+            ]
+          },
+          "weekly_mape": 0.188,
+          "weekly_bias_mean_minus_actual": 6502.91,
+          "total_13w_mape": 0.036,
+          "total_13w_bias_pct": 0.011,
+          "weekly_coverage_80_by_horizon": {
+            "1": 0.737,
+            "2": 0.719,
+            "3": 0.772,
+            "4": 0.807,
+            "5": 0.807,
+            "6": 0.895,
+            "7": 0.825,
+            "8": 0.86,
+            "9": 0.825,
+            "10": 0.825,
+            "11": 0.772,
+            "12": 0.737,
+            "13": 0.772
+          }
+        }
+      },
+      "totals_13w": [
+        {
+          "lag_model": "hybrid",
+          "forecast_date": "2024-09-02",
+          "mean": 7652066.86,
+          "p02_5": 6990501.72,
+          "p10": 7161414.69,
+          "p90": 8136425.0,
+          "p97_5": 8428659.7,
+          "actual": 7260918.42,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "hybrid",
+          "forecast_date": "2024-09-09",
+          "mean": 7233546.36,
+          "p02_5": 6554031.66,
+          "p10": 6818177.7,
+          "p90": 7660473.47,
+          "p97_5": 7926348.01,
+          "actual": 7119042.29,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "hybrid",
+          "forecast_date": "2024-09-16",
+          "mean": 7160494.56,
+          "p02_5": 6409240.56,
+          "p10": 6634135.54,
+          "p90": 7684885.16,
+          "p97_5": 7893608.35,
+          "actual": 7267868.4,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "hybrid",
+          "forecast_date": "2024-09-23",
+          "mean": 7368148.12,
+          "p02_5": 6623025.05,
+          "p10": 6887227.86,
+          "p90": 7891676.48,
+          "p97_5": 8189574.21,
+          "actual": 7662188.78,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "hybrid",
+          "forecast_date": "2024-09-30",
+          "mean": 7301518.0,
+          "p02_5": 6595126.67,
+          "p10": 6856622.28,
+          "p90": 7809286.51,
+          "p97_5": 8126361.94,
+          "actual": 7414590.41,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "hybrid",
+          "forecast_date": "2024-10-07",
+          "mean": 7760960.64,
+          "p02_5": 6972294.55,
+          "p10": 7243867.32,
+          "p90": 8284818.76,
+          "p97_5": 8582859.06,
+          "actual": 7579789.29,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "hybrid",
+          "forecast_date": "2024-10-14",
+          "mean": 7809058.72,
+          "p02_5": 7021024.96,
+          "p10": 7300985.69,
+          "p90": 8350973.66,
+          "p97_5": 8644407.52,
+          "actual": 7827989.85,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "hybrid",
+          "forecast_date": "2024-10-21",
+          "mean": 7493770.76,
+          "p02_5": 6757214.61,
+          "p10": 6976349.98,
+          "p90": 8036993.0,
+          "p97_5": 8321774.87,
+          "actual": 7717557.12,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "hybrid",
+          "forecast_date": "2024-10-28",
+          "mean": 7682528.61,
+          "p02_5": 6945280.7,
+          "p10": 7210629.72,
+          "p90": 8186177.76,
+          "p97_5": 8499952.51,
+          "actual": 7834041.69,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "hybrid",
+          "forecast_date": "2024-11-04",
+          "mean": 7613139.73,
+          "p02_5": 6938361.79,
+          "p10": 7153890.52,
+          "p90": 8113318.71,
+          "p97_5": 8342933.42,
+          "actual": 7722117.28,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "hybrid",
+          "forecast_date": "2024-11-11",
+          "mean": 7794704.38,
+          "p02_5": 6979047.18,
+          "p10": 7293179.71,
+          "p90": 8319029.83,
+          "p97_5": 8593322.65,
+          "actual": 7838037.15,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "hybrid",
+          "forecast_date": "2024-11-18",
+          "mean": 7823188.47,
+          "p02_5": 7199142.23,
+          "p10": 7346227.33,
+          "p90": 8292781.72,
+          "p97_5": 8500798.89,
+          "actual": 8056916.36,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "hybrid",
+          "forecast_date": "2024-11-25",
+          "mean": 7764843.77,
+          "p02_5": 6989953.13,
+          "p10": 7277012.11,
+          "p90": 8272531.48,
+          "p97_5": 8624046.04,
+          "actual": 7972904.45,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "hybrid",
+          "forecast_date": "2024-12-02",
+          "mean": 7571653.11,
+          "p02_5": 6798495.37,
+          "p10": 7085876.4,
+          "p90": 8077576.96,
+          "p97_5": 8288849.89,
+          "actual": 8014665.81,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "hybrid",
+          "forecast_date": "2024-12-09",
+          "mean": 7550625.11,
+          "p02_5": 6891152.31,
+          "p10": 7105336.23,
+          "p90": 8026577.28,
+          "p97_5": 8323729.52,
+          "actual": 8338588.09,
+          "in_80": false,
+          "in_95": false
+        },
+        {
+          "lag_model": "hybrid",
+          "forecast_date": "2024-12-16",
+          "mean": 7406181.76,
+          "p02_5": 6706525.66,
+          "p10": 6978796.47,
+          "p90": 7864101.61,
+          "p97_5": 8084353.71,
+          "actual": 8117246.56,
+          "in_80": false,
+          "in_95": false
+        },
+        {
+          "lag_model": "hybrid",
+          "forecast_date": "2024-12-23",
+          "mean": 7204685.14,
+          "p02_5": 6528351.46,
+          "p10": 6753094.63,
+          "p90": 7660276.36,
+          "p97_5": 7965956.21,
+          "actual": 8072374.56,
+          "in_80": false,
+          "in_95": false
+        },
+        {
+          "lag_model": "hybrid",
+          "forecast_date": "2024-12-30",
+          "mean": 7025112.14,
+          "p02_5": 6384726.01,
+          "p10": 6564402.33,
+          "p90": 7504914.03,
+          "p97_5": 7746846.22,
+          "actual": 8140580.27,
+          "in_80": false,
+          "in_95": false
+        },
+        {
+          "lag_model": "hybrid",
+          "forecast_date": "2025-01-06",
+          "mean": 7270657.19,
+          "p02_5": 6594189.72,
+          "p10": 6804702.51,
+          "p90": 7761155.63,
+          "p97_5": 7991676.25,
+          "actual": 8107100.09,
+          "in_80": false,
+          "in_95": false
+        },
+        {
+          "lag_model": "hybrid",
+          "forecast_date": "2025-01-13",
+          "mean": 7496859.59,
+          "p02_5": 6843971.99,
+          "p10": 7055938.52,
+          "p90": 7921228.82,
+          "p97_5": 8217999.28,
+          "actual": 7987700.2,
+          "in_80": false,
+          "in_95": true
+        },
+        {
+          "lag_model": "hybrid",
+          "forecast_date": "2025-01-20",
+          "mean": 7806072.06,
+          "p02_5": 7087938.89,
+          "p10": 7335425.05,
+          "p90": 8284768.93,
+          "p97_5": 8584205.42,
+          "actual": 7970169.1,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "hybrid",
+          "forecast_date": "2025-01-27",
+          "mean": 7632853.72,
+          "p02_5": 6912359.28,
+          "p10": 7166420.96,
+          "p90": 8075521.07,
+          "p97_5": 8379738.13,
+          "actual": 8041121.41,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "hybrid",
+          "forecast_date": "2025-02-03",
+          "mean": 7887238.63,
+          "p02_5": 7122063.26,
+          "p10": 7390289.07,
+          "p90": 8393700.76,
+          "p97_5": 8650536.17,
+          "actual": 8229994.17,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "hybrid",
+          "forecast_date": "2025-02-10",
+          "mean": 7900531.97,
+          "p02_5": 7186580.95,
+          "p10": 7441863.71,
+          "p90": 8389129.74,
+          "p97_5": 8649957.62,
+          "actual": 8329705.62,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "hybrid",
+          "forecast_date": "2025-02-17",
+          "mean": 8042659.45,
+          "p02_5": 7343048.22,
+          "p10": 7584824.03,
+          "p90": 8547716.21,
+          "p97_5": 8833345.3,
+          "actual": 8071082.56,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "hybrid",
+          "forecast_date": "2025-02-24",
+          "mean": 7896152.72,
+          "p02_5": 7252688.79,
+          "p10": 7457326.25,
+          "p90": 8375447.36,
+          "p97_5": 8579796.38,
+          "actual": 7757487.47,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "hybrid",
+          "forecast_date": "2025-03-03",
+          "mean": 8276976.71,
+          "p02_5": 7416808.27,
+          "p10": 7740264.19,
+          "p90": 8822969.44,
+          "p97_5": 9131718.68,
+          "actual": 7877034.06,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "hybrid",
+          "forecast_date": "2025-03-10",
+          "mean": 8445058.93,
+          "p02_5": 7700234.41,
+          "p10": 7958271.82,
+          "p90": 8994649.07,
+          "p97_5": 9243265.06,
+          "actual": 7783892.36,
+          "in_80": false,
+          "in_95": true
+        },
+        {
+          "lag_model": "hybrid",
+          "forecast_date": "2025-03-17",
+          "mean": 8259931.83,
+          "p02_5": 7508371.32,
+          "p10": 7768019.51,
+          "p90": 8772246.91,
+          "p97_5": 9057290.39,
+          "actual": 7936359.11,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "hybrid",
+          "forecast_date": "2025-03-24",
+          "mean": 8233826.36,
+          "p02_5": 7522926.06,
+          "p10": 7753541.62,
+          "p90": 8820913.9,
+          "p97_5": 9026962.14,
+          "actual": 8111066.6,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "hybrid",
+          "forecast_date": "2025-03-31",
+          "mean": 8171706.08,
+          "p02_5": 7346721.49,
+          "p10": 7648501.91,
+          "p90": 8692076.45,
+          "p97_5": 8952227.93,
+          "actual": 8208022.9,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "hybrid",
+          "forecast_date": "2025-04-07",
+          "mean": 8320646.73,
+          "p02_5": 7515513.02,
+          "p10": 7792998.44,
+          "p90": 8850517.46,
+          "p97_5": 9050774.07,
+          "actual": 8357990.25,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "hybrid",
+          "forecast_date": "2025-04-14",
+          "mean": 8568902.65,
+          "p02_5": 7764877.88,
+          "p10": 8053032.73,
+          "p90": 9118841.26,
+          "p97_5": 9352159.9,
+          "actual": 8379909.5,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "hybrid",
+          "forecast_date": "2025-04-21",
+          "mean": 8488021.36,
+          "p02_5": 7740742.73,
+          "p10": 7953163.18,
+          "p90": 9036993.91,
+          "p97_5": 9446567.43,
+          "actual": 8306027.68,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "hybrid",
+          "forecast_date": "2025-04-28",
+          "mean": 8413105.26,
+          "p02_5": 7632125.15,
+          "p10": 7898703.91,
+          "p90": 8940882.26,
+          "p97_5": 9216409.38,
+          "actual": 8219142.22,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "hybrid",
+          "forecast_date": "2025-05-05",
+          "mean": 8285281.54,
+          "p02_5": 7537073.96,
+          "p10": 7783095.97,
+          "p90": 8755921.69,
+          "p97_5": 9007677.98,
+          "actual": 8136454.35,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "hybrid",
+          "forecast_date": "2025-05-12",
+          "mean": 8476319.61,
+          "p02_5": 7651929.84,
+          "p10": 7935803.87,
+          "p90": 9009563.52,
+          "p97_5": 9276736.98,
+          "actual": 8230636.84,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "hybrid",
+          "forecast_date": "2025-05-19",
+          "mean": 8677710.11,
+          "p02_5": 7908086.36,
+          "p10": 8139506.65,
+          "p90": 9230945.07,
+          "p97_5": 9436192.66,
+          "actual": 8213166.39,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "hybrid",
+          "forecast_date": "2025-05-26",
+          "mean": 8843920.63,
+          "p02_5": 8101149.09,
+          "p10": 8299811.73,
+          "p90": 9400044.18,
+          "p97_5": 9737471.83,
+          "actual": 8496023.31,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "hybrid",
+          "forecast_date": "2025-06-02",
+          "mean": 8612541.09,
+          "p02_5": 7840547.86,
+          "p10": 8092294.7,
+          "p90": 9160255.12,
+          "p97_5": 9423759.44,
+          "actual": 8300611.81,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "hybrid",
+          "forecast_date": "2025-06-09",
+          "mean": 8340152.06,
+          "p02_5": 7602867.68,
+          "p10": 7826190.56,
+          "p90": 8856072.91,
+          "p97_5": 9140327.63,
+          "actual": 8541670.69,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "hybrid",
+          "forecast_date": "2025-06-16",
+          "mean": 8424510.59,
+          "p02_5": 7649540.23,
+          "p10": 7948597.18,
+          "p90": 8921276.15,
+          "p97_5": 9217513.04,
+          "actual": 8450955.44,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "hybrid",
+          "forecast_date": "2025-06-23",
+          "mean": 8284779.67,
+          "p02_5": 7427157.54,
+          "p10": 7699564.9,
+          "p90": 8813754.96,
+          "p97_5": 9078331.8,
+          "actual": 8050953.64,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "hybrid",
+          "forecast_date": "2025-06-30",
+          "mean": 8486128.99,
+          "p02_5": 7715452.52,
+          "p10": 7926015.96,
+          "p90": 9058911.97,
+          "p97_5": 9367898.24,
+          "actual": 8108227.46,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "hybrid",
+          "forecast_date": "2025-07-07",
+          "mean": 8316659.11,
+          "p02_5": 7593215.36,
+          "p10": 7835073.87,
+          "p90": 8781874.7,
+          "p97_5": 9134991.84,
+          "actual": 8164701.75,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "hybrid",
+          "forecast_date": "2025-07-14",
+          "mean": 8243154.51,
+          "p02_5": 7471296.32,
+          "p10": 7722926.52,
+          "p90": 8814684.23,
+          "p97_5": 9122075.29,
+          "actual": 7935318.15,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "hybrid",
+          "forecast_date": "2025-07-21",
+          "mean": 8217609.51,
+          "p02_5": 7435749.48,
+          "p10": 7735061.64,
+          "p90": 8717849.97,
+          "p97_5": 9028147.93,
+          "actual": 8134896.62,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "hybrid",
+          "forecast_date": "2025-07-28",
+          "mean": 8410103.27,
+          "p02_5": 7641804.88,
+          "p10": 7892337.16,
+          "p90": 8953913.88,
+          "p97_5": 9188796.13,
+          "actual": 8268945.22,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "hybrid",
+          "forecast_date": "2025-08-04",
+          "mean": 8146412.35,
+          "p02_5": 7387384.17,
+          "p10": 7633053.99,
+          "p90": 8668599.55,
+          "p97_5": 8929592.71,
+          "actual": 8308145.22,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "hybrid",
+          "forecast_date": "2025-08-11",
+          "mean": 7885033.14,
+          "p02_5": 7087391.65,
+          "p10": 7389768.18,
+          "p90": 8421963.12,
+          "p97_5": 8745368.4,
+          "actual": 8078262.52,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "hybrid",
+          "forecast_date": "2025-08-18",
+          "mean": 8101326.12,
+          "p02_5": 7320431.03,
+          "p10": 7598666.25,
+          "p90": 8622045.44,
+          "p97_5": 8904302.7,
+          "actual": 8134595.37,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "hybrid",
+          "forecast_date": "2025-08-25",
+          "mean": 8127410.19,
+          "p02_5": 7442977.65,
+          "p10": 7609494.69,
+          "p90": 8659068.05,
+          "p97_5": 8870529.03,
+          "actual": 8188215.63,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "hybrid",
+          "forecast_date": "2025-09-01",
+          "mean": 8473739.76,
+          "p02_5": 7674827.48,
+          "p10": 7977947.27,
+          "p90": 9027727.78,
+          "p97_5": 9344553.3,
+          "actual": 8178911.39,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "hybrid",
+          "forecast_date": "2025-09-08",
+          "mean": 8178091.43,
+          "p02_5": 7384625.82,
+          "p10": 7659680.5,
+          "p90": 8717564.67,
+          "p97_5": 9003227.84,
+          "actual": 7946764.87,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "hybrid",
+          "forecast_date": "2025-09-15",
+          "mean": 8272500.13,
+          "p02_5": 7511365.1,
+          "p10": 7747589.9,
+          "p90": 8820492.03,
+          "p97_5": 9189044.87,
+          "actual": 8011546.42,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "hybrid",
+          "forecast_date": "2025-09-22",
+          "mean": 8330293.31,
+          "p02_5": 7601248.99,
+          "p10": 7808779.31,
+          "p90": 8850224.75,
+          "p97_5": 9128185.22,
+          "actual": 8325410.12,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "hybrid",
+          "forecast_date": "2025-09-29",
+          "mean": 8182940.87,
+          "p02_5": 7406145.06,
+          "p10": 7700406.01,
+          "p90": 8687250.67,
+          "p97_5": 8925853.6,
+          "actual": 8263512.75,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "parametric",
+          "forecast_date": "2024-09-02",
+          "mean": 7735457.11,
+          "p02_5": 7051522.92,
+          "p10": 7271051.81,
+          "p90": 8233328.85,
+          "p97_5": 8458991.83,
+          "actual": 7260918.42,
+          "in_80": false,
+          "in_95": true
+        },
+        {
+          "lag_model": "parametric",
+          "forecast_date": "2024-09-09",
+          "mean": 7316926.81,
+          "p02_5": 6677651.92,
+          "p10": 6901209.34,
+          "p90": 7774531.48,
+          "p97_5": 8104050.49,
+          "actual": 7119042.29,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "parametric",
+          "forecast_date": "2024-09-16",
+          "mean": 7263479.9,
+          "p02_5": 6618974.69,
+          "p10": 6739749.76,
+          "p90": 7769218.32,
+          "p97_5": 7999884.89,
+          "actual": 7267868.4,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "parametric",
+          "forecast_date": "2024-09-23",
+          "mean": 7501347.43,
+          "p02_5": 6803564.45,
+          "p10": 7037731.06,
+          "p90": 8011758.91,
+          "p97_5": 8304372.74,
+          "actual": 7662188.78,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "parametric",
+          "forecast_date": "2024-09-30",
+          "mean": 7432992.47,
+          "p02_5": 6730127.15,
+          "p10": 6992929.72,
+          "p90": 7919962.97,
+          "p97_5": 8259550.96,
+          "actual": 7414590.41,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "parametric",
+          "forecast_date": "2024-10-07",
+          "mean": 7903676.01,
+          "p02_5": 7144227.14,
+          "p10": 7390080.17,
+          "p90": 8409833.35,
+          "p97_5": 8703318.43,
+          "actual": 7579789.29,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "parametric",
+          "forecast_date": "2024-10-14",
+          "mean": 7969199.31,
+          "p02_5": 7226143.42,
+          "p10": 7481583.09,
+          "p90": 8465800.94,
+          "p97_5": 8765804.2,
+          "actual": 7827989.85,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "parametric",
+          "forecast_date": "2024-10-21",
+          "mean": 7632622.29,
+          "p02_5": 6905970.27,
+          "p10": 7109612.01,
+          "p90": 8158031.0,
+          "p97_5": 8424479.56,
+          "actual": 7717557.12,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "parametric",
+          "forecast_date": "2024-10-28",
+          "mean": 7803212.89,
+          "p02_5": 7114994.01,
+          "p10": 7349232.47,
+          "p90": 8310758.79,
+          "p97_5": 8560121.77,
+          "actual": 7834041.69,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "parametric",
+          "forecast_date": "2024-11-04",
+          "mean": 7739604.37,
+          "p02_5": 7069779.98,
+          "p10": 7298599.14,
+          "p90": 8186404.57,
+          "p97_5": 8458015.7,
+          "actual": 7722117.28,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "parametric",
+          "forecast_date": "2024-11-11",
+          "mean": 7924575.91,
+          "p02_5": 7122993.56,
+          "p10": 7441579.68,
+          "p90": 8446013.41,
+          "p97_5": 8739050.7,
+          "actual": 7838037.15,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "parametric",
+          "forecast_date": "2024-11-18",
+          "mean": 7976341.03,
+          "p02_5": 7322275.06,
+          "p10": 7522615.88,
+          "p90": 8441699.68,
+          "p97_5": 8654101.0,
+          "actual": 8056916.36,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "parametric",
+          "forecast_date": "2024-11-25",
+          "mean": 7911728.71,
+          "p02_5": 7187849.12,
+          "p10": 7454483.26,
+          "p90": 8383375.66,
+          "p97_5": 8715526.74,
+          "actual": 7972904.45,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "parametric",
+          "forecast_date": "2024-12-02",
+          "mean": 7702622.92,
+          "p02_5": 6928508.35,
+          "p10": 7219259.59,
+          "p90": 8198952.34,
+          "p97_5": 8392208.24,
+          "actual": 8014665.81,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "parametric",
+          "forecast_date": "2024-12-09",
+          "mean": 7685599.18,
+          "p02_5": 7028824.1,
+          "p10": 7234413.19,
+          "p90": 8191027.17,
+          "p97_5": 8450559.28,
+          "actual": 8338588.09,
+          "in_80": false,
+          "in_95": true
+        },
+        {
+          "lag_model": "parametric",
+          "forecast_date": "2024-12-16",
+          "mean": 7539765.36,
+          "p02_5": 6863687.54,
+          "p10": 7109030.56,
+          "p90": 7975981.29,
+          "p97_5": 8165614.48,
+          "actual": 8117246.56,
+          "in_80": false,
+          "in_95": true
+        },
+        {
+          "lag_model": "parametric",
+          "forecast_date": "2024-12-23",
+          "mean": 7310464.92,
+          "p02_5": 6608507.39,
+          "p10": 6856445.12,
+          "p90": 7771353.19,
+          "p97_5": 7988491.66,
+          "actual": 8072374.56,
+          "in_80": false,
+          "in_95": false
+        },
+        {
+          "lag_model": "parametric",
+          "forecast_date": "2024-12-30",
+          "mean": 7133595.59,
+          "p02_5": 6478946.94,
+          "p10": 6688000.3,
+          "p90": 7597588.17,
+          "p97_5": 7844353.03,
+          "actual": 8140580.27,
+          "in_80": false,
+          "in_95": false
+        },
+        {
+          "lag_model": "parametric",
+          "forecast_date": "2025-01-06",
+          "mean": 7366574.29,
+          "p02_5": 6691227.86,
+          "p10": 6913294.21,
+          "p90": 7838181.44,
+          "p97_5": 8118666.37,
+          "actual": 8107100.09,
+          "in_80": false,
+          "in_95": true
+        },
+        {
+          "lag_model": "parametric",
+          "forecast_date": "2025-01-13",
+          "mean": 7590062.29,
+          "p02_5": 6941729.6,
+          "p10": 7168322.11,
+          "p90": 8015175.51,
+          "p97_5": 8305028.42,
+          "actual": 7987700.2,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "parametric",
+          "forecast_date": "2025-01-20",
+          "mean": 7891347.26,
+          "p02_5": 7190381.19,
+          "p10": 7420604.67,
+          "p90": 8352591.41,
+          "p97_5": 8688330.34,
+          "actual": 7970169.1,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "parametric",
+          "forecast_date": "2025-01-27",
+          "mean": 7725403.98,
+          "p02_5": 7023014.35,
+          "p10": 7270332.22,
+          "p90": 8179172.95,
+          "p97_5": 8445031.4,
+          "actual": 8041121.41,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "parametric",
+          "forecast_date": "2025-02-03",
+          "mean": 8007780.69,
+          "p02_5": 7303466.47,
+          "p10": 7534802.48,
+          "p90": 8499318.8,
+          "p97_5": 8743624.51,
+          "actual": 8229994.17,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "parametric",
+          "forecast_date": "2025-02-10",
+          "mean": 8046464.74,
+          "p02_5": 7398274.3,
+          "p10": 7587762.76,
+          "p90": 8514765.36,
+          "p97_5": 8699740.96,
+          "actual": 8329705.62,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "parametric",
+          "forecast_date": "2025-02-17",
+          "mean": 8142331.87,
+          "p02_5": 7412213.58,
+          "p10": 7681613.62,
+          "p90": 8643788.92,
+          "p97_5": 8879757.78,
+          "actual": 8071082.56,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "parametric",
+          "forecast_date": "2025-02-24",
+          "mean": 8015047.86,
+          "p02_5": 7395700.97,
+          "p10": 7575669.79,
+          "p90": 8477475.09,
+          "p97_5": 8717500.24,
+          "actual": 7757487.47,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "parametric",
+          "forecast_date": "2025-03-03",
+          "mean": 8385647.85,
+          "p02_5": 7565090.71,
+          "p10": 7847404.67,
+          "p90": 8899918.93,
+          "p97_5": 9209792.0,
+          "actual": 7877034.06,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "parametric",
+          "forecast_date": "2025-03-10",
+          "mean": 8573313.29,
+          "p02_5": 7852417.74,
+          "p10": 8068769.93,
+          "p90": 9085622.05,
+          "p97_5": 9391565.27,
+          "actual": 7783892.36,
+          "in_80": false,
+          "in_95": false
+        },
+        {
+          "lag_model": "parametric",
+          "forecast_date": "2025-03-17",
+          "mean": 8417130.23,
+          "p02_5": 7635258.4,
+          "p10": 7913199.39,
+          "p90": 8908660.52,
+          "p97_5": 9188880.13,
+          "actual": 7936359.11,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "parametric",
+          "forecast_date": "2025-03-24",
+          "mean": 8379842.43,
+          "p02_5": 7674431.99,
+          "p10": 7892298.1,
+          "p90": 8940080.79,
+          "p97_5": 9163332.53,
+          "actual": 8111066.6,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "parametric",
+          "forecast_date": "2025-03-31",
+          "mean": 8345872.69,
+          "p02_5": 7673647.5,
+          "p10": 7843746.51,
+          "p90": 8834979.03,
+          "p97_5": 9114052.27,
+          "actual": 8208022.9,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "parametric",
+          "forecast_date": "2025-04-07",
+          "mean": 8489727.67,
+          "p02_5": 7681678.22,
+          "p10": 7961111.45,
+          "p90": 9003659.18,
+          "p97_5": 9287424.59,
+          "actual": 8357990.25,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "parametric",
+          "forecast_date": "2025-04-14",
+          "mean": 8700301.83,
+          "p02_5": 7929109.3,
+          "p10": 8200643.23,
+          "p90": 9251940.73,
+          "p97_5": 9480036.16,
+          "actual": 8379909.5,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "parametric",
+          "forecast_date": "2025-04-21",
+          "mean": 8642221.93,
+          "p02_5": 7904174.16,
+          "p10": 8110720.54,
+          "p90": 9201527.32,
+          "p97_5": 9601209.96,
+          "actual": 8306027.68,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "parametric",
+          "forecast_date": "2025-04-28",
+          "mean": 8532360.27,
+          "p02_5": 7742561.94,
+          "p10": 8025353.1,
+          "p90": 9050770.9,
+          "p97_5": 9346086.31,
+          "actual": 8219142.22,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "parametric",
+          "forecast_date": "2025-05-05",
+          "mean": 8425860.92,
+          "p02_5": 7676168.99,
+          "p10": 7917352.88,
+          "p90": 8930194.47,
+          "p97_5": 9159622.27,
+          "actual": 8136454.35,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "parametric",
+          "forecast_date": "2025-05-12",
+          "mean": 8599040.98,
+          "p02_5": 7820709.33,
+          "p10": 8067508.92,
+          "p90": 9148756.24,
+          "p97_5": 9426469.37,
+          "actual": 8230636.84,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "parametric",
+          "forecast_date": "2025-05-19",
+          "mean": 8811813.82,
+          "p02_5": 8030661.62,
+          "p10": 8298588.33,
+          "p90": 9379382.63,
+          "p97_5": 9627062.09,
+          "actual": 8213166.39,
+          "in_80": false,
+          "in_95": true
+        },
+        {
+          "lag_model": "parametric",
+          "forecast_date": "2025-05-26",
+          "mean": 8987923.06,
+          "p02_5": 8210808.43,
+          "p10": 8444706.24,
+          "p90": 9524736.01,
+          "p97_5": 9823509.87,
+          "actual": 8496023.31,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "parametric",
+          "forecast_date": "2025-06-02",
+          "mean": 8801529.56,
+          "p02_5": 8019030.81,
+          "p10": 8276033.59,
+          "p90": 9353518.53,
+          "p97_5": 9622701.05,
+          "actual": 8300611.81,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "parametric",
+          "forecast_date": "2025-06-09",
+          "mean": 8564310.18,
+          "p02_5": 7830102.72,
+          "p10": 8077873.26,
+          "p90": 9102323.54,
+          "p97_5": 9343671.65,
+          "actual": 8541670.69,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "parametric",
+          "forecast_date": "2025-06-16",
+          "mean": 8660993.11,
+          "p02_5": 7930902.78,
+          "p10": 8197691.84,
+          "p90": 9176746.23,
+          "p97_5": 9412841.7,
+          "actual": 8450955.44,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "parametric",
+          "forecast_date": "2025-06-23",
+          "mean": 8475298.08,
+          "p02_5": 7695140.57,
+          "p10": 7897810.14,
+          "p90": 9020190.31,
+          "p97_5": 9257439.0,
+          "actual": 8050953.64,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "parametric",
+          "forecast_date": "2025-06-30",
+          "mean": 8599626.69,
+          "p02_5": 7824539.51,
+          "p10": 8055019.27,
+          "p90": 9144530.61,
+          "p97_5": 9431794.82,
+          "actual": 8108227.46,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "parametric",
+          "forecast_date": "2025-07-07",
+          "mean": 8432643.15,
+          "p02_5": 7735277.26,
+          "p10": 7954796.16,
+          "p90": 8937631.47,
+          "p97_5": 9243602.28,
+          "actual": 8164701.75,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "parametric",
+          "forecast_date": "2025-07-14",
+          "mean": 8346883.68,
+          "p02_5": 7575098.17,
+          "p10": 7846296.42,
+          "p90": 8882157.26,
+          "p97_5": 9239240.99,
+          "actual": 7935318.15,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "parametric",
+          "forecast_date": "2025-07-21",
+          "mean": 8309708.48,
+          "p02_5": 7484929.56,
+          "p10": 7793541.58,
+          "p90": 8796622.98,
+          "p97_5": 9049316.71,
+          "actual": 8134896.62,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "parametric",
+          "forecast_date": "2025-07-28",
+          "mean": 8512818.38,
+          "p02_5": 7742425.79,
+          "p10": 7978812.84,
+          "p90": 9050835.98,
+          "p97_5": 9269600.39,
+          "actual": 8268945.22,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "parametric",
+          "forecast_date": "2025-08-04",
+          "mean": 8245259.36,
+          "p02_5": 7479118.39,
+          "p10": 7775971.81,
+          "p90": 8765495.9,
+          "p97_5": 9023761.44,
+          "actual": 8308145.22,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "parametric",
+          "forecast_date": "2025-08-11",
+          "mean": 7980395.12,
+          "p02_5": 7198423.77,
+          "p10": 7489672.28,
+          "p90": 8517408.19,
+          "p97_5": 8771281.1,
+          "actual": 8078262.52,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "parametric",
+          "forecast_date": "2025-08-18",
+          "mean": 8203641.31,
+          "p02_5": 7461891.35,
+          "p10": 7707289.38,
+          "p90": 8709732.78,
+          "p97_5": 8993549.27,
+          "actual": 8134595.37,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "parametric",
+          "forecast_date": "2025-08-25",
+          "mean": 8228717.97,
+          "p02_5": 7542122.68,
+          "p10": 7753249.3,
+          "p90": 8732956.01,
+          "p97_5": 8989477.57,
+          "actual": 8188215.63,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "parametric",
+          "forecast_date": "2025-09-01",
+          "mean": 8588248.03,
+          "p02_5": 7826784.05,
+          "p10": 8083615.33,
+          "p90": 9125151.53,
+          "p97_5": 9402630.22,
+          "actual": 8178911.39,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "parametric",
+          "forecast_date": "2025-09-08",
+          "mean": 8288122.22,
+          "p02_5": 7485119.96,
+          "p10": 7788750.2,
+          "p90": 8829226.67,
+          "p97_5": 9073026.6,
+          "actual": 7946764.87,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "parametric",
+          "forecast_date": "2025-09-15",
+          "mean": 8397522.02,
+          "p02_5": 7661434.22,
+          "p10": 7861006.76,
+          "p90": 8958969.88,
+          "p97_5": 9286029.02,
+          "actual": 8011546.42,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "parametric",
+          "forecast_date": "2025-09-22",
+          "mean": 8430611.23,
+          "p02_5": 7720659.0,
+          "p10": 7941667.62,
+          "p90": 8946525.84,
+          "p97_5": 9222313.35,
+          "actual": 8325410.12,
+          "in_80": true,
+          "in_95": true
+        },
+        {
+          "lag_model": "parametric",
+          "forecast_date": "2025-09-29",
+          "mean": 8292195.91,
+          "p02_5": 7532244.65,
+          "p10": 7808526.41,
+          "p90": 8775549.79,
+          "p97_5": 9022516.32,
+          "actual": 8263512.75,
+          "in_80": true,
+          "in_95": true
+        }
+      ]
+    },
+    "label": "model_estimate",
+    "note": "each forecast uses only rows dated on or before its forecast date; actual = payer deposits (synthetic_record)"
+  },
+  "marts": [
+    "mart.cash_forecast",
+    "mart.cash_forecast_backtest",
+    "mart.cash_forecast_lag"
+  ],
+  "figures": [
+    "figures/cashflow_lag_km.png",
+    "figures/cashflow_forecast_fan.png",
+    "figures/cashflow_backtest.png",
+    "figures/cashflow_shortfall_curve.png"
+  ],
+  "seconds": 202.9
+}

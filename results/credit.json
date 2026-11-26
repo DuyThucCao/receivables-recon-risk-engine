@@ -1,0 +1,756 @@
+{
+  "module": "recon_engine.models.credit",
+  "question": "Q5 Bank credit analyst: how much can we lend against these receivables?",
+  "label_note": "Simulated data for a fictional hospital. Results show that the borrowing-base logic behaves correctly and how well risk inputs are recovered; they are not findings about real payers, lenders or rates.",
+  "inputs": {
+    "tables": [
+      "core.fact_claim_line",
+      "core.fact_remit_line",
+      "core.fact_claim_event",
+      "recon.claim_remit_match",
+      "recon.remit_duplicate",
+      "recon.claim_line_balance (tie-out)"
+    ],
+    "sql": [
+      "sql/models/40_chain.sql",
+      "sql/models/42_borrowing_base.sql"
+    ],
+    "params": {
+      "certificate_date": null,
+      "steady_state_date": "2025-09-30",
+      "series_start": "2024-09-30",
+      "series_end": "2025-12-31",
+      "lookback_days": 365,
+      "slow_factor": 1.25,
+      "rate_shocks_bp": [
+        100,
+        200
+      ],
+      "n_boot": 300
+    }
+  },
+  "seed": 20260331,
+  "cutoff": "2026-03-31",
+  "assumptions": {
+    "advance_rate": {
+      "value": 0.85,
+      "label": "financial_assumption",
+      "source": "Assumption. Lender advance rate on eligible receivables."
+    },
+    "eligibility_max_age_days": {
+      "value": 120,
+      "label": "financial_assumption",
+      "source": "Assumption. Receivables older than this are ineligible for the borrowing base."
+    },
+    "concentration_limit": {
+      "value": 0.3,
+      "label": "financial_assumption",
+      "source": "Assumption. Maximum share of the eligible base from a single payer."
+    },
+    "sofr": {
+      "value": 0.0391,
+      "label": "observed_public",
+      "source": "SOFR 3.91% as of 2026-11-19: Federal Reserve Bank of New York, retrieved from FRED (Federal Reserve Bank of St. Louis). Secured Overnight Financing Rate [SOFR]. https://fred.stlouisfed.org/series/SOFR (CSV: https://fred.stlouisfed.org/graph/fredgraph.csv?id=SOFR), retrieved 2026-11-21."
+    },
+    "facility_spread": {
+      "value": 0.0275,
+      "label": "financial_assumption",
+      "source": "Assumption for the credit model (Q5). Margin over SOFR on the receivables facility; not a market quote."
+    },
+    "cross_age_pct": {
+      "value": 0.5,
+      "label": "financial_assumption",
+      "source": "Assumption for the credit model (Q5). If more than this share of a payer's net collectible value is past the age limit, all its receivables are ineligible."
+    }
+  },
+  "tie_out_point_in_time_vs_recon": {
+    "value": {
+      "lines": 72256,
+      "point_in_time_open_total": 2837491.1,
+      "recon_claim_line_balance_open_total": 2837491.1,
+      "difference_total": 0.0,
+      "lines_with_difference": 0,
+      "abs_difference_total": 0.0
+    },
+    "label": "synthetic_record",
+    "note": "open balance per line from mart.bb_lines_asof(as_of) vs recon.claim_line_balance"
+  },
+  "certificate_as_of": {
+    "value": {
+      "certificate_date": "2026-03-31",
+      "rules": {
+        "max_age_days": 120,
+        "advance_rate": 0.85,
+        "concentration_limit": 0.3,
+        "cross_age_pct": 0.5
+      },
+      "totals": {
+        "gross_ncv": 2179365.75,
+        "inel_denied": 1135356.09,
+        "inel_disputed": 476316.89,
+        "inel_aged": 546956.47,
+        "inel_cross_aged": 20736.3,
+        "eligible_pre_cap": 0.0,
+        "concentration_excess": 0.0,
+        "eligible": 0.0,
+        "credit_balance_reserve": 95638.73,
+        "availability": -95638.73,
+        "expected_loss": 0.0
+      },
+      "lines_by_reason": {
+        "AGED": {
+          "n": 912,
+          "ncv": 546956.47
+        },
+        "CROSS_AGED": {
+          "n": 48,
+          "ncv": 20736.3
+        },
+        "DENIED": {
+          "n": 377,
+          "ncv": 1135356.09
+        },
+        "DISPUTED": {
+          "n": 235,
+          "ncv": 476316.89
+        }
+      },
+      "per_payer": {
+        "P01": {
+          "gross_ncv": 550995.94,
+          "inel_denied": 128453.86,
+          "inel_disputed": 106172.43,
+          "inel_aged": 315388.87,
+          "inel_cross_aged": 980.79,
+          "eligible_pre_cap": 0.0,
+          "eligible": 0.0,
+          "concentration_excess": 0.0,
+          "credit_balance_reserve": 48713.88,
+          "advance_rate": 0.85,
+          "availability": -48713.88,
+          "pd": 0.0,
+          "lgd": 1.0,
+          "ead": 0.0,
+          "expected_loss": 0.0
+        },
+        "P02": {
+          "gross_ncv": 309787.99,
+          "inel_denied": 255172.26,
+          "inel_disputed": 41964.87,
+          "inel_aged": 12615.66,
+          "inel_cross_aged": 35.2,
+          "eligible_pre_cap": 0.0,
+          "eligible": 0.0,
+          "concentration_excess": 0.0,
+          "credit_balance_reserve": 7373.2,
+          "advance_rate": 0.85,
+          "availability": -7373.2,
+          "pd": 0.0,
+          "lgd": 1.0,
+          "ead": 0.0,
+          "expected_loss": 0.0
+        },
+        "P03": {
+          "gross_ncv": 562085.16,
+          "inel_denied": 326879.51,
+          "inel_disputed": 147485.11,
+          "inel_aged": 83718.52,
+          "inel_cross_aged": 4002.03,
+          "eligible_pre_cap": 0.0,
+          "eligible": 0.0,
+          "concentration_excess": 0.0,
+          "credit_balance_reserve": 1063.25,
+          "advance_rate": 0.85,
+          "availability": -1063.25,
+          "pd": 0.0,
+          "lgd": 1.0,
+          "ead": 0.0,
+          "expected_loss": 0.0
+        },
+        "P04": {
+          "gross_ncv": 449905.93,
+          "inel_denied": 206413.98,
+          "inel_disputed": 126164.84,
+          "inel_aged": 109441.62,
+          "inel_cross_aged": 7885.49,
+          "eligible_pre_cap": 0.0,
+          "eligible": 0.0,
+          "concentration_excess": 0.0,
+          "credit_balance_reserve": 13390.0,
+          "advance_rate": 0.85,
+          "availability": -13390.0,
+          "pd": 0.0,
+          "lgd": 1.0,
+          "ead": 0.0,
+          "expected_loss": 0.0
+        },
+        "P05": {
+          "gross_ncv": 259485.82,
+          "inel_denied": 197769.73,
+          "inel_disputed": 47854.37,
+          "inel_aged": 13564.83,
+          "inel_cross_aged": 296.89,
+          "eligible_pre_cap": 0.0,
+          "eligible": 0.0,
+          "concentration_excess": 0.0,
+          "credit_balance_reserve": 11154.4,
+          "advance_rate": 0.85,
+          "availability": -11154.4,
+          "pd": 0.0,
+          "lgd": 1.0,
+          "ead": 0.0,
+          "expected_loss": 0.0
+        },
+        "P06": {
+          "gross_ncv": 47104.91,
+          "inel_denied": 20666.76,
+          "inel_disputed": 6675.28,
+          "inel_aged": 12226.97,
+          "inel_cross_aged": 7535.91,
+          "eligible_pre_cap": 0.0,
+          "eligible": 0.0,
+          "concentration_excess": 0.0,
+          "credit_balance_reserve": 13944.0,
+          "advance_rate": 0.85,
+          "availability": -13944.0,
+          "pd": 0.0,
+          "lgd": 1.0,
+          "ead": 0.0,
+          "expected_loss": 0.0
+        }
+      },
+      "lender_margin_eligible_x_(1-advance)": 0.0,
+      "expected_loss_covered_by_margin": true,
+      "lgd_detail": {
+        "P01": {
+          "lgd": 1.0,
+          "recovery_rate": 0.0,
+          "n_written_off_claims": 294,
+          "lgd_95": [
+            1.0,
+            1.0
+          ]
+        },
+        "P02": {
+          "lgd": 1.0,
+          "recovery_rate": 0.0,
+          "n_written_off_claims": 295,
+          "lgd_95": [
+            1.0,
+            1.0
+          ]
+        },
+        "P03": {
+          "lgd": 1.0,
+          "recovery_rate": 0.0,
+          "n_written_off_claims": 365,
+          "lgd_95": [
+            1.0,
+            1.0
+          ]
+        },
+        "P04": {
+          "lgd": 1.0,
+          "recovery_rate": 0.0,
+          "n_written_off_claims": 141,
+          "lgd_95": [
+            1.0,
+            1.0
+          ]
+        },
+        "P05": {
+          "lgd": 1.0,
+          "recovery_rate": 0.0,
+          "n_written_off_claims": 171,
+          "lgd_95": [
+            1.0,
+            1.0
+          ]
+        },
+        "P06": {
+          "lgd": 1.0,
+          "recovery_rate": 0.0,
+          "n_written_off_claims": 62,
+          "lgd_95": [
+            1.0,
+            1.0
+          ]
+        },
+        "ALL": {
+          "lgd": 1.0,
+          "recovery_rate": 0.0,
+          "n_written_off_claims": 1328,
+          "lgd_95": [
+            1.0,
+            1.0
+          ]
+        }
+      }
+    },
+    "label": "model_estimate",
+    "note": "At the as-of date the simulated hospital has not billed for three months, so almost all open receivables are past the age limit: a run-off book."
+  },
+  "certificate_steady_state": {
+    "value": {
+      "certificate_date": "2025-09-30",
+      "rules": {
+        "max_age_days": 120,
+        "advance_rate": 0.85,
+        "concentration_limit": 0.3,
+        "cross_age_pct": 0.5
+      },
+      "totals": {
+        "gross_ncv": 7034464.62,
+        "inel_denied": 2574901.54,
+        "inel_disputed": 767427.82,
+        "inel_aged": 487227.27,
+        "inel_cross_aged": 0.0,
+        "eligible_pre_cap": 3204907.99,
+        "concentration_excess": 0.0,
+        "eligible": 3204907.99,
+        "credit_balance_reserve": 67445.85,
+        "availability": 2656725.94,
+        "expected_loss": 662340.28
+      },
+      "lines_by_reason": {
+        "AGED": {
+          "n": 750,
+          "ncv": 487227.27
+        },
+        "DENIED": {
+          "n": 1036,
+          "ncv": 2574901.54
+        },
+        "DISPUTED": {
+          "n": 501,
+          "ncv": 767427.82
+        },
+        "ELIGIBLE": {
+          "n": 3174,
+          "ncv": 3204907.99
+        }
+      },
+      "per_payer": {
+        "P01": {
+          "gross_ncv": 1479260.13,
+          "inel_denied": 533311.97,
+          "inel_disputed": 60314.96,
+          "inel_aged": 289045.87,
+          "inel_cross_aged": 0.0,
+          "eligible_pre_cap": 596587.33,
+          "eligible": 596587.33,
+          "concentration_excess": 0.0,
+          "credit_balance_reserve": 6672.91,
+          "advance_rate": 0.85,
+          "availability": 500426.32,
+          "pd": 0.1724,
+          "lgd": 1.0,
+          "ead": 596587.33,
+          "expected_loss": 102843.52
+        },
+        "P02": {
+          "gross_ncv": 1378328.76,
+          "inel_denied": 563003.13,
+          "inel_disputed": 184387.81,
+          "inel_aged": 10474.77,
+          "inel_cross_aged": 0.0,
+          "eligible_pre_cap": 620463.04,
+          "eligible": 620463.04,
+          "concentration_excess": 0.0,
+          "credit_balance_reserve": 7373.2,
+          "advance_rate": 0.85,
+          "availability": 520020.38,
+          "pd": 0.2614,
+          "lgd": 1.0,
+          "ead": 620463.04,
+          "expected_loss": 162174.21
+        },
+        "P03": {
+          "gross_ncv": 1374504.25,
+          "inel_denied": 591767.22,
+          "inel_disputed": 271437.37,
+          "inel_aged": 77275.63,
+          "inel_cross_aged": 0.0,
+          "eligible_pre_cap": 434024.04,
+          "eligible": 434024.04,
+          "concentration_excess": 0.0,
+          "credit_balance_reserve": 10644.5,
+          "advance_rate": 0.85,
+          "availability": 358275.94,
+          "pd": 0.2993,
+          "lgd": 1.0,
+          "ead": 434024.04,
+          "expected_loss": 129912.57
+        },
+        "P04": {
+          "gross_ncv": 1210112.99,
+          "inel_denied": 422960.32,
+          "inel_disputed": 109720.65,
+          "inel_aged": 90470.02,
+          "inel_cross_aged": 0.0,
+          "eligible_pre_cap": 586962.0,
+          "eligible": 586962.0,
+          "concentration_excess": 0.0,
+          "credit_balance_reserve": 4333.75,
+          "advance_rate": 0.85,
+          "availability": 494583.95,
+          "pd": 0.1345,
+          "lgd": 1.0,
+          "ead": 586962.0,
+          "expected_loss": 78936.58
+        },
+        "P05": {
+          "gross_ncv": 1061802.7,
+          "inel_denied": 390934.88,
+          "inel_disputed": 101496.24,
+          "inel_aged": 11407.88,
+          "inel_cross_aged": 0.0,
+          "eligible_pre_cap": 557963.71,
+          "eligible": 557963.71,
+          "concentration_excess": 0.0,
+          "credit_balance_reserve": 1032.4,
+          "advance_rate": 0.85,
+          "availability": 473236.75,
+          "pd": 0.2191,
+          "lgd": 1.0,
+          "ead": 557963.71,
+          "expected_loss": 122275.82
+        },
+        "P06": {
+          "gross_ncv": 530455.79,
+          "inel_denied": 72924.03,
+          "inel_disputed": 40070.79,
+          "inel_aged": 8553.1,
+          "inel_cross_aged": 0.0,
+          "eligible_pre_cap": 408907.88,
+          "eligible": 408907.88,
+          "concentration_excess": 0.0,
+          "credit_balance_reserve": 37389.09,
+          "advance_rate": 0.85,
+          "availability": 310182.61,
+          "pd": 0.1619,
+          "lgd": 1.0,
+          "ead": 408907.88,
+          "expected_loss": 66197.59
+        }
+      },
+      "lender_margin_eligible_x_(1-advance)": 480736.2,
+      "expected_loss_covered_by_margin": false,
+      "lgd_detail": {
+        "P01": {
+          "lgd": 1.0,
+          "recovery_rate": 0.0,
+          "n_written_off_claims": 300,
+          "lgd_95": [
+            1.0,
+            1.0
+          ]
+        },
+        "P02": {
+          "lgd": 1.0,
+          "recovery_rate": 0.0,
+          "n_written_off_claims": 337,
+          "lgd_95": [
+            1.0,
+            1.0
+          ]
+        },
+        "P03": {
+          "lgd": 1.0,
+          "recovery_rate": 0.0,
+          "n_written_off_claims": 373,
+          "lgd_95": [
+            1.0,
+            1.0
+          ]
+        },
+        "P04": {
+          "lgd": 1.0,
+          "recovery_rate": 0.0,
+          "n_written_off_claims": 155,
+          "lgd_95": [
+            1.0,
+            1.0
+          ]
+        },
+        "P05": {
+          "lgd": 1.0,
+          "recovery_rate": 0.0,
+          "n_written_off_claims": 176,
+          "lgd_95": [
+            1.0,
+            1.0
+          ]
+        },
+        "P06": {
+          "lgd": 1.0,
+          "recovery_rate": 0.0,
+          "n_written_off_claims": 66,
+          "lgd_95": [
+            1.0,
+            1.0
+          ]
+        },
+        "ALL": {
+          "lgd": 1.0,
+          "recovery_rate": 0.0,
+          "n_written_off_claims": 1407,
+          "lgd_95": [
+            1.0,
+            1.0
+          ]
+        }
+      }
+    },
+    "label": "model_estimate",
+    "note": "certificate while the simulated hospital is still billing"
+  },
+  "sensitivity_90_day_limit_steady_state": {
+    "value": {
+      "gross_ncv": 7034464.62,
+      "inel_denied": 2574901.54,
+      "inel_disputed": 767427.82,
+      "inel_aged": 537844.6,
+      "inel_cross_aged": 0.0,
+      "eligible_pre_cap": 3154290.66,
+      "concentration_excess": 0.0,
+      "eligible": 3154290.66,
+      "credit_balance_reserve": 67445.85,
+      "availability": 2613701.21
+    },
+    "label": "model_estimate"
+  },
+  "stress_steady_state": {
+    "value": [
+      {
+        "scenario": "base",
+        "rate_annual": 0.0666,
+        "drawn": 2656725.9408,
+        "interest_cost_annual": 179395.4192,
+        "interest_cost_13w": 44725.9812,
+        "carry_cost_of_delay": 42985.577,
+        "availability": 2656725.9408
+      },
+      {
+        "scenario": "+100bp",
+        "rate_annual": 0.0766,
+        "drawn": 2656725.9408,
+        "interest_cost_annual": 206331.6683,
+        "interest_cost_13w": 51441.594,
+        "carry_cost_of_delay": 49439.8678,
+        "availability": 2656725.9408
+      },
+      {
+        "scenario": "+200bp",
+        "rate_annual": 0.0866,
+        "drawn": 2656725.9408,
+        "interest_cost_annual": 233267.9174,
+        "interest_cost_13w": 58157.2068,
+        "carry_cost_of_delay": 55894.1587,
+        "availability": 2656725.9408
+      },
+      {
+        "scenario": "slower_payment_x1.25",
+        "rate_annual": 0.0666,
+        "drawn": 2628022.1136,
+        "interest_cost_annual": 177457.1932,
+        "interest_cost_13w": 44242.7523,
+        "carry_cost_of_delay": 53731.9713,
+        "availability": 2628022.1136
+      },
+      {
+        "scenario": "+200bp_and_slower",
+        "rate_annual": 0.0866,
+        "drawn": 2628022.1136,
+        "interest_cost_annual": 230747.6416,
+        "interest_cost_13w": 57528.8641,
+        "carry_cost_of_delay": 69867.6984,
+        "availability": 2628022.1136
+      }
+    ],
+    "label": "model_estimate"
+  },
+  "stress_as_of": {
+    "value": [
+      {
+        "scenario": "base",
+        "rate_annual": 0.0666,
+        "drawn": 0.0,
+        "interest_cost_annual": 0.0,
+        "interest_cost_13w": 0.0,
+        "carry_cost_of_delay": 15182.0658,
+        "availability": -95638.73
+      },
+      {
+        "scenario": "+100bp",
+        "rate_annual": 0.0766,
+        "drawn": 0.0,
+        "interest_cost_annual": 0.0,
+        "interest_cost_13w": 0.0,
+        "carry_cost_of_delay": 17461.6553,
+        "availability": -95638.73
+      },
+      {
+        "scenario": "+200bp",
+        "rate_annual": 0.0866,
+        "drawn": 0.0,
+        "interest_cost_annual": 0.0,
+        "interest_cost_13w": 0.0,
+        "carry_cost_of_delay": 19741.2447,
+        "availability": -95638.73
+      },
+      {
+        "scenario": "slower_payment_x1.25",
+        "rate_annual": 0.0666,
+        "drawn": 0.0,
+        "interest_cost_annual": 0.0,
+        "interest_cost_13w": 0.0,
+        "carry_cost_of_delay": 18977.5823,
+        "availability": -95638.73
+      },
+      {
+        "scenario": "+200bp_and_slower",
+        "rate_annual": 0.0866,
+        "drawn": 0.0,
+        "interest_cost_annual": 0.0,
+        "interest_cost_13w": 0.0,
+        "carry_cost_of_delay": 24676.5559,
+        "availability": -95638.73
+      }
+    ],
+    "label": "model_estimate"
+  },
+  "availability_series": {
+    "value": [
+      {
+        "date": "2024-09-30",
+        "gross_ncv": 7096647.0,
+        "eligible": 3094043.77,
+        "availability": 2621686.61
+      },
+      {
+        "date": "2024-10-31",
+        "gross_ncv": 7160100.75,
+        "eligible": 3287595.05,
+        "availability": 2780490.83
+      },
+      {
+        "date": "2024-11-30",
+        "gross_ncv": 7363385.14,
+        "eligible": 3537506.09,
+        "availability": 2989195.21
+      },
+      {
+        "date": "2024-12-31",
+        "gross_ncv": 6310251.4,
+        "eligible": 2814507.94,
+        "availability": 2381211.15
+      },
+      {
+        "date": "2025-01-31",
+        "gross_ncv": 6732552.51,
+        "eligible": 3736828.42,
+        "availability": 3113783.55
+      },
+      {
+        "date": "2025-02-28",
+        "gross_ncv": 7215239.61,
+        "eligible": 3898608.53,
+        "availability": 3014081.28
+      },
+      {
+        "date": "2025-03-31",
+        "gross_ncv": 7986789.03,
+        "eligible": 3761518.9,
+        "availability": 3141542.96
+      },
+      {
+        "date": "2025-04-30",
+        "gross_ncv": 8116422.39,
+        "eligible": 3532714.16,
+        "availability": 2979445.51
+      },
+      {
+        "date": "2025-05-31",
+        "gross_ncv": 8246028.85,
+        "eligible": 3815849.84,
+        "availability": 3223707.08
+      },
+      {
+        "date": "2025-06-30",
+        "gross_ncv": 8448102.77,
+        "eligible": 3527229.47,
+        "availability": 2983867.2
+      },
+      {
+        "date": "2025-07-31",
+        "gross_ncv": 8020693.5,
+        "eligible": 3360551.79,
+        "availability": 2837941.26
+      },
+      {
+        "date": "2025-08-31",
+        "gross_ncv": 8062416.96,
+        "eligible": 3483895.38,
+        "availability": 2929012.56
+      },
+      {
+        "date": "2025-09-30",
+        "gross_ncv": 7034464.62,
+        "eligible": 3204907.99,
+        "availability": 2656725.94
+      },
+      {
+        "date": "2025-10-31",
+        "gross_ncv": 7156711.18,
+        "eligible": 3420899.69,
+        "availability": 2830721.89
+      },
+      {
+        "date": "2025-11-30",
+        "gross_ncv": 7880716.56,
+        "eligible": 3558788.28,
+        "availability": 2982623.03
+      },
+      {
+        "date": "2025-12-31",
+        "gross_ncv": 6934593.09,
+        "eligible": 2809550.66,
+        "availability": 2344075.3
+      }
+    ],
+    "label": "model_estimate"
+  },
+  "expected_loss_backtest": {
+    "value": {
+      "certificate_date": "2025-09-30",
+      "eval_date": "2026-03-31",
+      "eligible_lines": 3174,
+      "eligible_ncv": 3204907.99,
+      "predicted_expected_loss": 662340.28,
+      "realised_loss_written_off": 625006.59,
+      "predicted_pd_ncv_weighted": 0.2067,
+      "predicted_pd_ncv_weighted_count_chain": 0.0814,
+      "predicted_pd_count": 0.2065,
+      "predicted_pd_count_chain_count": 0.0816,
+      "realised_write_off_rate_count": 0.0655,
+      "realised_write_off_share_ncv": 0.195,
+      "lines_still_open_at_eval": 61,
+      "collected_after_certificate": 2470811.73,
+      "collected_share_of_ncv": 0.7709
+    },
+    "label": "model_estimate",
+    "note": "eligible pool of the steady-state certificate followed to the as-of date"
+  },
+  "marts": [
+    "mart.borrowing_base",
+    "mart.borrowing_base_line",
+    "mart.borrowing_base_stress"
+  ],
+  "figures": [
+    "figures/credit_borrowing_base_waterfall.png",
+    "figures/credit_availability_series.png",
+    "figures/credit_stress.png"
+  ],
+  "seconds": 17.3
+}

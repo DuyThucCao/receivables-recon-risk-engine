@@ -1,0 +1,22 @@
+# generated data (rebuilt by run_all.py); small readable extracts live in data/samples/
+data/raw/
+data/truth/
+data/pg/
+# python and tool caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ipynb_checkpoints/
+.venv/
+venv/
+.DS_Store
+# local secrets, if anyone adds a hosted database URL
+.env
+.streamlit/secrets.toml
+# page renders of generated reports (scripts/build_reports.py --png)
+reports/*_p*.png
+.*.tmp
+docs/project_dossier/build/
+# personal interview and CV preparation, kept locally, not published
+INTERVIEW_GUIDE.md
+docs/career/

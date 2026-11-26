@@ -1,0 +1,470 @@
+{
+  "name": "prioritize_evaluation",
+  "label": "model_estimate",
+  "note": "Compares the Q2 model with the parameters planted in the simulator (data/truth). Evaluation only: shows parameter recovery and decision quality on simulated data, not facts about real payers.",
+  "seed": 20260331,
+  "as_of_date": "2026-03-31",
+  "validation_cutoff": "2025-07-01",
+  "parameter_recovery": {
+    "coefficients_fit_at_cutoff": {
+      "rows": [
+        {
+          "term": "payer_id=P01",
+          "planted": 0.6386,
+          "estimate": 0.5973,
+          "ci_low": 0.2495,
+          "ci_high": 0.9452,
+          "covered": true
+        },
+        {
+          "term": "payer_id=P02",
+          "planted": 0.4179,
+          "estimate": 0.2134,
+          "ci_low": -0.1433,
+          "ci_high": 0.5701,
+          "covered": true
+        },
+        {
+          "term": "payer_id=P04",
+          "planted": 0.8318,
+          "estimate": 0.6176,
+          "ci_low": 0.0893,
+          "ci_high": 1.1458,
+          "covered": true
+        },
+        {
+          "term": "payer_id=P05",
+          "planted": 0.4184,
+          "estimate": 0.3989,
+          "ci_low": -0.0351,
+          "ci_high": 0.833,
+          "covered": true
+        },
+        {
+          "term": "payer_id=P06",
+          "planted": 0.1954,
+          "estimate": -0.3261,
+          "ci_low": -0.9217,
+          "ci_high": 0.2695,
+          "covered": true
+        },
+        {
+          "term": "reason_category=ADMINISTRATIVE",
+          "planted": 0.6,
+          "estimate": 0.5537,
+          "ci_low": 0.167,
+          "ci_high": 0.9404,
+          "covered": true
+        },
+        {
+          "term": "reason_category=CODING",
+          "planted": 0.3,
+          "estimate": 0.2735,
+          "ci_low": -0.1241,
+          "ci_high": 0.6711,
+          "covered": true
+        },
+        {
+          "term": "reason_category=ELIGIBILITY",
+          "planted": -0.4,
+          "estimate": -0.5306,
+          "ci_low": -1.0918,
+          "ci_high": 0.0305,
+          "covered": true
+        },
+        {
+          "term": "reason_category=MEDICAL_NECESSITY",
+          "planted": -0.3,
+          "estimate": -0.1695,
+          "ci_low": -0.502,
+          "ci_high": 0.163,
+          "covered": true
+        },
+        {
+          "term": "reason_category=NON_COVERED",
+          "planted": -1.2,
+          "estimate": -1.3901,
+          "ci_low": -1.9634,
+          "ci_high": -0.8167,
+          "covered": true
+        },
+        {
+          "term": "service_line_code=CARDIOLOGY",
+          "planted": -0.2,
+          "estimate": 0.0159,
+          "ci_low": -0.5478,
+          "ci_high": 0.5797,
+          "covered": true
+        },
+        {
+          "term": "service_line_code=EMERGENCY",
+          "planted": -0.1,
+          "estimate": 0.0937,
+          "ci_low": -0.4566,
+          "ci_high": 0.644,
+          "covered": true
+        },
+        {
+          "term": "service_line_code=LABORATORY",
+          "planted": -0.4,
+          "estimate": -0.2953,
+          "ci_low": -1.2082,
+          "ci_high": 0.6177,
+          "covered": true
+        },
+        {
+          "term": "service_line_code=OPHTHALMOLOGY",
+          "planted": -0.2,
+          "estimate": -0.1097,
+          "ci_low": -0.722,
+          "ci_high": 0.5027,
+          "covered": true
+        },
+        {
+          "term": "service_line_code=ORTHOPEDICS",
+          "planted": -0.1,
+          "estimate": 0.1534,
+          "ci_low": -0.2961,
+          "ci_high": 0.6029,
+          "covered": true
+        },
+        {
+          "term": "service_line_code=PRIMARY_CARE",
+          "planted": -0.3,
+          "estimate": -0.2449,
+          "ci_low": -0.9966,
+          "ci_high": 0.5069,
+          "covered": true
+        },
+        {
+          "term": "service_line_code=RADIOLOGY",
+          "planted": -0.3,
+          "estimate": -0.0229,
+          "ci_low": -0.5703,
+          "ci_high": 0.5244,
+          "covered": true
+        },
+        {
+          "term": "ln_amount_c",
+          "planted": -0.15,
+          "estimate": -0.1033,
+          "ci_low": -0.2323,
+          "ci_high": 0.0256,
+          "covered": true
+        },
+        {
+          "term": "age_months",
+          "planted": 0.0,
+          "estimate": -0.0264,
+          "ci_low": -0.1048,
+          "ci_high": 0.0521,
+          "covered": true
+        }
+      ],
+      "n_terms": 19,
+      "ci95_coverage": "19 of 19",
+      "corr_estimate_planted": 0.9143,
+      "mean_abs_error": 0.1468
+    },
+    "coefficients_fit_at_as_of": {
+      "rows": [
+        {
+          "term": "payer_id=P01",
+          "planted": 0.6386,
+          "estimate": 0.5302,
+          "ci_low": 0.2537,
+          "ci_high": 0.8067,
+          "covered": true
+        },
+        {
+          "term": "payer_id=P02",
+          "planted": 0.4179,
+          "estimate": 0.3626,
+          "ci_low": 0.0859,
+          "ci_high": 0.6393,
+          "covered": true
+        },
+        {
+          "term": "payer_id=P04",
+          "planted": 0.8318,
+          "estimate": 0.4863,
+          "ci_low": 0.0725,
+          "ci_high": 0.9002,
+          "covered": true
+        },
+        {
+          "term": "payer_id=P05",
+          "planted": 0.4184,
+          "estimate": 0.3035,
+          "ci_low": -0.0328,
+          "ci_high": 0.6398,
+          "covered": true
+        },
+        {
+          "term": "payer_id=P06",
+          "planted": 0.1954,
+          "estimate": 0.189,
+          "ci_low": -0.277,
+          "ci_high": 0.655,
+          "covered": true
+        },
+        {
+          "term": "reason_category=ADMINISTRATIVE",
+          "planted": 0.6,
+          "estimate": 0.5659,
+          "ci_low": 0.2652,
+          "ci_high": 0.8666,
+          "covered": true
+        },
+        {
+          "term": "reason_category=CODING",
+          "planted": 0.3,
+          "estimate": 0.2467,
+          "ci_low": -0.0642,
+          "ci_high": 0.5575,
+          "covered": true
+        },
+        {
+          "term": "reason_category=ELIGIBILITY",
+          "planted": -0.4,
+          "estimate": -0.2876,
+          "ci_low": -0.7319,
+          "ci_high": 0.1568,
+          "covered": true
+        },
+        {
+          "term": "reason_category=MEDICAL_NECESSITY",
+          "planted": -0.3,
+          "estimate": -0.1774,
+          "ci_low": -0.4382,
+          "ci_high": 0.0835,
+          "covered": true
+        },
+        {
+          "term": "reason_category=NON_COVERED",
+          "planted": -1.2,
+          "estimate": -1.4029,
+          "ci_low": -1.8542,
+          "ci_high": -0.9516,
+          "covered": true
+        },
+        {
+          "term": "service_line_code=CARDIOLOGY",
+          "planted": -0.2,
+          "estimate": 0.0205,
+          "ci_low": -0.4233,
+          "ci_high": 0.4643,
+          "covered": true
+        },
+        {
+          "term": "service_line_code=EMERGENCY",
+          "planted": -0.1,
+          "estimate": 0.1768,
+          "ci_low": -0.2467,
+          "ci_high": 0.6003,
+          "covered": true
+        },
+        {
+          "term": "service_line_code=LABORATORY",
+          "planted": -0.4,
+          "estimate": -0.1752,
+          "ci_low": -0.8675,
+          "ci_high": 0.5172,
+          "covered": true
+        },
+        {
+          "term": "service_line_code=OPHTHALMOLOGY",
+          "planted": -0.2,
+          "estimate": -0.0336,
+          "ci_low": -0.5163,
+          "ci_high": 0.4492,
+          "covered": true
+        },
+        {
+          "term": "service_line_code=ORTHOPEDICS",
+          "planted": -0.1,
+          "estimate": 0.1723,
+          "ci_low": -0.1786,
+          "ci_high": 0.5231,
+          "covered": true
+        },
+        {
+          "term": "service_line_code=PRIMARY_CARE",
+          "planted": -0.3,
+          "estimate": -0.1284,
+          "ci_low": -0.7023,
+          "ci_high": 0.4456,
+          "covered": true
+        },
+        {
+          "term": "service_line_code=RADIOLOGY",
+          "planted": -0.3,
+          "estimate": -0.0177,
+          "ci_low": -0.4324,
+          "ci_high": 0.3969,
+          "covered": true
+        },
+        {
+          "term": "ln_amount_c",
+          "planted": -0.15,
+          "estimate": -0.0881,
+          "ci_low": -0.1856,
+          "ci_high": 0.0094,
+          "covered": true
+        },
+        {
+          "term": "age_months",
+          "planted": 0.0,
+          "estimate": -0.031,
+          "ci_low": -0.0889,
+          "ci_high": 0.027,
+          "covered": true
+        }
+      ],
+      "n_terms": 19,
+      "ci95_coverage": "19 of 19",
+      "corr_estimate_planted": 0.9289,
+      "mean_abs_error": 0.1507
+    }
+  },
+  "planted_probability_metrics_on_test": {
+    "n": 442,
+    "observed_rate": 0.4186,
+    "mean_predicted": 0.4239,
+    "brier": 0.2283,
+    "log_loss": 0.6476,
+    "auc": 0.6441,
+    "calibration_intercept": -0.0385,
+    "calibration_slope": 0.9468,
+    "calibration_slope_ci95": [
+      0.5820980066328084,
+      1.3114035737592213
+    ]
+  },
+  "model_metrics_on_test": {
+    "n": 442,
+    "observed_rate": 0.4186,
+    "mean_predicted": 0.4314,
+    "brier": 0.2317,
+    "log_loss": 0.6554,
+    "auc": 0.6306,
+    "calibration_intercept": -0.0959,
+    "calibration_slope": 0.8367,
+    "calibration_slope_ci95": [
+      0.4747031167483213,
+      1.1987657846078574
+    ]
+  },
+  "backtest_value_under_planted_probabilities": [
+    {
+      "hours_per_day": 0.75,
+      "largest_first": 3166931.78,
+      "model_knapsack": 3313175.85,
+      "oldest_first": 794211.54,
+      "knapsack_minus_oldest": 2518964.31,
+      "knapsack_minus_largest": 146244.07
+    },
+    {
+      "hours_per_day": 1.0,
+      "largest_first": 3535255.55,
+      "model_knapsack": 3693432.39,
+      "oldest_first": 832862.66,
+      "knapsack_minus_oldest": 2860569.73,
+      "knapsack_minus_largest": 158176.84
+    },
+    {
+      "hours_per_day": 1.5,
+      "largest_first": 4114170.01,
+      "model_knapsack": 4329008.2,
+      "oldest_first": 1343582.8,
+      "knapsack_minus_oldest": 2985425.4,
+      "knapsack_minus_largest": 214838.19
+    },
+    {
+      "hours_per_day": 2.0,
+      "largest_first": 4497665.35,
+      "model_knapsack": 4632262.09,
+      "oldest_first": 1857132.66,
+      "knapsack_minus_oldest": 2775129.42,
+      "knapsack_minus_largest": 134596.73
+    },
+    {
+      "hours_per_day": 3.0,
+      "largest_first": 4855506.45,
+      "model_knapsack": 4896887.33,
+      "oldest_first": 2872181.91,
+      "knapsack_minus_oldest": 2024705.42,
+      "knapsack_minus_largest": 41380.89
+    },
+    {
+      "hours_per_day": 4.0,
+      "largest_first": 4977364.22,
+      "model_knapsack": 4993799.23,
+      "oldest_first": 3703658.34,
+      "knapsack_minus_oldest": 1290140.89,
+      "knapsack_minus_largest": 16435.01
+    },
+    {
+      "hours_per_day": 6.0,
+      "largest_first": 5026000.15,
+      "model_knapsack": 5027853.44,
+      "oldest_first": 5025317.88,
+      "knapsack_minus_oldest": 2535.56,
+      "knapsack_minus_largest": 1853.29
+    },
+    {
+      "hours_per_day": 8.0,
+      "largest_first": 5025317.88,
+      "model_knapsack": 5027853.44,
+      "oldest_first": 5025317.88,
+      "knapsack_minus_oldest": 2535.56,
+      "knapsack_minus_largest": 2535.56
+    },
+    {
+      "hours_per_day": 24.0,
+      "largest_first": 5025317.88,
+      "model_knapsack": 5027853.44,
+      "oldest_first": 5025317.88,
+      "knapsack_minus_oldest": 2535.56,
+      "knapsack_minus_largest": 2535.56
+    }
+  ],
+  "oracle_knapsack": [
+    {
+      "hours_per_day": 0.75,
+      "oracle_knapsack_true_value": 3323853.33
+    },
+    {
+      "hours_per_day": 1.0,
+      "oracle_knapsack_true_value": 3705282.19
+    },
+    {
+      "hours_per_day": 1.5,
+      "oracle_knapsack_true_value": 4328537.19
+    },
+    {
+      "hours_per_day": 2.0,
+      "oracle_knapsack_true_value": 4635997.72
+    },
+    {
+      "hours_per_day": 3.0,
+      "oracle_knapsack_true_value": 4896912.97
+    },
+    {
+      "hours_per_day": 4.0,
+      "oracle_knapsack_true_value": 4993921.31
+    },
+    {
+      "hours_per_day": 6.0,
+      "oracle_knapsack_true_value": 5027960.64
+    },
+    {
+      "hours_per_day": 8.0,
+      "oracle_knapsack_true_value": 5027960.64
+    },
+    {
+      "hours_per_day": 24.0,
+      "oracle_knapsack_true_value": 5027960.64
+    }
+  ]
+}

@@ -1,0 +1,951 @@
+{
+  "name": "econ",
+  "question": "Q7 Consulting economist: which payers underpay against contract, by how much, and why would they?",
+  "label_note": "Simulated payers and claims for a fictional hospital; SOFR is the only real series. Results show parameter recovery and decision logic, not findings about real payers.",
+  "seed": 20260331,
+  "cutoff": {
+    "as_of_date": "2026-03-31",
+    "service_start": "2024-01-01",
+    "service_end": "2025-12-31",
+    "years_of_service_dates": 1.999
+  },
+  "inputs": {
+    "tables": [
+      "recon.claim_line_balance",
+      "recon.claim_line_status",
+      "recon.claim_remit_match",
+      "core.fact_remit_line",
+      "core.fact_claim_event",
+      "core.fact_claim_line",
+      "core.dim_contract_rate (through recon.claim_line_balance.expected_allowed)"
+    ],
+    "sql": [
+      "sql/models/63_econ_underpayment.sql",
+      "sql/models/64_econ_float.sql",
+      "sql/models/65_econ_appeals.sql"
+    ],
+    "sofr": {
+      "source": "FRED SOFR daily series, monthly mean",
+      "label": "observed_public",
+      "path": "SOFR.csv"
+    }
+  },
+  "assumptions": {
+    "shortfall_tolerance_usd": {
+      "value": 0.01,
+      "label": "financial_assumption",
+      "note": "A line counts as priced below contract if allowed is at least one cent below the contract amount. Contract arithmetic in this data set is exact to the cent; real data would need a wider tolerance for rounding. Value from config/calibration.yaml."
+    },
+    "prompt_pay_days": {
+      "value": 30,
+      "label": "financial_assumption",
+      "note": "Days from submission after which a payment counts as late. A round assumption, not a statute; prompt-pay windows differ by state, payer type and claim type. Value from config/calibration.yaml."
+    },
+    "bootstrap_reps": {
+      "value": 2000,
+      "label": "financial_assumption",
+      "note": "Bootstrap replicates per payer."
+    },
+    "p_win_dispute_alt": {
+      "value": 0.9,
+      "label": "financial_assumption",
+      "note": "Sensitivity: assumed win rate for an underpayment dispute, where the contract rate is documented (likely higher than the denial-appeal win rate used as the base case). Value from config/calibration.yaml."
+    },
+    "prompt_pay_interest_rate": {
+      "value": 0.12,
+      "label": "financial_assumption",
+      "note": "Illustrative contract clause: simple interest per year owed on late or short payments. Assumed, not taken from any statute or contract. Value from config/calibration.yaml."
+    },
+    "renewal_discount_factor": {
+      "value": 0.9,
+      "label": "financial_assumption",
+      "note": "Weight the payer puts on next contract period relative to this one (probability of renewal x time discount). Illustrative. Value from config/calibration.yaml."
+    }
+  },
+  "appeal_cost_usd": {
+    "value": 45.0,
+    "label": "financial_assumption",
+    "note": "cfg financial_assumptions.appeal_handling_cost_usd"
+  },
+  "gap_reasons": {
+    "label": "synthetic_record",
+    "rows": [
+      {
+        "payer_id": "P01",
+        "gap_reason": "AT_CONTRACT",
+        "n_lines": 16559,
+        "gap_vs_contract_usd": 0.01,
+        "pricing_shortfall_usd": 0.0,
+        "net_post_payment_change_usd": 0.01,
+        "patient_resp_usd": 2093324.26
+      },
+      {
+        "payer_id": "P01",
+        "gap_reason": "OVERPAID",
+        "n_lines": 111,
+        "gap_vs_contract_usd": -21116.23,
+        "pricing_shortfall_usd": 0.0,
+        "net_post_payment_change_usd": -21116.23,
+        "patient_resp_usd": 14495.41
+      },
+      {
+        "payer_id": "P01",
+        "gap_reason": "PARTIAL_PENDING",
+        "n_lines": 49,
+        "gap_vs_contract_usd": 0.0,
+        "pricing_shortfall_usd": 0.0,
+        "net_post_payment_change_usd": 0.0,
+        "patient_resp_usd": 6873.46
+      },
+      {
+        "payer_id": "P01",
+        "gap_reason": "PRICED_BELOW_CONTRACT",
+        "n_lines": 758,
+        "gap_vs_contract_usd": 34361.37,
+        "pricing_shortfall_usd": 34851.63,
+        "net_post_payment_change_usd": -490.26,
+        "patient_resp_usd": 78941.91
+      },
+      {
+        "payer_id": "P01",
+        "gap_reason": "REDUCED_AFTER_PAYMENT",
+        "n_lines": 197,
+        "gap_vs_contract_usd": 24617.3,
+        "pricing_shortfall_usd": 0.0,
+        "net_post_payment_change_usd": 24718.16,
+        "patient_resp_usd": 15725.67
+      },
+      {
+        "payer_id": "P02",
+        "gap_reason": "AT_CONTRACT",
+        "n_lines": 13437,
+        "gap_vs_contract_usd": 0.0,
+        "pricing_shortfall_usd": 0.0,
+        "net_post_payment_change_usd": 0.0,
+        "patient_resp_usd": 1570817.31
+      },
+      {
+        "payer_id": "P02",
+        "gap_reason": "OVERPAID",
+        "n_lines": 95,
+        "gap_vs_contract_usd": -3710.8,
+        "pricing_shortfall_usd": 0.0,
+        "net_post_payment_change_usd": -3710.8,
+        "patient_resp_usd": 10544.72
+      },
+      {
+        "payer_id": "P02",
+        "gap_reason": "PARTIAL_PENDING",
+        "n_lines": 46,
+        "gap_vs_contract_usd": 0.0,
+        "pricing_shortfall_usd": 0.0,
+        "net_post_payment_change_usd": 0.0,
+        "patient_resp_usd": 4021.71
+      },
+      {
+        "payer_id": "P02",
+        "gap_reason": "PRICED_BELOW_CONTRACT",
+        "n_lines": 800,
+        "gap_vs_contract_usd": 60802.45,
+        "pricing_shortfall_usd": 60752.25,
+        "net_post_payment_change_usd": 50.2,
+        "patient_resp_usd": 77305.73
+      },
+      {
+        "payer_id": "P02",
+        "gap_reason": "REDUCED_AFTER_PAYMENT",
+        "n_lines": 167,
+        "gap_vs_contract_usd": 2934.04,
+        "pricing_shortfall_usd": 0.0,
+        "net_post_payment_change_usd": 2934.04,
+        "patient_resp_usd": 10981.48
+      },
+      {
+        "payer_id": "P03",
+        "gap_reason": "AT_CONTRACT",
+        "n_lines": 8288,
+        "gap_vs_contract_usd": 0.0,
+        "pricing_shortfall_usd": 0.0,
+        "net_post_payment_change_usd": 0.0,
+        "patient_resp_usd": 796415.52
+      },
+      {
+        "payer_id": "P03",
+        "gap_reason": "OVERPAID",
+        "n_lines": 127,
+        "gap_vs_contract_usd": -2527.73,
+        "pricing_shortfall_usd": 0.0,
+        "net_post_payment_change_usd": -2527.73,
+        "patient_resp_usd": 30578.03
+      },
+      {
+        "payer_id": "P03",
+        "gap_reason": "PARTIAL_PENDING",
+        "n_lines": 33,
+        "gap_vs_contract_usd": 0.0,
+        "pricing_shortfall_usd": 0.0,
+        "net_post_payment_change_usd": 0.0,
+        "patient_resp_usd": 2257.42
+      },
+      {
+        "payer_id": "P03",
+        "gap_reason": "PRICED_BELOW_CONTRACT",
+        "n_lines": 1405,
+        "gap_vs_contract_usd": 144832.86,
+        "pricing_shortfall_usd": 143952.69,
+        "net_post_payment_change_usd": 880.17,
+        "patient_resp_usd": 114602.52
+      },
+      {
+        "payer_id": "P03",
+        "gap_reason": "REDUCED_AFTER_PAYMENT",
+        "n_lines": 205,
+        "gap_vs_contract_usd": 4920.38,
+        "pricing_shortfall_usd": 0.0,
+        "net_post_payment_change_usd": 4921.47,
+        "patient_resp_usd": 43556.37
+      },
+      {
+        "payer_id": "P04",
+        "gap_reason": "AT_CONTRACT",
+        "n_lines": 11179,
+        "gap_vs_contract_usd": 0.0,
+        "pricing_shortfall_usd": 0.0,
+        "net_post_payment_change_usd": 0.0,
+        "patient_resp_usd": 81042.81
+      },
+      {
+        "payer_id": "P04",
+        "gap_reason": "OVERPAID",
+        "n_lines": 58,
+        "gap_vs_contract_usd": -4681.06,
+        "pricing_shortfall_usd": 0.0,
+        "net_post_payment_change_usd": -4681.06,
+        "patient_resp_usd": 553.07
+      },
+      {
+        "payer_id": "P04",
+        "gap_reason": "PARTIAL_PENDING",
+        "n_lines": 33,
+        "gap_vs_contract_usd": 0.0,
+        "pricing_shortfall_usd": 0.0,
+        "net_post_payment_change_usd": 0.0,
+        "patient_resp_usd": 0.0
+      },
+      {
+        "payer_id": "P04",
+        "gap_reason": "PRICED_BELOW_CONTRACT",
+        "n_lines": 234,
+        "gap_vs_contract_usd": 23309.95,
+        "pricing_shortfall_usd": 23286.77,
+        "net_post_payment_change_usd": 23.18,
+        "patient_resp_usd": 2105.43
+      },
+      {
+        "payer_id": "P04",
+        "gap_reason": "REDUCED_AFTER_PAYMENT",
+        "n_lines": 72,
+        "gap_vs_contract_usd": 2472.51,
+        "pricing_shortfall_usd": 0.0,
+        "net_post_payment_change_usd": 2472.51,
+        "patient_resp_usd": 225.01
+      },
+      {
+        "payer_id": "P05",
+        "gap_reason": "AT_CONTRACT",
+        "n_lines": 5959,
+        "gap_vs_contract_usd": 0.0,
+        "pricing_shortfall_usd": 0.0,
+        "net_post_payment_change_usd": 0.0,
+        "patient_resp_usd": 678374.76
+      },
+      {
+        "payer_id": "P05",
+        "gap_reason": "OVERPAID",
+        "n_lines": 66,
+        "gap_vs_contract_usd": -5776.49,
+        "pricing_shortfall_usd": 0.0,
+        "net_post_payment_change_usd": -5776.49,
+        "patient_resp_usd": 6321.81
+      },
+      {
+        "payer_id": "P05",
+        "gap_reason": "PARTIAL_PENDING",
+        "n_lines": 56,
+        "gap_vs_contract_usd": 0.0,
+        "pricing_shortfall_usd": 0.0,
+        "net_post_payment_change_usd": 0.0,
+        "patient_resp_usd": 7679.65
+      },
+      {
+        "payer_id": "P05",
+        "gap_reason": "PRICED_BELOW_CONTRACT",
+        "n_lines": 547,
+        "gap_vs_contract_usd": 30880.74,
+        "pricing_shortfall_usd": 30851.75,
+        "net_post_payment_change_usd": 28.99,
+        "patient_resp_usd": 80721.2
+      },
+      {
+        "payer_id": "P05",
+        "gap_reason": "REDUCED_AFTER_PAYMENT",
+        "n_lines": 64,
+        "gap_vs_contract_usd": 2364.62,
+        "pricing_shortfall_usd": 0.0,
+        "net_post_payment_change_usd": 2364.62,
+        "patient_resp_usd": 2717.78
+      },
+      {
+        "payer_id": "P06",
+        "gap_reason": "AT_CONTRACT",
+        "n_lines": 3236,
+        "gap_vs_contract_usd": 0.0,
+        "pricing_shortfall_usd": 0.0,
+        "net_post_payment_change_usd": 0.0,
+        "patient_resp_usd": 427903.24
+      },
+      {
+        "payer_id": "P06",
+        "gap_reason": "OVERPAID",
+        "n_lines": 28,
+        "gap_vs_contract_usd": -8774.61,
+        "pricing_shortfall_usd": 0.0,
+        "net_post_payment_change_usd": -8774.61,
+        "patient_resp_usd": 1988.15
+      },
+      {
+        "payer_id": "P06",
+        "gap_reason": "PARTIAL_PENDING",
+        "n_lines": 11,
+        "gap_vs_contract_usd": 0.0,
+        "pricing_shortfall_usd": 0.0,
+        "net_post_payment_change_usd": 0.0,
+        "patient_resp_usd": 2451.05
+      },
+      {
+        "payer_id": "P06",
+        "gap_reason": "PRICED_BELOW_CONTRACT",
+        "n_lines": 398,
+        "gap_vs_contract_usd": 40936.95,
+        "pricing_shortfall_usd": 40791.2,
+        "net_post_payment_change_usd": 145.75,
+        "patient_resp_usd": 27684.25
+      },
+      {
+        "payer_id": "P06",
+        "gap_reason": "REDUCED_AFTER_PAYMENT",
+        "n_lines": 42,
+        "gap_vs_contract_usd": 1095.88,
+        "pricing_shortfall_usd": 0.0,
+        "net_post_payment_change_usd": 1095.88,
+        "patient_resp_usd": 8635.63
+      }
+    ]
+  },
+  "underpayment_by_payer": {
+    "label": "model_estimate",
+    "rows": [
+      {
+        "payer_id": "P01",
+        "n_priced_claims": 7384,
+        "n_priced_lines": 17674,
+        "n_underpaid_claims": 323,
+        "expected_allowed": 19667533.29,
+        "shortfall_usd": 34851.63,
+        "shortfall_usd_lo": 24476.4,
+        "shortfall_usd_hi": 46370.4,
+        "underpaid_claim_share": 0.04374,
+        "underpaid_claim_share_lo": 0.03914,
+        "underpaid_claim_share_hi": 0.04821,
+        "shortfall_rate": 0.001772,
+        "shortfall_rate_lo": 0.001264,
+        "shortfall_rate_hi": 0.002383,
+        "mean_shortfall_fraction": 0.04834,
+        "mean_shortfall_fraction_lo": 0.04375,
+        "mean_shortfall_fraction_hi": 0.05329,
+        "post_payment_reduction_usd": 24946.26,
+        "post_payment_increase_usd": 21834.58,
+        "pending_partial_usd": 27301.36,
+        "patient_resp_usd": 2209360.71,
+        "bootstrap_reps": 2000,
+        "bootstrap_seed": 20261331
+      },
+      {
+        "payer_id": "P02",
+        "n_priced_claims": 6095,
+        "n_priced_lines": 14545,
+        "n_underpaid_claims": 338,
+        "expected_allowed": 14792792.41,
+        "shortfall_usd": 60752.25,
+        "shortfall_usd_lo": 30832.32,
+        "shortfall_usd_hi": 106861.4,
+        "underpaid_claim_share": 0.05546,
+        "underpaid_claim_share_lo": 0.05004,
+        "underpaid_claim_share_hi": 0.0612,
+        "shortfall_rate": 0.004107,
+        "shortfall_rate_lo": 0.0021,
+        "shortfall_rate_hi": 0.007157,
+        "mean_shortfall_fraction": 0.07852,
+        "mean_shortfall_fraction_lo": 0.07273,
+        "mean_shortfall_fraction_hi": 0.08457,
+        "post_payment_reduction_usd": 3219.49,
+        "post_payment_increase_usd": 3946.05,
+        "pending_partial_usd": 21609.86,
+        "patient_resp_usd": 1673670.95,
+        "bootstrap_reps": 2000,
+        "bootstrap_seed": 20262331
+      },
+      {
+        "payer_id": "P03",
+        "n_priced_claims": 4281,
+        "n_priced_lines": 10058,
+        "n_underpaid_claims": 595,
+        "expected_allowed": 8923036.83,
+        "shortfall_usd": 143952.69,
+        "shortfall_usd_lo": 102969.87,
+        "shortfall_usd_hi": 194322.14,
+        "underpaid_claim_share": 0.13899,
+        "underpaid_claim_share_lo": 0.12941,
+        "underpaid_claim_share_hi": 0.14926,
+        "shortfall_rate": 0.016133,
+        "shortfall_rate_lo": 0.011515,
+        "shortfall_rate_hi": 0.021469,
+        "mean_shortfall_fraction": 0.11854,
+        "mean_shortfall_fraction_lo": 0.11245,
+        "mean_shortfall_fraction_hi": 0.12455,
+        "post_payment_reduction_usd": 5916.58,
+        "post_payment_increase_usd": 2642.67,
+        "pending_partial_usd": 12537.74,
+        "patient_resp_usd": 987409.86,
+        "bootstrap_reps": 2000,
+        "bootstrap_seed": 20263331
+      },
+      {
+        "payer_id": "P04",
+        "n_priced_claims": 4828,
+        "n_priced_lines": 11576,
+        "n_underpaid_claims": 98,
+        "expected_allowed": 9465620.9,
+        "shortfall_usd": 23286.77,
+        "shortfall_usd_lo": 4028.11,
+        "shortfall_usd_hi": 49192.84,
+        "underpaid_claim_share": 0.0203,
+        "underpaid_claim_share_lo": 0.01657,
+        "underpaid_claim_share_hi": 0.02444,
+        "shortfall_rate": 0.00246,
+        "shortfall_rate_lo": 0.000443,
+        "shortfall_rate_hi": 0.005034,
+        "mean_shortfall_fraction": 0.02578,
+        "mean_shortfall_fraction_lo": 0.01909,
+        "mean_shortfall_fraction_hi": 0.03401,
+        "post_payment_reduction_usd": 2495.69,
+        "post_payment_increase_usd": 4681.06,
+        "pending_partial_usd": 1495.39,
+        "patient_resp_usd": 83926.32,
+        "bootstrap_reps": 2000,
+        "bootstrap_seed": 20264331
+      },
+      {
+        "payer_id": "P05",
+        "n_priced_claims": 2791,
+        "n_priced_lines": 6692,
+        "n_underpaid_claims": 216,
+        "expected_allowed": 6861487.51,
+        "shortfall_usd": 30851.75,
+        "shortfall_usd_lo": 20012.57,
+        "shortfall_usd_hi": 45509.59,
+        "underpaid_claim_share": 0.07739,
+        "underpaid_claim_share_lo": 0.06772,
+        "underpaid_claim_share_hi": 0.08707,
+        "shortfall_rate": 0.004496,
+        "shortfall_rate_lo": 0.002926,
+        "shortfall_rate_hi": 0.006411,
+        "mean_shortfall_fraction": 0.06719,
+        "mean_shortfall_fraction_lo": 0.05985,
+        "mean_shortfall_fraction_hi": 0.07453,
+        "post_payment_reduction_usd": 2398.69,
+        "post_payment_increase_usd": 5781.57,
+        "pending_partial_usd": 21134.47,
+        "patient_resp_usd": 775815.2,
+        "bootstrap_reps": 2000,
+        "bootstrap_seed": 20265331
+      },
+      {
+        "payer_id": "P06",
+        "n_priced_claims": 1564,
+        "n_priced_lines": 3715,
+        "n_underpaid_claims": 166,
+        "expected_allowed": 5456861.23,
+        "shortfall_usd": 40791.2,
+        "shortfall_usd_lo": 24142.76,
+        "shortfall_usd_hi": 60110.39,
+        "underpaid_claim_share": 0.10614,
+        "underpaid_claim_share_lo": 0.09143,
+        "underpaid_claim_share_hi": 0.12214,
+        "shortfall_rate": 0.007475,
+        "shortfall_rate_lo": 0.004434,
+        "shortfall_rate_hi": 0.011074,
+        "mean_shortfall_fraction": 0.09374,
+        "mean_shortfall_fraction_lo": 0.084,
+        "mean_shortfall_fraction_hi": 0.10331,
+        "post_payment_reduction_usd": 1255.2,
+        "post_payment_increase_usd": 8788.18,
+        "pending_partial_usd": 7220.09,
+        "patient_resp_usd": 468662.32,
+        "bootstrap_reps": 2000,
+        "bootstrap_seed": 20266331
+      }
+    ]
+  },
+  "appeal_outcomes": {
+    "label": "synthetic_record",
+    "rows": [
+      {
+        "payer_id": "P01",
+        "n_appeals": 386,
+        "n_won": 181,
+        "n_lost": 194,
+        "n_pending": 11,
+        "win_rate": 0.4827,
+        "median_days_to_decision": 52.0,
+        "as_of_date": "2026-03-31"
+      },
+      {
+        "payer_id": "P02",
+        "n_appeals": 387,
+        "n_won": 167,
+        "n_lost": 204,
+        "n_pending": 16,
+        "win_rate": 0.4501,
+        "median_days_to_decision": 54.0,
+        "as_of_date": "2026-03-31"
+      },
+      {
+        "payer_id": "P03",
+        "n_appeals": 625,
+        "n_won": 209,
+        "n_lost": 378,
+        "n_pending": 38,
+        "win_rate": 0.356,
+        "median_days_to_decision": 53.0,
+        "as_of_date": "2026-03-31"
+      },
+      {
+        "payer_id": "P04",
+        "n_appeals": 131,
+        "n_won": 58,
+        "n_lost": 64,
+        "n_pending": 9,
+        "win_rate": 0.4754,
+        "median_days_to_decision": 53.0,
+        "as_of_date": "2026-03-31"
+      },
+      {
+        "payer_id": "P05",
+        "n_appeals": 215,
+        "n_won": 88,
+        "n_lost": 117,
+        "n_pending": 10,
+        "win_rate": 0.4293,
+        "median_days_to_decision": 55.0,
+        "as_of_date": "2026-03-31"
+      },
+      {
+        "payer_id": "P06",
+        "n_appeals": 95,
+        "n_won": 36,
+        "n_lost": 55,
+        "n_pending": 4,
+        "win_rate": 0.3956,
+        "median_days_to_decision": 54.0,
+        "as_of_date": "2026-03-31"
+      }
+    ]
+  },
+  "float_by_payer": {
+    "label": "model_estimate",
+    "rows": [
+      {
+        "payer_id": "P01",
+        "n_paid_lines": 17672,
+        "paid_usd": 17393494.39,
+        "median_days_first_pass": 21.0,
+        "mean_days_first_pass": 24.2988,
+        "median_days_after_denial": 81.0,
+        "share_lines_late": 0.2928,
+        "paid_weighted_days_late": 15.939,
+        "float_total_usd": 82933.51,
+        "float_late_usd": 33932.55,
+        "float_late_first_pass_usd": 7102.09,
+        "float_late_after_denial_usd": 26830.46,
+        "avg_rate": 0.0459,
+        "float_accruing_open_usd": 13588.84,
+        "float_late_per_100k_paid": 195.0876
+      },
+      {
+        "payer_id": "P02",
+        "n_paid_lines": 14545,
+        "paid_usd": 13037485.91,
+        "median_days_first_pass": 27.0,
+        "mean_days_first_pass": 30.5207,
+        "median_days_after_denial": 95.0,
+        "share_lines_late": 0.4596,
+        "paid_weighted_days_late": 22.3053,
+        "float_total_usd": 76908.76,
+        "float_late_usd": 35681.96,
+        "float_late_first_pass_usd": 9725.99,
+        "float_late_after_denial_usd": 25955.97,
+        "avg_rate": 0.0455,
+        "float_accruing_open_usd": 4.8,
+        "float_late_per_100k_paid": 273.6874
+      },
+      {
+        "payer_id": "P03",
+        "n_paid_lines": 10055,
+        "paid_usd": 7775884.18,
+        "median_days_first_pass": 30.0,
+        "mean_days_first_pass": 36.1278,
+        "median_days_after_denial": 122.0,
+        "share_lines_late": 0.5439,
+        "paid_weighted_days_late": 36.2009,
+        "float_total_usd": 58236.25,
+        "float_late_usd": 33705.82,
+        "float_late_first_pass_usd": 7795.51,
+        "float_late_after_denial_usd": 25910.31,
+        "avg_rate": 0.0459,
+        "float_accruing_open_usd": 4328.04,
+        "float_late_per_100k_paid": 433.4661
+      },
+      {
+        "payer_id": "P04",
+        "n_paid_lines": 11576,
+        "paid_usd": 9359097.79,
+        "median_days_first_pass": 43.0,
+        "mean_days_first_pass": 47.739,
+        "median_days_after_denial": 115.0,
+        "share_lines_late": 0.7682,
+        "paid_weighted_days_late": 29.1132,
+        "float_total_usd": 66687.78,
+        "float_late_usd": 33369.08,
+        "float_late_first_pass_usd": 18436.57,
+        "float_late_after_denial_usd": 14932.51,
+        "avg_rate": 0.0456,
+        "float_accruing_open_usd": 4305.62,
+        "float_late_per_100k_paid": 356.5416
+      },
+      {
+        "payer_id": "P05",
+        "n_paid_lines": 6692,
+        "paid_usd": 6037068.97,
+        "median_days_first_pass": 29.0,
+        "mean_days_first_pass": 32.0972,
+        "median_days_after_denial": 90.0,
+        "share_lines_late": 0.5133,
+        "paid_weighted_days_late": 29.9078,
+        "float_total_usd": 40545.31,
+        "float_late_usd": 21093.75,
+        "float_late_first_pass_usd": 4273.67,
+        "float_late_after_denial_usd": 16820.08,
+        "avg_rate": 0.0453,
+        "float_accruing_open_usd": 10.28,
+        "float_late_per_100k_paid": 349.4038
+      },
+      {
+        "payer_id": "P06",
+        "n_paid_lines": 3715,
+        "paid_usd": 4947720.6,
+        "median_days_first_pass": 40.0,
+        "mean_days_first_pass": 47.7155,
+        "median_days_after_denial": 125.0,
+        "share_lines_late": 0.6878,
+        "paid_weighted_days_late": 36.0833,
+        "float_total_usd": 38222.39,
+        "float_late_usd": 21414.54,
+        "float_late_first_pass_usd": 11753.97,
+        "float_late_after_denial_usd": 9660.57,
+        "avg_rate": 0.0445,
+        "float_accruing_open_usd": 130.84,
+        "float_late_per_100k_paid": 432.8163
+      }
+    ]
+  },
+  "float_open_by_payer": {
+    "label": "model_estimate",
+    "rows": [
+      {
+        "payer_id": "P01",
+        "n_lines": 280,
+        "expected_allowed": 280301.29,
+        "float_accruing": 13588.84,
+        "as_of_date": "2026-03-31"
+      },
+      {
+        "payer_id": "P02",
+        "n_lines": 3,
+        "expected_allowed": 173.42,
+        "float_accruing": 4.8,
+        "as_of_date": "2026-03-31"
+      },
+      {
+        "payer_id": "P03",
+        "n_lines": 146,
+        "expected_allowed": 93272.44,
+        "float_accruing": 4328.04,
+        "as_of_date": "2026-03-31"
+      },
+      {
+        "payer_id": "P04",
+        "n_lines": 156,
+        "expected_allowed": 105937.13,
+        "float_accruing": 4305.62,
+        "as_of_date": "2026-03-31"
+      },
+      {
+        "payer_id": "P05",
+        "n_lines": 2,
+        "expected_allowed": 273.06,
+        "float_accruing": 10.28,
+        "as_of_date": "2026-03-31"
+      },
+      {
+        "payer_id": "P06",
+        "n_lines": 15,
+        "expected_allowed": 13752.54,
+        "float_accruing": 130.84,
+        "as_of_date": "2026-03-31"
+      }
+    ]
+  },
+  "incentives_by_payer": {
+    "label": "model_estimate",
+    "rows": [
+      {
+        "payer_id": "P01",
+        "p_win": 0.4827,
+        "p_win_lo": 0.4325,
+        "p_win_hi": 0.5332,
+        "n_appeals_decided": 375,
+        "appeal_cost_usd": 45.0,
+        "threshold_usd": 93.23,
+        "n_underpaid_claims": 323,
+        "median_claim_shortfall_usd": 13.82,
+        "n_above_threshold": 67,
+        "shortfall_above_threshold_usd": 30541.92,
+        "shortfall_below_threshold_usd": 4309.71,
+        "share_dollars_above_threshold": 0.8763,
+        "expected_net_recovery_usd": 11727.58,
+        "threshold_alt_usd": 50.0,
+        "n_above_threshold_alt": 91,
+        "expected_net_recovery_alt_usd": 24793.37,
+        "payer_retains_status_quo_usd": 34851.63,
+        "payer_retains_under_threshold_policy_usd": 20109.05,
+        "deterrence_penalty_multiple": 1.072,
+        "interest_clause_as_share_of_s_90d": 0.0296,
+        "payer_float_gain_per_dollar_30d_late": 0.00377,
+        "payer_cost_per_dollar_30d_late_with_clause": -0.00609,
+        "annual_gain_shortfall_plus_late_float_usd": 34415.65,
+        "renewal_min_annual_loss_to_deter_usd": 3823.96
+      },
+      {
+        "payer_id": "P02",
+        "p_win": 0.4501,
+        "p_win_lo": 0.4003,
+        "p_win_hi": 0.501,
+        "n_appeals_decided": 371,
+        "appeal_cost_usd": 45.0,
+        "threshold_usd": 99.98,
+        "n_underpaid_claims": 338,
+        "median_claim_shortfall_usd": 22.86,
+        "n_above_threshold": 76,
+        "shortfall_above_threshold_usd": 54690.91,
+        "shortfall_below_threshold_usd": 6061.34,
+        "share_dollars_above_threshold": 0.9002,
+        "expected_net_recovery_usd": 21196.38,
+        "threshold_alt_usd": 50.0,
+        "n_above_threshold_alt": 110,
+        "expected_net_recovery_alt_usd": 46493.77,
+        "payer_retains_status_quo_usd": 60752.25,
+        "payer_retains_under_threshold_policy_usd": 36135.87,
+        "deterrence_penalty_multiple": 1.222,
+        "interest_clause_as_share_of_s_90d": 0.0296,
+        "payer_float_gain_per_dollar_30d_late": 0.00374,
+        "payer_cost_per_dollar_30d_late_with_clause": -0.00612,
+        "annual_gain_shortfall_plus_late_float_usd": 48250.13,
+        "renewal_min_annual_loss_to_deter_usd": 5361.13
+      },
+      {
+        "payer_id": "P03",
+        "p_win": 0.356,
+        "p_win_lo": 0.3184,
+        "p_win_hi": 0.3956,
+        "n_appeals_decided": 587,
+        "appeal_cost_usd": 45.0,
+        "threshold_usd": 126.4,
+        "n_underpaid_claims": 595,
+        "median_claim_shortfall_usd": 34.89,
+        "n_above_threshold": 154,
+        "shortfall_above_threshold_usd": 129417.85,
+        "shortfall_below_threshold_usd": 14534.84,
+        "share_dollars_above_threshold": 0.899,
+        "expected_net_recovery_usd": 39142.75,
+        "threshold_alt_usd": 50.0,
+        "n_above_threshold_alt": 264,
+        "expected_net_recovery_alt_usd": 112692.64,
+        "payer_retains_status_quo_usd": 143952.69,
+        "payer_retains_under_threshold_policy_usd": 97879.94,
+        "deterrence_penalty_multiple": 1.809,
+        "interest_clause_as_share_of_s_90d": 0.0296,
+        "payer_float_gain_per_dollar_30d_late": 0.00377,
+        "payer_cost_per_dollar_30d_late_with_clause": -0.00609,
+        "annual_gain_shortfall_plus_late_float_usd": 88890.1,
+        "renewal_min_annual_loss_to_deter_usd": 9876.68
+      },
+      {
+        "payer_id": "P04",
+        "p_win": 0.4754,
+        "p_win_lo": 0.3889,
+        "p_win_hi": 0.5634,
+        "n_appeals_decided": 122,
+        "appeal_cost_usd": 45.0,
+        "threshold_usd": 94.66,
+        "n_underpaid_claims": 98,
+        "median_claim_shortfall_usd": 2.46,
+        "n_above_threshold": 12,
+        "shortfall_above_threshold_usd": 22455.58,
+        "shortfall_below_threshold_usd": 831.19,
+        "share_dollars_above_threshold": 0.9643,
+        "expected_net_recovery_usd": 10135.38,
+        "threshold_alt_usd": 50.0,
+        "n_above_threshold_alt": 15,
+        "expected_net_recovery_alt_usd": 19712.44,
+        "payer_retains_status_quo_usd": 23286.77,
+        "payer_retains_under_threshold_policy_usd": 12611.39,
+        "deterrence_penalty_multiple": 1.103,
+        "interest_clause_as_share_of_s_90d": 0.0296,
+        "payer_float_gain_per_dollar_30d_late": 0.00375,
+        "payer_cost_per_dollar_30d_late_with_clause": -0.00612,
+        "annual_gain_shortfall_plus_late_float_usd": 28347.33,
+        "renewal_min_annual_loss_to_deter_usd": 3149.7
+      },
+      {
+        "payer_id": "P05",
+        "p_win": 0.4293,
+        "p_win_lo": 0.3634,
+        "p_win_hi": 0.4977,
+        "n_appeals_decided": 205,
+        "appeal_cost_usd": 45.0,
+        "threshold_usd": 104.82,
+        "n_underpaid_claims": 216,
+        "median_claim_shortfall_usd": 22.15,
+        "n_above_threshold": 48,
+        "shortfall_above_threshold_usd": 26908.55,
+        "shortfall_below_threshold_usd": 3943.2,
+        "share_dollars_above_threshold": 0.8722,
+        "expected_net_recovery_usd": 9391.84,
+        "threshold_alt_usd": 50.0,
+        "n_above_threshold_alt": 76,
+        "expected_net_recovery_alt_usd": 22601.99,
+        "payer_retains_status_quo_usd": 30851.75,
+        "payer_retains_under_threshold_policy_usd": 19299.91,
+        "deterrence_penalty_multiple": 1.329,
+        "interest_clause_as_share_of_s_90d": 0.0296,
+        "payer_float_gain_per_dollar_30d_late": 0.00372,
+        "payer_cost_per_dollar_30d_late_with_clause": -0.00614,
+        "annual_gain_shortfall_plus_late_float_usd": 25990.54,
+        "renewal_min_annual_loss_to_deter_usd": 2887.84
+      },
+      {
+        "payer_id": "P06",
+        "p_win": 0.3956,
+        "p_win_lo": 0.3013,
+        "p_win_hi": 0.4983,
+        "n_appeals_decided": 91,
+        "appeal_cost_usd": 45.0,
+        "threshold_usd": 113.75,
+        "n_underpaid_claims": 166,
+        "median_claim_shortfall_usd": 32.94,
+        "n_above_threshold": 43,
+        "shortfall_above_threshold_usd": 36889.26,
+        "shortfall_below_threshold_usd": 3901.94,
+        "share_dollars_above_threshold": 0.9043,
+        "expected_net_recovery_usd": 12658.39,
+        "threshold_alt_usd": 50.0,
+        "n_above_threshold_alt": 69,
+        "expected_net_recovery_alt_usd": 31940.2,
+        "payer_retains_status_quo_usd": 40791.2,
+        "payer_retains_under_threshold_policy_usd": 26197.81,
+        "deterrence_penalty_multiple": 1.528,
+        "interest_clause_as_share_of_s_90d": 0.0296,
+        "payer_float_gain_per_dollar_30d_late": 0.00366,
+        "payer_cost_per_dollar_30d_late_with_clause": -0.00621,
+        "annual_gain_shortfall_plus_late_float_usd": 31124.17,
+        "renewal_min_annual_loss_to_deter_usd": 3458.24
+      }
+    ]
+  },
+  "headline": {
+    "total_pricing_shortfall_usd": {
+      "value": 334486.29,
+      "label": "model_estimate"
+    },
+    "payer_highest_shortfall_rate": {
+      "value": "P03",
+      "label": "model_estimate"
+    },
+    "highest_shortfall_rate": {
+      "value": 0.016133,
+      "label": "model_estimate"
+    },
+    "highest_shortfall_rate_ci": {
+      "value": [
+        0.011515,
+        0.021469
+      ],
+      "label": "model_estimate"
+    },
+    "total_float_late_usd": {
+      "value": 179197.7,
+      "label": "model_estimate"
+    },
+    "total_float_total_usd": {
+      "value": 363534.0,
+      "label": "model_estimate"
+    },
+    "total_expected_net_recovery_usd": {
+      "value": 104252.32,
+      "label": "model_estimate"
+    },
+    "total_shortfall_above_threshold_usd": {
+      "value": 300904.07,
+      "label": "model_estimate"
+    },
+    "payers_ranked_by_shortfall_rate": {
+      "value": [
+        "P03",
+        "P06",
+        "P05",
+        "P02",
+        "P04",
+        "P01"
+      ],
+      "label": "model_estimate"
+    }
+  },
+  "figures": [
+    "figures/econ_underpayment_by_payer.png",
+    "figures/econ_float_by_payer.png",
+    "figures/econ_appeal_threshold.png"
+  ],
+  "marts": {
+    "mart.underpayment_line": "synthetic_record",
+    "mart.underpayment_claim": "synthetic_record",
+    "mart.underpayment": "model_estimate",
+    "mart.underpayment_incentive": "model_estimate",
+    "mart.float_value_line": "model_estimate",
+    "mart.float_value": "model_estimate",
+    "mart.float_value_open": "model_estimate",
+    "mart.econ_appeal_outcome": "synthetic_record",
+    "mart.econ_sofr_month": "observed_public"
+  },
+  "seconds": 2.4
+}

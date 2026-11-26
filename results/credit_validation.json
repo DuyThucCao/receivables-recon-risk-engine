@@ -1,0 +1,47 @@
+{
+  "label_note": "Predicted write-off probability of the eligible pool at the steady-state certificate against the generator's ultimate outcome per claim (includes outcomes after the as-of date).",
+  "pd_vs_ultimate_outcome": {
+    "value": {
+      "certificate_date": "2025-09-30",
+      "n_lines": 3174,
+      "predicted_pd_count": 0.2065,
+      "ultimate_write_off_rate_count": 0.0778,
+      "predicted_pd_ncv_weighted": 0.2067,
+      "ultimate_write_off_share_ncv": 0.2163,
+      "per_payer": {
+        "P01": {
+          "n": 527,
+          "predicted_pd": 0.1726,
+          "ultimate_write_off_rate": 0.038
+        },
+        "P02": {
+          "n": 673,
+          "predicted_pd": 0.2569,
+          "ultimate_write_off_rate": 0.0565
+        },
+        "P03": {
+          "n": 578,
+          "predicted_pd": 0.2977,
+          "ultimate_write_off_rate": 0.109
+        },
+        "P04": {
+          "n": 749,
+          "predicted_pd": 0.1304,
+          "ultimate_write_off_rate": 0.0828
+        },
+        "P05": {
+          "n": 364,
+          "predicted_pd": 0.2152,
+          "ultimate_write_off_rate": 0.1126
+        },
+        "P06": {
+          "n": 283,
+          "predicted_pd": 0.1534,
+          "ultimate_write_off_rate": 0.0813
+        }
+      }
+    },
+    "label": "model_estimate"
+  },
+  "note": "p_written_off in the eligible pool comes from the dollar-weighted chain, so the NCV-weighted figures are the ones to compare; count-weighted figures are shown for completeness."
+}

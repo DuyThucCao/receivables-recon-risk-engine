@@ -1,0 +1,222 @@
+{
+  "label": "synthetic_record",
+  "note": "Control totals of the latest reconciliation run, to the cent.",
+  "checks": [
+    {
+      "check_name": "RAW_ROWS_ACCOUNTED",
+      "scope": "raw.claims_export",
+      "expected": 72336.0,
+      "actual": 72336.0,
+      "difference": 0.0,
+      "passed": true,
+      "detail": "raw 72336 = staged 72256 + rejected 80"
+    },
+    {
+      "check_name": "RAW_ROWS_ACCOUNTED",
+      "scope": "raw.remittance_advice",
+      "expected": 89051.0,
+      "actual": 89051.0,
+      "difference": 0.0,
+      "passed": true,
+      "detail": "raw 89051 = staged 89041 + rejected 10"
+    },
+    {
+      "check_name": "RAW_ROWS_ACCOUNTED",
+      "scope": "raw.bank_statement",
+      "expected": 1831.0,
+      "actual": 1831.0,
+      "difference": 0.0,
+      "passed": true,
+      "detail": "raw 1831 = staged 1825 + rejected 6"
+    },
+    {
+      "check_name": "RAW_ROWS_ACCOUNTED",
+      "scope": "raw.payer_contracts",
+      "expected": 505.0,
+      "actual": 505.0,
+      "difference": 0.0,
+      "passed": true,
+      "detail": "raw 505 = staged 502 + rejected 3"
+    },
+    {
+      "check_name": "RAW_ROWS_ACCOUNTED",
+      "scope": "raw.drug_purchase_invoices",
+      "expected": 1292.0,
+      "actual": 1292.0,
+      "difference": 0.0,
+      "passed": true,
+      "detail": "raw 1292 = staged 1292 + rejected 0"
+    },
+    {
+      "check_name": "RAW_ROWS_ACCOUNTED",
+      "scope": "raw.drug_dispense_log",
+      "expected": 6298.0,
+      "actual": 6298.0,
+      "difference": 0.0,
+      "passed": true,
+      "detail": "raw 6298 = staged 6293 + rejected 5"
+    },
+    {
+      "check_name": "RAW_ROWS_ACCOUNTED",
+      "scope": "raw.claim_status_history",
+      "expected": 104695.0,
+      "actual": 104695.0,
+      "difference": 0.0,
+      "passed": true,
+      "detail": "raw 104695 = staged 104280 + rejected 415"
+    },
+    {
+      "check_name": "STG_TO_CORE_ROWS",
+      "scope": "claim lines",
+      "expected": 72256.0,
+      "actual": 72256.0,
+      "difference": 0.0,
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check_name": "STG_TO_CORE_ROWS",
+      "scope": "remittance lines",
+      "expected": 89041.0,
+      "actual": 89041.0,
+      "difference": 0.0,
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check_name": "STG_TO_CORE_ROWS",
+      "scope": "bank transactions",
+      "expected": 1825.0,
+      "actual": 1825.0,
+      "difference": 0.0,
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check_name": "BILLED_ACCOUNTED",
+      "scope": "claim line charges",
+      "expected": 208063973.4,
+      "actual": 208063973.4,
+      "difference": 0.0,
+      "passed": true,
+      "detail": "sum of parseable raw line_charge = core + rejected rows"
+    },
+    {
+      "check_name": "REMIT_PAID_ACCOUNTED",
+      "scope": "remittance paid amounts",
+      "expected": 61477380.53,
+      "actual": 61477380.53,
+      "difference": 0.0,
+      "passed": true,
+      "detail": "sum of parseable raw line_paid_amount = core + rejected rows"
+    },
+    {
+      "check_name": "REMIT_POSTING_SPLIT",
+      "scope": "remittance paid amounts",
+      "expected": 61476996.86,
+      "actual": 61476996.86,
+      "difference": 0.0,
+      "passed": true,
+      "detail": "core paid = posted to claim lines + excluded duplicates + unmatched (exception queue) + provider-level suspense"
+    },
+    {
+      "check_name": "CONTROL_IDENTITY_TOTAL",
+      "scope": "all claim lines",
+      "expected": 207967496.01,
+      "actual": 207967496.01,
+      "difference": 0.0,
+      "passed": true,
+      "detail": "sum billed = sum(paid + contractual + denied + patient_resp + open)"
+    },
+    {
+      "check_name": "CONTROL_IDENTITY_LINES_BROKEN",
+      "scope": "claim lines",
+      "expected": 0.0,
+      "actual": 0.0,
+      "difference": 0.0,
+      "passed": true,
+      "detail": "lines where the identity fails"
+    },
+    {
+      "check_name": "BALANCE_RECOMPUTE_MISMATCH",
+      "scope": "claim lines",
+      "expected": 0.0,
+      "actual": 0.0,
+      "difference": 0.0,
+      "passed": true,
+      "detail": "lines whose stored components differ from a fresh sum of their postings"
+    },
+    {
+      "check_name": "BILLED_TIES_TO_CORE",
+      "scope": "claim lines",
+      "expected": 207967496.01,
+      "actual": 207967496.01,
+      "difference": 0.0,
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check_name": "BANK_BALANCE_CHAIN_BREAKS",
+      "scope": "bank rows",
+      "expected": 0.0,
+      "actual": 0.0,
+      "difference": 0.0,
+      "passed": true,
+      "detail": "rows where previous balance + amount <> running balance"
+    },
+    {
+      "check_name": "BANK_OPENING_PLUS_ACTIVITY",
+      "scope": "statement",
+      "expected": 3119869.46,
+      "actual": 3119869.46,
+      "difference": 0.0,
+      "passed": true,
+      "detail": "opening + sum(amounts) = final running balance"
+    },
+    {
+      "check_name": "CASH_REMIT_SIDE",
+      "scope": "payments dated <= as-of",
+      "expected": 61195660.83,
+      "actual": 61195660.83,
+      "difference": 0.0,
+      "passed": true,
+      "detail": "sum(remittance paid by trace) = matched bank deposits + unmatched remittance + timing differences"
+    },
+    {
+      "check_name": "CASH_BANK_SIDE",
+      "scope": "payer credits",
+      "expected": 61647762.86,
+      "actual": 61647762.86,
+      "difference": 0.0,
+      "passed": true,
+      "detail": "payer credits = allocated to remittances + unapplied cash"
+    },
+    {
+      "check_name": "ALLOCATION_INTEGRITY",
+      "scope": "matched deposits",
+      "expected": 0.0,
+      "actual": 0.0,
+      "difference": 0.0,
+      "passed": true,
+      "detail": "deposits whose allocations do not sum to the deposit"
+    },
+    {
+      "check_name": "PAYMENT_ALLOCATION_INTEGRITY",
+      "scope": "matched payments",
+      "expected": 0.0,
+      "actual": 0.0,
+      "difference": 0.0,
+      "passed": true,
+      "detail": "payments whose allocations do not sum to the payment"
+    },
+    {
+      "check_name": "TRACE_HEADER_EXPLAINED",
+      "scope": "all traces",
+      "expected": 61195660.83,
+      "actual": 61195660.83,
+      "difference": 0.0,
+      "passed": true,
+      "detail": "sum of payment headers = sum of posted lines (net of duplicates) + queued header/line mismatches"
+    }
+  ]
+}

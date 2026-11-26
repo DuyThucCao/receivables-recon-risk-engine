@@ -1,0 +1,303 @@
+{
+  "label": "synthetic_record",
+  "note": "Build of the reconciliation core on simulated data for a fictional hospital.",
+  "as_of_date": "2026-03-31",
+  "build": {
+    "raw_rows": {
+      "claims_export.csv": 72336,
+      "remittance_advice.csv": 89051,
+      "bank_statement.csv": 1831,
+      "payer_contracts.csv": 505,
+      "drug_purchase_invoices.csv": 1292,
+      "drug_dispense_log.csv": 6298,
+      "claim_status_history.csv": 104695
+    },
+    "timings_s": {
+      "land_raw": 1.89,
+      "10_stg_tables.sql": 0.01,
+      "11_stg_process.sql": 7.28,
+      "20_core_tables.sql": 0.02,
+      "21_core_process.sql": 5.61,
+      "30_recon_tables.sql": 0.02,
+      "31_recon_matching.sql": 0.0,
+      "32_recon_derive.sql": 0.0,
+      "33_recon_controls.sql": 0.0,
+      "34_recon_close_day.sql": 0.0,
+      "35_recon_run.sql": 6.61,
+      "36_mart_q1.sql": 0.46,
+      "close_days": 41.01,
+      "total": 63.39
+    },
+    "close": {
+      "closed": 820,
+      "refused": null,
+      "start": "2024-01-02",
+      "end": "2026-03-31"
+    },
+    "generate_seconds": 5.85,
+    "run_all_total_seconds": 319.99
+  },
+  "calibration": {
+    "public_file_used": true,
+    "public_retrieved": "2026-11-21",
+    "overrides": [
+      {
+        "parameter": "denial.first_pass_denial_rate",
+        "scope": "P01",
+        "assumed_value": 0.12,
+        "applied_value": 0.1406,
+        "method": "percentile 0.35 of the published issuer distribution (plan year 2025, n=134)",
+        "source_class": "observed_public",
+        "source": "Centers for Medicare & Medicaid Services. 2027 Transparency in Coverage Public Use File (data for plan year 2025). https://download.cms.gov/marketplace-puf/2027/transparency-in-coverage-puf.zip (listed on https://www.cms.gov/marketplace/resources/data/public-use-files), retrieved 2026-11-21."
+      },
+      {
+        "parameter": "denial.first_pass_denial_rate",
+        "scope": "P02",
+        "assumed_value": 0.15,
+        "applied_value": 0.1769,
+        "method": "percentile 0.55 of the published issuer distribution (plan year 2025, n=134)",
+        "source_class": "observed_public",
+        "source": "Centers for Medicare & Medicaid Services. 2027 Transparency in Coverage Public Use File (data for plan year 2025). https://download.cms.gov/marketplace-puf/2027/transparency-in-coverage-puf.zip (listed on https://www.cms.gov/marketplace/resources/data/public-use-files), retrieved 2026-11-21."
+      },
+      {
+        "parameter": "denial.first_pass_denial_rate",
+        "scope": "P03",
+        "assumed_value": 0.21,
+        "applied_value": 0.2328,
+        "method": "percentile 0.85 of the published issuer distribution (plan year 2025, n=134)",
+        "source_class": "observed_public",
+        "source": "Centers for Medicare & Medicaid Services. 2027 Transparency in Coverage Public Use File (data for plan year 2025). https://download.cms.gov/marketplace-puf/2027/transparency-in-coverage-puf.zip (listed on https://www.cms.gov/marketplace/resources/data/public-use-files), retrieved 2026-11-21."
+      },
+      {
+        "parameter": "denial.first_pass_denial_rate",
+        "scope": "P04",
+        "assumed_value": 0.1,
+        "applied_value": 0.1112,
+        "method": "percentile 0.2 of the published issuer distribution (plan year 2025, n=134)",
+        "source_class": "observed_public",
+        "source": "Centers for Medicare & Medicaid Services. 2027 Transparency in Coverage Public Use File (data for plan year 2025). https://download.cms.gov/marketplace-puf/2027/transparency-in-coverage-puf.zip (listed on https://www.cms.gov/marketplace/resources/data/public-use-files), retrieved 2026-11-21."
+      },
+      {
+        "parameter": "denial.first_pass_denial_rate",
+        "scope": "P05",
+        "assumed_value": 0.17,
+        "applied_value": 0.1928,
+        "method": "percentile 0.65 of the published issuer distribution (plan year 2025, n=134)",
+        "source_class": "observed_public",
+        "source": "Centers for Medicare & Medicaid Services. 2027 Transparency in Coverage Public Use File (data for plan year 2025). https://download.cms.gov/marketplace-puf/2027/transparency-in-coverage-puf.zip (listed on https://www.cms.gov/marketplace/resources/data/public-use-files), retrieved 2026-11-21."
+      },
+      {
+        "parameter": "denial.first_pass_denial_rate",
+        "scope": "P06",
+        "assumed_value": 0.14,
+        "applied_value": 0.1595,
+        "method": "percentile 0.45 of the published issuer distribution (plan year 2025, n=134)",
+        "source_class": "observed_public",
+        "source": "Centers for Medicare & Medicaid Services. 2027 Transparency in Coverage Public Use File (data for plan year 2025). https://download.cms.gov/marketplace-puf/2027/transparency-in-coverage-puf.zip (listed on https://www.cms.gov/marketplace/resources/data/public-use-files), retrieved 2026-11-21."
+      },
+      {
+        "parameter": "drugs.reference_list",
+        "scope": "25 HCPCS codes",
+        "assumed_value": "9 assumed drugs",
+        "applied_value": "CMS payment limits, 2026Q4",
+        "method": "drug list, billing unit and reference price per unit taken from the public file",
+        "source_class": "published_aggregate",
+        "source": "Centers for Medicare & Medicaid Services. Medicare Part B Drug Payment Limit File, effective October 1, 2026 through December 31, 2026. https://www.cms.gov/files/zip/october-2026-medicare-part-b-payment-limit-files-final.zip (listed on https://www.cms.gov/medicare/payment/part-b-drugs/asp-pricing-files), retrieved 2026-11-21."
+      },
+      {
+        "parameter": "financial_assumptions.discount_rate",
+        "scope": "all models",
+        "assumed_value": 0.04,
+        "applied_value": 0.0391,
+        "method": "SOFR as of 2026-11-19",
+        "source_class": "observed_public",
+        "source": "Federal Reserve Bank of New York, retrieved from FRED (Federal Reserve Bank of St. Louis). Secured Overnight Financing Rate [SOFR]. https://fred.stlouisfed.org/series/SOFR (CSV: https://fred.stlouisfed.org/graph/fredgraph.csv?id=SOFR), retrieved 2026-11-21."
+      }
+    ],
+    "calibration_sha256": "d98261176339016264b7461bf252820ae0ec05efb147720130e473aad8ef11f6"
+  },
+  "row_counts": {
+    "core.fact_claim_line": 72256,
+    "core.fact_remit_line": 89041,
+    "core.fact_bank_txn": 1825,
+    "core.fact_claim_event": 104280,
+    "core.fact_drug_purchase": 1292,
+    "core.fact_drug_dispense": 6298,
+    "core.dim_contract_rate": 502,
+    "stg.reject": 519,
+    "recon.claim_remit_match": 88467,
+    "recon.remit_bank_match": 1118,
+    "recon.exception_queue": 6071
+  },
+  "matches_by_rule": {
+    "CR10_EXACT_CLAIM_ID": 83241,
+    "CR20_NORMALISED_CLAIM_ID": 4800,
+    "CR30_MEMBER_DATE_AMOUNT": 426,
+    "DUP10_SAME_TRACE_IDENTICAL": 356,
+    "RB10_TRACE_EXACT": 817,
+    "RB20_TRACE_NORMALISED": 89,
+    "RB25_TRACE_SPLIT": 30,
+    "RB30_LOCKBOX_SUBSET": 139,
+    "RB40_PAYER_AMOUNT_WINDOW": 43
+  },
+  "open_exceptions": [
+    {
+      "type": "CREDIT_BALANCE",
+      "severity": "HIGH",
+      "n": 40,
+      "amount": 95638.73
+    },
+    {
+      "type": "DUPLICATE_REMIT_LINE",
+      "severity": "INFO",
+      "n": 356,
+      "amount": 281934.59
+    },
+    {
+      "type": "ILLEGAL_TRANSITION",
+      "severity": "HIGH",
+      "n": 3,
+      "amount": 0.0
+    },
+    {
+      "type": "NO_RESPONSE",
+      "severity": "MEDIUM",
+      "n": 587,
+      "amount": 1176353.15
+    },
+    {
+      "type": "ORPHAN_REVERSAL",
+      "severity": "MEDIUM",
+      "n": 76,
+      "amount": -8522.22
+    },
+    {
+      "type": "PROVIDER_LEVEL_PAYMENT",
+      "severity": "INFO",
+      "n": 129,
+      "amount": 2580000.0
+    },
+    {
+      "type": "REMIT_NO_DEPOSIT",
+      "severity": "HIGH",
+      "n": 51,
+      "amount": 1596219.08
+    },
+    {
+      "type": "STAGING_REJECT",
+      "severity": "LOW",
+      "n": 489,
+      "amount": 69918.62
+    },
+    {
+      "type": "STAGING_REJECT",
+      "severity": "HIGH",
+      "n": 30,
+      "amount": 25241.69
+    },
+    {
+      "type": "STALE_REVERSAL",
+      "severity": "MEDIUM",
+      "n": 14,
+      "amount": 314044.83
+    },
+    {
+      "type": "TRACE_TOTAL_MISMATCH",
+      "severity": "HIGH",
+      "n": 8,
+      "amount": 598.56
+    },
+    {
+      "type": "UNAPPLIED_CASH",
+      "severity": "HIGH",
+      "n": 64,
+      "amount": 2048321.11
+    },
+    {
+      "type": "UNDERPAYMENT",
+      "severity": "MEDIUM",
+      "n": 4135,
+      "amount": 360714.43
+    },
+    {
+      "type": "UNMATCHED_REMIT",
+      "severity": "HIGH",
+      "n": 89,
+      "amount": 64355.64
+    }
+  ],
+  "control_totals_passed": true,
+  "days_closed": 820,
+  "days_total": 820,
+  "cash_stuck": [
+    {
+      "bucket": "NOT_YET_ADJUDICATED",
+      "n_items": 602,
+      "amount": 493709.88
+    },
+    {
+      "bucket": "PARTIAL_PAYMENT_BALANCE",
+      "n_items": 251,
+      "amount": 94471.62
+    },
+    {
+      "bucket": "DENIED_IN_PLAY",
+      "n_items": 730,
+      "amount": 2292185.59
+    },
+    {
+      "bucket": "DENIED_WRITTEN_OFF",
+      "n_items": 6346,
+      "amount": 17066329.66
+    },
+    {
+      "bucket": "UNDERPAID_VS_CONTRACT",
+      "n_items": 4135,
+      "amount": 360714.43
+    },
+    {
+      "bucket": "CREDIT_BALANCE",
+      "n_items": 40,
+      "amount": -95638.73
+    },
+    {
+      "bucket": "UNAPPLIED_CASH",
+      "n_items": 64,
+      "amount": 2048321.11
+    },
+    {
+      "bucket": "REMIT_NO_DEPOSIT",
+      "n_items": 51,
+      "amount": 1596219.08
+    },
+    {
+      "bucket": "IN_TRANSIT",
+      "n_items": 0,
+      "amount": 0.0
+    },
+    {
+      "bucket": "UNMATCHED_REMITTANCE",
+      "n_items": 89,
+      "amount": 64355.64
+    },
+    {
+      "bucket": "PROVIDER_LEVEL_SUSPENSE",
+      "n_items": 129,
+      "amount": 2580000.0
+    },
+    {
+      "bucket": "ORPHAN_REVERSAL_LINES",
+      "n_items": 77,
+      "amount": 664582.88
+    }
+  ],
+  "claim_line_status": {
+    "CREDIT_BALANCE": 40,
+    "DENIED": 7076,
+    "ORPHAN_REVERSAL": 77,
+    "PAID": 63893,
+    "PARTIAL": 251,
+    "REVERSED": 14,
+    "SUBMITTED": 905
+  }
+}

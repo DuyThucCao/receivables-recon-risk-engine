@@ -1,0 +1,64 @@
+{
+  "note": "FIFO lot positions compared with the generator's physical lot records. The generator consumes first-expiry-first-out; FIFO is a cost-flow convention, so lot-level differences are expected where a later lot expires earlier. Drug-level totals must agree exactly.",
+  "n_lots_generator": {
+    "value": 1292,
+    "label": "synthetic_record"
+  },
+  "n_lots_model": {
+    "value": 1292,
+    "label": "synthetic_record"
+  },
+  "n_lots_matched_by_lot_no": {
+    "value": 1292,
+    "label": "synthetic_record"
+  },
+  "lots_only_in_one_side": {
+    "value": 0,
+    "label": "synthetic_record"
+  },
+  "purchased_units_equal_every_lot": {
+    "value": true,
+    "label": "synthetic_record"
+  },
+  "share_lots_exact_all_quantities": {
+    "value": 0.9938,
+    "label": "model_estimate"
+  },
+  "units_on_a_different_lot": {
+    "value": 1616.0,
+    "label": "model_estimate",
+    "note": "administered units FIFO places on another lot of the same drug"
+  },
+  "administered_units_generator": {
+    "value": 823394.0,
+    "label": "synthetic_record"
+  },
+  "administered_units_model": {
+    "value": 823394.0,
+    "label": "synthetic_record"
+  },
+  "wasted_units_generator": {
+    "value": 3154.0,
+    "label": "synthetic_record"
+  },
+  "wasted_units_model": {
+    "value": 3154.0,
+    "label": "synthetic_record"
+  },
+  "on_hand_units_generator": {
+    "value": 58776.0,
+    "label": "synthetic_record"
+  },
+  "on_hand_units_model": {
+    "value": 58776.0,
+    "label": "synthetic_record"
+  },
+  "drug_totals_exact_all_drugs": {
+    "value": true,
+    "label": "model_estimate"
+  },
+  "wasted_units_exact_every_lot": {
+    "value": true,
+    "label": "model_estimate"
+  }
+}

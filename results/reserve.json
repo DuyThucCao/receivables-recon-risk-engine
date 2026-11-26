@@ -1,0 +1,722 @@
+{
+  "name": "reserve",
+  "question": "Q4 Payer actuary: how much is still owed on claims incurred but not yet paid?",
+  "label": "model_estimate",
+  "note": "Simulated data for a fictional hospital and payers. Results show whether chain-ladder recovers the generator's unpaid amount and how its intervals behave; they are not findings about real payers.",
+  "seed": 20260331,
+  "as_of_date": "2026-03-31",
+  "inputs": {
+    "tables": [
+      "core.fact_claim_line",
+      "core.fact_remit_line",
+      "recon.claim_remit_match",
+      "recon.claim_line_balance"
+    ],
+    "sql": "sql/models/50_reserve_triangle.sql",
+    "grain": "accident = service month; development lag = payment month - service month",
+    "calibration_sha256": "d98261176339016264b7461bf252820ae0ec05efb147720130e473aad8ef11f6"
+  },
+  "assumptions": {
+    "tail_factor": {
+      "value": 1.0,
+      "label": "financial_assumption",
+      "note": "no development after the oldest observed lag; the oldest accident months show no payments after lag 18"
+    },
+    "paid_definition": "remittance paid_amount on lines matched to claim lines, net of reversals and recoupments",
+    "bootstrap": "ODP Pearson-residual bootstrap, 2000 replications (retro: 1000), gamma process noise, seed = config seed",
+    "frequency_exposure": "weekdays minus US federal holidays in the service month"
+  },
+  "triangle": {
+    "accident_months": [
+      "2024-01",
+      "2024-02",
+      "2024-03",
+      "2024-04",
+      "2024-05",
+      "2024-06",
+      "2024-07",
+      "2024-08",
+      "2024-09",
+      "2024-10",
+      "2024-11",
+      "2024-12",
+      "2025-01",
+      "2025-02",
+      "2025-03",
+      "2025-04",
+      "2025-05",
+      "2025-06",
+      "2025-07",
+      "2025-08",
+      "2025-09",
+      "2025-10",
+      "2025-11",
+      "2025-12"
+    ],
+    "n_dev_lags": 27,
+    "total_paid_to_date": {
+      "value": 58550706.63,
+      "label": "synthetic_record"
+    },
+    "tie_to_claim_line_balance_paid": {
+      "value": 0.0,
+      "label": "synthetic_record",
+      "note": "difference in dollars; 0 = triangle ties to the reconciliation core"
+    }
+  },
+  "chain_ladder": {
+    "age_to_age": [
+      {
+        "from": 0,
+        "to": 1,
+        "f": 5.052018,
+        "n": 24
+      },
+      {
+        "from": 1,
+        "to": 2,
+        "f": 1.353106,
+        "n": 24
+      },
+      {
+        "from": 2,
+        "to": 3,
+        "f": 1.1056,
+        "n": 24
+      },
+      {
+        "from": 3,
+        "to": 4,
+        "f": 1.055764,
+        "n": 23
+      },
+      {
+        "from": 4,
+        "to": 5,
+        "f": 1.029676,
+        "n": 22
+      },
+      {
+        "from": 5,
+        "to": 6,
+        "f": 1.020067,
+        "n": 21
+      },
+      {
+        "from": 6,
+        "to": 7,
+        "f": 1.009195,
+        "n": 20
+      },
+      {
+        "from": 7,
+        "to": 8,
+        "f": 1.005641,
+        "n": 19
+      },
+      {
+        "from": 8,
+        "to": 9,
+        "f": 1.005716,
+        "n": 18
+      },
+      {
+        "from": 9,
+        "to": 10,
+        "f": 1.003971,
+        "n": 17
+      },
+      {
+        "from": 10,
+        "to": 11,
+        "f": 1.000741,
+        "n": 16
+      },
+      {
+        "from": 11,
+        "to": 12,
+        "f": 1.000681,
+        "n": 15
+      },
+      {
+        "from": 12,
+        "to": 13,
+        "f": 1.000333,
+        "n": 14
+      },
+      {
+        "from": 13,
+        "to": 14,
+        "f": 1.000014,
+        "n": 13
+      },
+      {
+        "from": 14,
+        "to": 15,
+        "f": 1.000001,
+        "n": 12
+      }
+    ],
+    "cdf_by_lag": {
+      "0": 8.624712,
+      "1": 1.707182,
+      "2": 1.261677,
+      "3": 1.14117,
+      "4": 1.080895,
+      "5": 1.049743,
+      "6": 1.029092,
+      "7": 1.019716,
+      "8": 1.013996,
+      "9": 1.008233,
+      "10": 1.004246,
+      "11": 1.003502,
+      "12": 1.00282,
+      "13": 1.002486,
+      "14": 1.002472
+    },
+    "total_unpaid": {
+      "value": 863525.78,
+      "label": "model_estimate"
+    },
+    "total_ultimate": {
+      "value": 59414232.41,
+      "label": "model_estimate"
+    },
+    "mack_se_total": {
+      "value": 208351.01,
+      "label": "model_estimate"
+    },
+    "bf_cape_cod_unpaid": {
+      "value": 827454.44,
+      "label": "model_estimate",
+      "note": "Bornhuetter-Ferguson, exposure = contract allowed on reported claims, Cape Cod expected ratio"
+    },
+    "bf_cape_cod_elr": {
+      "value": 0.6954,
+      "label": "model_estimate",
+      "note": "paid / contract allowed at ultimate"
+    },
+    "mack_cv": {
+      "value": 0.2413,
+      "label": "model_estimate"
+    },
+    "bootstrap": {
+      "mean": {
+        "value": 860117.94,
+        "label": "model_estimate"
+      },
+      "sd": {
+        "value": 172809.7,
+        "label": "model_estimate"
+      },
+      "p05": {
+        "value": 590324.77,
+        "label": "model_estimate"
+      },
+      "p50": {
+        "value": 848916.66,
+        "label": "model_estimate"
+      },
+      "p95": {
+        "value": 1168996.47,
+        "label": "model_estimate"
+      },
+      "phi": 22383.02,
+      "n_cells": 372,
+      "n_params": 50
+    },
+    "by_accident_month": [
+      {
+        "accident_month": "2024-01",
+        "latest_lag": 26,
+        "paid_to_date": 2258362.0,
+        "cdf": 1.0,
+        "unpaid_cl": 0.0,
+        "mack_se": 0.0,
+        "boot_p05": 0.0,
+        "boot_p95": 0.0,
+        "unpaid_bf": 0.0,
+        "unpaid_freq_sev": 0.0
+      },
+      {
+        "accident_month": "2024-02",
+        "latest_lag": 25,
+        "paid_to_date": 2061727.7,
+        "cdf": 1.0,
+        "unpaid_cl": 0.0,
+        "mack_se": 0.0,
+        "boot_p05": 0.0,
+        "boot_p95": 0.0,
+        "unpaid_bf": 0.0,
+        "unpaid_freq_sev": 0.0
+      },
+      {
+        "accident_month": "2024-03",
+        "latest_lag": 24,
+        "paid_to_date": 2221369.48,
+        "cdf": 1.0,
+        "unpaid_cl": 0.0,
+        "mack_se": 0.0,
+        "boot_p05": 0.0,
+        "boot_p95": 0.0,
+        "unpaid_bf": 0.0,
+        "unpaid_freq_sev": 0.0
+      },
+      {
+        "accident_month": "2024-04",
+        "latest_lag": 23,
+        "paid_to_date": 2372230.82,
+        "cdf": 1.0,
+        "unpaid_cl": 0.0,
+        "mack_se": 0.0,
+        "boot_p05": 0.0,
+        "boot_p95": 0.0,
+        "unpaid_bf": 0.0,
+        "unpaid_freq_sev": 0.0
+      },
+      {
+        "accident_month": "2024-05",
+        "latest_lag": 22,
+        "paid_to_date": 2712056.21,
+        "cdf": 1.0,
+        "unpaid_cl": 0.0,
+        "mack_se": 0.0,
+        "boot_p05": 0.0,
+        "boot_p95": 0.0,
+        "unpaid_bf": 0.0,
+        "unpaid_freq_sev": 0.0
+      },
+      {
+        "accident_month": "2024-06",
+        "latest_lag": 21,
+        "paid_to_date": 2284873.88,
+        "cdf": 1.0,
+        "unpaid_cl": 0.0,
+        "mack_se": 0.0,
+        "boot_p05": 0.0,
+        "boot_p95": 0.0,
+        "unpaid_bf": 0.0,
+        "unpaid_freq_sev": 0.0
+      },
+      {
+        "accident_month": "2024-07",
+        "latest_lag": 20,
+        "paid_to_date": 2247371.27,
+        "cdf": 1.0,
+        "unpaid_cl": 0.0,
+        "mack_se": 0.0,
+        "boot_p05": 0.0,
+        "boot_p95": 0.0,
+        "unpaid_bf": 0.0,
+        "unpaid_freq_sev": 0.0
+      },
+      {
+        "accident_month": "2024-08",
+        "latest_lag": 19,
+        "paid_to_date": 2622445.33,
+        "cdf": 1.0,
+        "unpaid_cl": 0.0,
+        "mack_se": 0.0,
+        "boot_p05": 0.0,
+        "boot_p95": 0.0,
+        "unpaid_bf": 0.0,
+        "unpaid_freq_sev": 0.0
+      },
+      {
+        "accident_month": "2024-09",
+        "latest_lag": 18,
+        "paid_to_date": 2262252.91,
+        "cdf": 1.0,
+        "unpaid_cl": 0.0,
+        "mack_se": 0.0,
+        "boot_p05": 0.0,
+        "boot_p95": 0.0,
+        "unpaid_bf": 0.0,
+        "unpaid_freq_sev": 0.0
+      },
+      {
+        "accident_month": "2024-10",
+        "latest_lag": 17,
+        "paid_to_date": 2571460.99,
+        "cdf": 1.0,
+        "unpaid_cl": 0.0,
+        "mack_se": 0.0,
+        "boot_p05": 0.0,
+        "boot_p95": 0.0,
+        "unpaid_bf": 0.0,
+        "unpaid_freq_sev": 0.0
+      },
+      {
+        "accident_month": "2024-11",
+        "latest_lag": 16,
+        "paid_to_date": 2358475.32,
+        "cdf": 1.0,
+        "unpaid_cl": 0.0,
+        "mack_se": 0.0,
+        "boot_p05": 0.0,
+        "boot_p95": 0.0,
+        "unpaid_bf": 0.0,
+        "unpaid_freq_sev": 0.0
+      },
+      {
+        "accident_month": "2024-12",
+        "latest_lag": 15,
+        "paid_to_date": 2080250.57,
+        "cdf": 1.002471,
+        "unpaid_cl": 5140.1,
+        "mack_se": 18012.11,
+        "boot_p05": 0.0,
+        "boot_p95": 29074.59,
+        "unpaid_bf": 5350.47,
+        "unpaid_freq_sev": 544.22
+      },
+      {
+        "accident_month": "2025-01",
+        "latest_lag": 14,
+        "paid_to_date": 3134255.65,
+        "cdf": 1.002472,
+        "unpaid_cl": 7746.55,
+        "mack_se": 22521.7,
+        "boot_p05": -0.0,
+        "boot_p95": 38130.61,
+        "unpaid_bf": 7371.1,
+        "unpaid_freq_sev": 1075.64
+      },
+      {
+        "accident_month": "2025-02",
+        "latest_lag": 13,
+        "paid_to_date": 2385925.98,
+        "cdf": 1.002486,
+        "unpaid_cl": 5930.62,
+        "mack_se": 19395.75,
+        "boot_p05": -0.0,
+        "boot_p95": 30356.58,
+        "unpaid_bf": 6072.14,
+        "unpaid_freq_sev": 1386.01
+      },
+      {
+        "accident_month": "2025-03",
+        "latest_lag": 12,
+        "paid_to_date": 2460018.95,
+        "cdf": 1.00282,
+        "unpaid_cl": 6936.08,
+        "mack_se": 19900.68,
+        "boot_p05": -0.86,
+        "boot_p95": 32170.14,
+        "unpaid_bf": 6983.42,
+        "unpaid_freq_sev": 2859.5
+      },
+      {
+        "accident_month": "2025-04",
+        "latest_lag": 11,
+        "paid_to_date": 2720598.46,
+        "cdf": 1.003502,
+        "unpaid_cl": 9528.6,
+        "mack_se": 21501.3,
+        "boot_p05": -147.59,
+        "boot_p95": 42123.19,
+        "unpaid_bf": 9450.55,
+        "unpaid_freq_sev": 6777.2
+      },
+      {
+        "accident_month": "2025-05",
+        "latest_lag": 10,
+        "paid_to_date": 2554572.92,
+        "cdf": 1.004246,
+        "unpaid_cl": 10846.23,
+        "mack_se": 21087.88,
+        "boot_p05": -18.35,
+        "boot_p95": 44273.4,
+        "unpaid_bf": 11068.0,
+        "unpaid_freq_sev": 9690.29
+      },
+      {
+        "accident_month": "2025-06",
+        "latest_lag": 9,
+        "paid_to_date": 2765782.35,
+        "cdf": 1.008233,
+        "unpaid_cl": 22771.51,
+        "mack_se": 28746.12,
+        "boot_p05": 216.29,
+        "boot_p95": 73225.27,
+        "unpaid_bf": 22446.82,
+        "unpaid_freq_sev": 16693.54
+      },
+      {
+        "accident_month": "2025-07",
+        "latest_lag": 8,
+        "paid_to_date": 2412414.84,
+        "cdf": 1.013996,
+        "unpaid_cl": 33764.03,
+        "mack_se": 36902.18,
+        "boot_p05": 1971.1,
+        "boot_p95": 89772.18,
+        "unpaid_bf": 35006.1,
+        "unpaid_freq_sev": 23636.94
+      },
+      {
+        "accident_month": "2025-08",
+        "latest_lag": 7,
+        "paid_to_date": 2627337.07,
+        "cdf": 1.019716,
+        "unpaid_cl": 51800.64,
+        "mack_se": 42131.17,
+        "boot_p05": 8554.12,
+        "boot_p95": 123021.95,
+        "unpaid_bf": 51436.21,
+        "unpaid_freq_sev": 41687.23
+      },
+      {
+        "accident_month": "2025-09",
+        "latest_lag": 6,
+        "paid_to_date": 2307956.31,
+        "cdf": 1.029092,
+        "unpaid_cl": 67144.08,
+        "mack_se": 48924.55,
+        "boot_p05": 15633.64,
+        "boot_p95": 145862.61,
+        "unpaid_bf": 62253.67,
+        "unpaid_freq_sev": 63895.89
+      },
+      {
+        "accident_month": "2025-10",
+        "latest_lag": 5,
+        "paid_to_date": 2540418.71,
+        "cdf": 1.049743,
+        "unpaid_cl": 126368.26,
+        "mack_se": 66309.17,
+        "boot_p05": 48884.35,
+        "boot_p95": 229234.21,
+        "unpaid_bf": 125554.04,
+        "unpaid_freq_sev": 112546.54
+      },
+      {
+        "accident_month": "2025-11",
+        "latest_lag": 4,
+        "paid_to_date": 2193528.9,
+        "cdf": 1.080895,
+        "unpaid_cl": 177445.03,
+        "mack_se": 86744.64,
+        "boot_p05": 82031.67,
+        "boot_p95": 310341.71,
+        "unpaid_bf": 179263.9,
+        "unpaid_freq_sev": 164495.57
+      },
+      {
+        "accident_month": "2025-12",
+        "latest_lag": 3,
+        "paid_to_date": 2395020.01,
+        "cdf": 1.14117,
+        "unpaid_cl": 338104.06,
+        "mack_se": 115037.66,
+        "boot_p05": 193950.02,
+        "boot_p95": 510224.49,
+        "unpaid_bf": 305198.02,
+        "unpaid_freq_sev": 324393.84
+      }
+    ],
+    "label": "model_estimate"
+  },
+  "frequency_severity": {
+    "frequency": {
+      "n_cells": 144,
+      "poisson_pearson_chi2": 120.1038,
+      "df_resid": 138,
+      "pearson_dispersion": 0.8703,
+      "pearson_p_value_overdispersion": 0.8615,
+      "cameron_trivedi_alpha": -0.0006,
+      "cameron_trivedi_t": -1.3606,
+      "cameron_trivedi_p_one_sided": 0.9121,
+      "nb2_alpha": 0.0,
+      "lr_stat_nb_vs_poisson": 0.0,
+      "lr_p_value_boundary": 0.5,
+      "aic_poisson": 1149.7276,
+      "aic_nb2": 1151.7276,
+      "chosen": "poisson"
+    },
+    "severity": {
+      "n_claims": 26942,
+      "gamma_shape": 0.0924,
+      "gamma_dispersion": 10.8224,
+      "lognormal_sigma": 1.6327,
+      "loglik_gamma": -239067.7211,
+      "loglik_lognormal": -215246.4422,
+      "aic_gamma": 478149.4423,
+      "aic_lognormal": 430506.8845,
+      "better_by_aic": "lognormal",
+      "by_band": [
+        {
+          "band": "0",
+          "n": 3666,
+          "empirical_mean": 1886.7576623022367,
+          "empirical_median": 298.87,
+          "gamma_mean": 1886.75766230219,
+          "lognormal_mean": 1533.7797783574106
+        },
+        {
+          "band": "1",
+          "n": 14372,
+          "empirical_mean": 1947.4453165878097,
+          "empirical_median": 315.37,
+          "gamma_mean": 1947.4453165877385,
+          "lognormal_mean": 1578.9782064440694
+        },
+        {
+          "band": "2",
+          "n": 5704,
+          "empirical_mean": 2141.524225105189,
+          "empirical_median": 313.075,
+          "gamma_mean": 2141.524225105097,
+          "lognormal_mean": 1568.9859439289658
+        },
+        {
+          "band": "3",
+          "n": 1751,
+          "empirical_mean": 2797.039183323815,
+          "empirical_median": 370.22,
+          "gamma_mean": 2797.039183323735,
+          "lognormal_mean": 1888.390772647548
+        },
+        {
+          "band": "4-5",
+          "n": 1076,
+          "empirical_mean": 3998.774618959108,
+          "empirical_median": 699.2950000000001,
+          "gamma_mean": 3998.774618958983,
+          "lognormal_mean": 2960.615840901827
+        },
+        {
+          "band": "6+",
+          "n": 373,
+          "empirical_mean": 5977.648471849866,
+          "empirical_median": 1456.2,
+          "gamma_mean": 5977.648471849162,
+          "lognormal_mean": 5434.219091981973
+        }
+      ]
+    },
+    "unpaid_freq_sev_gamma": {
+      "value": 769682.41,
+      "label": "model_estimate"
+    },
+    "unpaid_freq_sev_lognormal": {
+      "value": 655593.9,
+      "label": "model_estimate"
+    },
+    "note": "Frequency-severity unpaid = chain-ladder projection of first-paid claim counts x mean severity of claims first paid at that lag. It ignores further postings on claims already paid (partial supplements, reversals, late adjustments).",
+    "label": "model_estimate"
+  },
+  "retrospective": {
+    "rows": [
+      {
+        "retro_as_of": "2024-09-30",
+        "unpaid_cl": 3808920.44,
+        "unpaid_bf": 4165083.95,
+        "boot_p05": 2642214.2,
+        "boot_p95": 5124340.83,
+        "mack_se": 852200.07,
+        "paid_later_observed": 4373906.47,
+        "ratio_estimate_to_observed": 0.87,
+        "ratio_bf_to_observed": 0.95,
+        "latest_month_unpaid_cl": 1454853.13,
+        "latest_month_unpaid_bf": 1765225.23,
+        "latest_month_paid_later": 2074558.96,
+        "observed_inside_90pct_interval": true,
+        "projected_next_3m": 3113202.12,
+        "paid_next_3m": 3490269.05,
+        "projected_next_6m": 3682541.52,
+        "paid_next_6m": 4129473.91,
+        "boot_next_3m_p05_p95": [
+          2183526.0807404444,
+          4170820.9941202174
+        ]
+      },
+      {
+        "retro_as_of": "2024-12-31",
+        "unpaid_cl": 3937231.94,
+        "unpaid_bf": 3813075.13,
+        "boot_p05": 2827222.81,
+        "boot_p95": 5262767.5,
+        "mack_se": 881813.92,
+        "paid_later_observed": 4099393.95,
+        "ratio_estimate_to_observed": 0.96,
+        "ratio_bf_to_observed": 0.93,
+        "latest_month_unpaid_cl": 1646695.68,
+        "latest_month_unpaid_bf": 1592967.05,
+        "latest_month_paid_later": 1852511.94,
+        "observed_inside_90pct_interval": true,
+        "projected_next_3m": 3258760.71,
+        "paid_next_3m": 3423882.38,
+        "projected_next_6m": 3805608.09,
+        "paid_next_6m": 3837376.67,
+        "boot_next_3m_p05_p95": [
+          2314244.678372116,
+          4389837.944893092
+        ]
+      },
+      {
+        "retro_as_of": "2025-03-31",
+        "unpaid_cl": 4828668.46,
+        "unpaid_bf": 4376559.38,
+        "boot_p05": 3491972.2,
+        "boot_p95": 6392115.21,
+        "mack_se": 1077459.25,
+        "paid_later_observed": 4588505.36,
+        "ratio_estimate_to_observed": 1.05,
+        "ratio_bf_to_observed": 0.95,
+        "latest_month_unpaid_cl": 2572880.45,
+        "latest_month_unpaid_bf": 1995223.27,
+        "latest_month_paid_later": 2120429.32,
+        "observed_inside_90pct_interval": true,
+        "projected_next_3m": 3948391.21,
+        "paid_next_3m": 3596883.61,
+        "projected_next_6m": 4599193.49,
+        "paid_next_6m": 4440300.61,
+        "boot_next_3m_p05_p95": [
+          2837629.431911983,
+          5196154.340911811
+        ]
+      },
+      {
+        "retro_as_of": "2025-06-30",
+        "unpaid_cl": 3878438.6,
+        "unpaid_bf": 4503927.55,
+        "boot_p05": 2959761.96,
+        "boot_p95": 5037124.19,
+        "mack_se": 787700.61,
+        "paid_later_observed": 4985107.88,
+        "ratio_estimate_to_observed": 0.78,
+        "ratio_bf_to_observed": 0.9,
+        "latest_month_unpaid_cl": 1458688.08,
+        "latest_month_unpaid_bf": 2150721.04,
+        "latest_month_paid_later": 2569428.52,
+        "observed_inside_90pct_interval": true,
+        "projected_next_3m": 3185444.68,
+        "paid_next_3m": 4158864.27,
+        "projected_next_6m": 3707146.12,
+        "paid_next_6m": 4872805.77,
+        "boot_next_3m_p05_p95": [
+          2414759.4534440394,
+          4172148.088940846
+        ]
+      }
+    ],
+    "observed_inside_90pct_interval": "4 of 4",
+    "label": "model_estimate",
+    "note": "paid_later_observed covers payments up to the official as-of date, so for the latest retro dates a little remains unpaid even then."
+  },
+  "marts": [
+    "mart.dev_triangle",
+    "mart.reserve_factors",
+    "mart.reserve_by_period",
+    "mart.reserve_retro"
+  ],
+  "figures": [
+    "figures/reserve_development.png",
+    "figures/reserve_bootstrap.png",
+    "figures/reserve_retro.png",
+    "figures/reserve_factor_stability.png",
+    "figures/reserve_severity.png"
+  ],
+  "seconds": 3.2
+}

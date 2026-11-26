@@ -1,0 +1,185 @@
+{
+  "name": "reserve_evaluation",
+  "label": "model_estimate",
+  "note": "Compares the Q4 reserve with the unpaid amount the simulator knows (ultimate paid minus paid by the as-of date, data/truth). Evaluation only; simulated data.",
+  "seed": 20260331,
+  "as_of_date": "2026-03-31",
+  "true_unpaid_total": {
+    "value": 663429.38,
+    "label": "synthetic_record",
+    "note": "sum over lines of ultimate paid - paid by as-of"
+  },
+  "estimates": {
+    "chain_ladder": {
+      "value": 863525.78,
+      "error_pct": 30.16
+    },
+    "bornhuetter_ferguson_cape_cod": {
+      "value": 827454.44,
+      "error_pct": 24.72
+    },
+    "freq_sev_gamma_means": {
+      "value": 769682.41,
+      "error_pct": 16.02
+    },
+    "freq_sev_lognormal_means": {
+      "value": 655593.9,
+      "error_pct": -1.18
+    },
+    "bootstrap_p05_p95": [
+      590324.77,
+      1168996.47
+    ],
+    "true_inside_bootstrap_90pct": true,
+    "mack_se": 208351.01,
+    "error_in_mack_se_units": 0.96
+  },
+  "true_unpaid_concentration": {
+    "claims_with_unpaid": 149,
+    "top10_claims_share": 0.6292,
+    "largest_claim_unpaid": 83482.1,
+    "note": "the true unpaid amount is one random outcome concentrated in a few large claims, so single-month comparisons are noisy"
+  },
+  "remittance_visibility": {
+    "withheld_share_of_paid": 0.0122,
+    "note": "Some payments reach the bank without a visible remittance line (a planted defect). The triangle can only develop what is visible, so its natural target is slightly below the true unpaid amount."
+  },
+  "by_accident_month_last_13": [
+    {
+      "accident_month": "2025-03",
+      "true_unpaid": 0.0,
+      "unpaid_cl": 6936.08,
+      "unpaid_bf": 6983.42,
+      "unpaid_freq_sev": 2859.5,
+      "boot_p05": -0.86,
+      "boot_p95": 32170.14,
+      "inside_90pct": true
+    },
+    {
+      "accident_month": "2025-04",
+      "true_unpaid": 0.0,
+      "unpaid_cl": 9528.6,
+      "unpaid_bf": 9450.55,
+      "unpaid_freq_sev": 6777.2,
+      "boot_p05": -147.59,
+      "boot_p95": 42123.19,
+      "inside_90pct": true
+    },
+    {
+      "accident_month": "2025-05",
+      "true_unpaid": 3844.83,
+      "unpaid_cl": 10846.23,
+      "unpaid_bf": 11068.0,
+      "unpaid_freq_sev": 9690.29,
+      "boot_p05": -18.35,
+      "boot_p95": 44273.4,
+      "inside_90pct": true
+    },
+    {
+      "accident_month": "2025-06",
+      "true_unpaid": 155687.44,
+      "unpaid_cl": 22771.51,
+      "unpaid_bf": 22446.82,
+      "unpaid_freq_sev": 16693.54,
+      "boot_p05": 216.29,
+      "boot_p95": 73225.27,
+      "inside_90pct": false
+    },
+    {
+      "accident_month": "2025-07",
+      "true_unpaid": 86721.92,
+      "unpaid_cl": 33764.03,
+      "unpaid_bf": 35006.1,
+      "unpaid_freq_sev": 23636.94,
+      "boot_p05": 1971.1,
+      "boot_p95": 89772.18,
+      "inside_90pct": true
+    },
+    {
+      "accident_month": "2025-08",
+      "true_unpaid": 1433.0,
+      "unpaid_cl": 51800.64,
+      "unpaid_bf": 51436.21,
+      "unpaid_freq_sev": 41687.23,
+      "boot_p05": 8554.12,
+      "boot_p95": 123021.95,
+      "inside_90pct": false
+    },
+    {
+      "accident_month": "2025-09",
+      "true_unpaid": 35679.46,
+      "unpaid_cl": 67144.08,
+      "unpaid_bf": 62253.67,
+      "unpaid_freq_sev": 63895.89,
+      "boot_p05": 15633.64,
+      "boot_p95": 145862.61,
+      "inside_90pct": true
+    },
+    {
+      "accident_month": "2025-10",
+      "true_unpaid": 34101.19,
+      "unpaid_cl": 126368.26,
+      "unpaid_bf": 125554.04,
+      "unpaid_freq_sev": 112546.54,
+      "boot_p05": 48884.35,
+      "boot_p95": 229234.21,
+      "inside_90pct": false
+    },
+    {
+      "accident_month": "2025-11",
+      "true_unpaid": 193617.2,
+      "unpaid_cl": 177445.03,
+      "unpaid_bf": 179263.9,
+      "unpaid_freq_sev": 164495.57,
+      "boot_p05": 82031.67,
+      "boot_p95": 310341.71,
+      "inside_90pct": true
+    },
+    {
+      "accident_month": "2025-12",
+      "true_unpaid": 148785.9,
+      "unpaid_cl": 338104.06,
+      "unpaid_bf": 305198.02,
+      "unpaid_freq_sev": 324393.84,
+      "boot_p05": 193950.02,
+      "boot_p95": 510224.49,
+      "inside_90pct": false
+    }
+  ],
+  "accident_months_inside_90pct": "6 of 10",
+  "retrospective": [
+    {
+      "retro_as_of": "2024-09-30",
+      "estimate_cl": 3808920.44,
+      "estimate_bf": 4165083.95,
+      "paid_later_observed": 4373906.47,
+      "still_unpaid_at_official_as_of": 0.0,
+      "observed_plus_still_unpaid": 4373906.47
+    },
+    {
+      "retro_as_of": "2024-12-31",
+      "estimate_cl": 3937231.94,
+      "estimate_bf": 3813075.13,
+      "paid_later_observed": 4099393.95,
+      "still_unpaid_at_official_as_of": 0.0,
+      "observed_plus_still_unpaid": 4099393.95
+    },
+    {
+      "retro_as_of": "2025-03-31",
+      "estimate_cl": 4828668.46,
+      "estimate_bf": 4376559.38,
+      "paid_later_observed": 4588505.36,
+      "still_unpaid_at_official_as_of": 3558.44,
+      "observed_plus_still_unpaid": 4592063.8
+    },
+    {
+      "retro_as_of": "2025-06-30",
+      "estimate_cl": 3878438.6,
+      "estimate_bf": 4503927.55,
+      "paid_later_observed": 4985107.88,
+      "still_unpaid_at_official_as_of": 163090.71,
+      "observed_plus_still_unpaid": 5148198.59
+    }
+  ],
+  "figure": "figures/reserve_validation.png"
+}
