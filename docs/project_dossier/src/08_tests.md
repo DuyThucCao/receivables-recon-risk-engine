@@ -16,10 +16,11 @@ Per file (generated from the test sources at build time):
 
 @@table:tests@@
 
-The tests I care most about are the ones that try to break the books on purpose. A
-reconciliation that passes on clean data proves very little. One that refuses to close a day
-when a single cent is moved proves the controls actually work. The leakage tests play the same
-role for the models: they show that the backtests could not have looked into the future.
+The most important tests are the ones that try to break the books on purpose. A reconciliation
+that passes on clean data shows very little. One that refuses to close a day when a single cent
+is moved shows that the controls actually work. The leakage tests do a narrower job for the
+models: they check that changing records after the cutoff leaves the tested earlier outputs
+unchanged.
 
 The evaluation against planted truth is separate from the tests: `src/recon_engine/datagen/evaluate.py`
 (reconciliation) and `scripts/evaluate_models.py` (models) are the only code that reads

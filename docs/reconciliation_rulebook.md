@@ -69,7 +69,7 @@ A person resolves it with the payer claim number (ICN) on the payer portal.
 
 ### Why the contradiction guard exists
 During development (on an earlier version of the generated data; that results file was not kept), evaluation found 7 false matches in CR10: a transposed claim number happened to
-equal another real claim from the same day, and the line was resolved on procedure + date +
+equal another existing simulated claim from the same day, and the line was resolved on procedure + date +
 charge (same lab test, same price). The echoed line control number and member id both
 contradicted the match. With the guard those lines fall through to CR30 and match correctly
 (decision D-010).

@@ -92,5 +92,4 @@ def render() -> None:
         st.markdown(f"- Against planted ground truth (internal consistency, not real-world accuracy): claim-to-remittance "
                     f"precision {cr.get('precision')}, recall {cr.get('recall_on_postable_lines')}; remittance-to-bank "
                     f"precision {rb.get('precision')}, recall {rb.get('recall')}.")
-    st.caption("Built with AI assistance (see the README). Fictional hospital: Meridian "
-               "Health System. Fictional payers P01-P06.")
+    st.caption("Fictional hospital: Meridian Health System. Fictional payers P01-P06.")

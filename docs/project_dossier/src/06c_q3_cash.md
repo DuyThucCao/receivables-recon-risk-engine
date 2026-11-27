@@ -46,9 +46,9 @@ generator's realised quartiles by at most <!--n:cash.lag_quartile_error-->0<!--/
 
 For a treasurer, the forecast is only useful if its intervals are honest. A 13-week forecast
 that is right on average but has intervals that are too narrow is dangerous, because the credit
-line is sized on the bad weeks. That is why my backtest scores how often the actual cash falls
-inside the interval, not just the average error, and why I point out that the coverage numbers
-themselves are a bit too optimistic.
+line is sized on the bad weeks. That is why the backtest scores how often the actual cash falls
+inside the interval, not just the average error, and why this chapter points out that the
+coverage numbers themselves are a bit too optimistic.
 
 **Limits.** The backtest is not a clean hold-out: the lag weighting was changed after the first
 backtest over-forecast, so the coverage figures are partly in-sample for that design choice.

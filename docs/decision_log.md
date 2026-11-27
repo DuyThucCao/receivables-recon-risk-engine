@@ -55,7 +55,7 @@ as a stationary reference price (stated in the drug truth). SOFR replaces the as
 Each override is recorded in `data/raw/generation_metadata.json` and `results/core_build.json`.
 
 **D-010 (2026-11-21) Contradiction guard in the identifier rules.** During development, evaluation
-found 7 wrong CR10 matches: a transposed claim number equal to another real claim of the same day,
+found 7 wrong CR10 matches: a transposed claim number equal to another existing simulated claim of the same day,
 resolved on procedure + date + charge. A candidate is now ruled out when an echoed line control
 number or member id disagrees. Those lines fall to CR30 and match correctly.
 

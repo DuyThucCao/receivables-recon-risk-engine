@@ -19,7 +19,7 @@ desk lands the rows, runs the same incremental functions as the nightly build
 which claim lines and by which rule, which deposits matched which payments, what was rejected in
 staging and which new exceptions were opened. The numbers on the other screens move accordingly.
 
-The reconciliation desk is the demo I would give in an interview. I upload a small remittance
+The reconciliation desk is the quickest demonstration of the engine. Upload a small remittance
 file with one duplicate line, one mangled claim number and one payment whose deposit is missing.
 The app excludes the duplicate, matches the claim with the normalised rule, leaves the payment in
 "remitted, no deposit", and the control totals still tie.

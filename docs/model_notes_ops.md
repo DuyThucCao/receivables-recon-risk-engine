@@ -139,15 +139,15 @@ and largest-first gets $311,468. With uniform effort it picks 41 claims for $315
   payment by about 6%.
 - One appeal per denial episode. Resubmission, the alternative action, is not modelled.
 
-### Interview explanation (5 sentences)
+### Summary (5 sentences)
 
-I trained a logistic regression on past appeals to estimate the chance that each denied claim is
+A logistic regression trained on past appeals estimates the chance that each denied claim is
 overturned, using payer, denial reason, service line, claim size and age, and only data available
 before a cutoff date. On later appeals it was well calibrated but only about as good as a simple
 table of overturn rates by reason, which is honest. The generator's true probabilities only reach
-an AUC of 0.64, so appeal outcomes are mostly luck. I turned each probability into dollars, as probability
-times the contract amount the payer would actually pay minus the staff cost, set claims past the appeal window to zero,
-and chose today's list with an exact knapsack because appeals take different amounts of time. In a
+an AUC of 0.64, so appeal outcomes are mostly luck. Each probability is turned into dollars, as probability
+times the contract amount the payer would actually pay minus the staff cost, claims past the appeal window are set to zero,
+and today's list is chosen with an exact knapsack because appeals take different amounts of time. In a
 day-by-day replay with tight staff hours this beat "oldest first" by about $2.9 million and
 "largest first" by about $150 thousand over nine months. Once staff hours exceed the daily inflow, though, every rule
 gives the same answer, so the ranking only matters when there is a backlog.
@@ -253,16 +253,16 @@ minus paid by the as-of date.
   over time. A real payer system change would bias the chain-ladder, and a diagnostic of this kind would be the first warning.
 - **Lumpy claims.** A few large late claims dominate the true unpaid amount. Per-month intervals undercover.
 
-### Interview explanation (5 sentences)
+### Summary (5 sentences)
 
-I built a paid development triangle in SQL: service month down the side, months since service across
+A paid development triangle is built in SQL: service month down the side, months since service across
 the top, using only payments known on the valuation date, and it ties to the reconciliation to the cent.
 Chain-ladder estimates how much each month's payments still grow from the volume-weighted ratios between
-consecutive lags, and Mack's formula plus a residual bootstrap give the uncertainty; my code reproduces the
+consecutive lags, and Mack's formula plus a residual bootstrap give the uncertainty; the code reproduces the
 published Mack benchmark exactly. At the as-of date chain-ladder says $864 thousand is still owed, with a 90%
 interval of $590 thousand to $1.17 million; the simulator's true answer, $663 thousand, is inside that range but
 the point estimate is 30% high, because a handful of large claims make the true outcome lumpy. Re-running at four
-earlier dates showed chain-ladder is fragile for the newest month, where it multiplies one noisy month by 8.6, so I
-added Bornhuetter-Ferguson, which leans on exposure and narrowed the retrospective error from 0.78-1.05 to 0.90-0.95.
+earlier dates showed chain-ladder is fragile for the newest month, where it multiplies one noisy month by 8.6, so
+Bornhuetter-Ferguson was added, which leans on exposure and narrowed the retrospective error from 0.78-1.05 to 0.90-0.95.
 A frequency-severity view showed claim counts are plain Poisson while severity is heavy-tailed and grows with
 payment lag, which is the real reason late money matters.

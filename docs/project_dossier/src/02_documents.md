@@ -57,9 +57,9 @@ paperwork.
 adjustment, unpivoted from the three triples), `core.dim_reason_code`; payments are rebuilt as
 `recon.remit_trace`.
 
-The key thing I learned about remittances is that the bank never sees claim lines. It sees
-payments. A payer bundles many claim lines into one payment with one trace number and one total,
-and a lockbox deposit can even merge several payments. That is why I reconcile in two steps:
+The key fact about remittances is that the bank never sees claim lines. It sees payments. A
+payer bundles many claim lines into one payment with one trace number and one total, and a
+lockbox deposit can even merge several payments. That is why reconciliation runs in two steps:
 first each remittance line to its claim line, then each payment to a bank deposit. The payment
 total is the bridge between the two.
 

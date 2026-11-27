@@ -13,7 +13,7 @@ passes through a hospital, an insurer, a bank and a drug supplier. Every record 
 **fictional** hospital ("Meridian Health System"), six fictional payers, one bank account and one
 drug wholesaler. Only a few labelled calibration numbers come from public sources.
 
-*Built with AI coding assistants from a written brief and design document. I reviewed and ran the code, and every number is reproducible with `python run_all.py`.*
+*Every number below is reproducible with `python run_all.py`.*
 
 ## Results (simulated data, as of <!--n:recon.as_of_date-->2026-03-31<!--/n-->)
 

@@ -23,11 +23,11 @@ they cannot drift (decision D-005).
 
 ## One data model per business process
 
-I did not use a generic star schema with customer, product and date. I gave each business
-process its own fact table at its natural grain: one row per claim line for claims, one row per
-adjudicated line or adjustment for remittances, one row per bank transaction for cash, one row
-per status change for the claim life cycle, one row per lot for drug purchases and one row per
-administration for drug dispensing. The dimensions are what those processes share: payer,
+The core schema is not a generic star schema with customer, product and date. Each business
+process has its own fact table at its natural grain: one row per claim line for claims, one row
+per adjudicated line or adjustment for remittances, one row per bank transaction for cash, one
+row per status change for the claim life cycle, one row per lot for drug purchases and one row
+per administration for drug dispensing. The dimensions are what those processes share: payer,
 procedure, service line, reason code, drug and contract rate. Keeping each grain separate is what
 keeps the reconciliation joins from double counting.
 

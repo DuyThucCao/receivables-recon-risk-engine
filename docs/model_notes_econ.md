@@ -141,11 +141,11 @@ P04's contract rate is below FIFO cost for 11 drugs (loss at contract -$61,605.5
   workaround stays in `60_drug_inputs.sql` until core loads those rows itself (request R-DE-2,
   still open).
 
-**Interview explanation (5 sentences).** I cost every drug administration with FIFO, written as
+**Summary (5 sentences).** Every drug administration is costed with FIFO, written as
 a set-based SQL join: each lot and each administration gets a range on a cumulative-units axis,
 and the overlap of two ranges is the quantity taken from that lot. Cents are allocated by rounding
 cumulative amounts, so each lot ties out exactly: purchased = administered + wasted + on hand, and
-I test that on all 1,292 lots and on a hand-worked example. Margin per drug is reconciled payer
+a test checks that on all 1,292 lots and on a hand-worked example. Margin per drug is reconciled payer
 cash minus FIFO cost minus expired waste, split exactly into price gap, waste, denials, pending
 payment, patient share and pricing below contract. Under the simulation's assumptions (contracts
 about 123-129% of the CMS limit, acquisition 85-107%, and a 25.1% dollar-weighted final-denial
@@ -243,10 +243,10 @@ illustrative assumptions, held in `econ.ASSUMPTIONS` until core moves them into 
 separately (`mart.float_value_open`). SOFR is a near risk-free rate, so it understates a payer's
 actual return on cash.
 
-**Interview explanation (5 sentences).** I compare each paid claim line's allowed amount with the
+**Summary (5 sentences).** Each paid claim line's allowed amount is compared with the
 contract amount. Using allowed rather than paid means deductibles and coinsurance are never
 counted as underpayment, and denials, pending partial payments and later repricing are separated
-out. Per payer I report the share of claims underpaid and the shortfall rate. Their 95% intervals
+out. Per payer the model reports the share of claims underpaid and the shortfall rate. Their 95% intervals
 come from a bootstrap that resamples whole claims, because the lines of one claim share one
 pricing decision. On the simulation, the line flags match the generator with 99.9% precision and
 100% recall, and the planted rates fall inside the intervals for 5 of 6 payers. The economics

@@ -32,12 +32,12 @@ The planted coefficients lie inside their 95% intervals for <!--n:q2.coef_covera
 with planted values <!--n:q2.coef_corr-->0.91<!--/n-->). Calibration slope <!--n:q2.calib_slope-->0.84<!--/n--> (95% interval <!--n:q2.calib_slope_ci-->0.47 to 1.20<!--/n-->). On overturned
 held-out appeals, realised payment divided by predicted recoverable amount is <!--n:q2.recoverable_ratio-->0.941<!--/n-->.
 
-The overturn model is weak, and I say so. On held-out appeals it does no better than a simple
-table of overturn rates by denial reason. The data explain why: even the generator's true
-probabilities only reach an AUC of <!--n:q2.auc_planted-->0.644<!--/n-->, so appeal outcomes are mostly
+The overturn model is weak, and this chapter says so. On held-out appeals it does no better
+than a simple table of overturn rates by denial reason. The data explain why: even the
+generator's true probabilities only reach an AUC of <!--n:q2.auc_planted-->0.644<!--/n-->, so appeal outcomes are mostly
 noise and there is little signal to find. The estimated coefficients still land close to the
-planted ones, which tells me the estimation is correct; the sample is just small for the number
-of parameters.
+planted ones, which shows the estimation is correct; the sample is just small for the number of
+parameters.
 
 **Decision quality.** On the as-of date, <!--n:q2.today_candidates-->151<!--/n--> denied claims wait for action. The knapsack chooses
 <!--n:q2.today_selected-->48<!--/n--> of them, using <!--n:q2.today_minutes-->1,439<!--/n--> of <!--n:q2.budget_minutes-->1,440<!--/n--> minutes, for an expected net value of <!--n:q2.today_value-->$324,591<!--/n-->; with the

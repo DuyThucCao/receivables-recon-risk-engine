@@ -84,16 +84,16 @@ predictions inherit these effects.
 time (handled in cashflow); the bootstrap treats claims as independent; the planted comparison
 is to the generator's visit-weighted matrix, which is exactly what the count MLE estimates.
 
-**Interview (5 sentences).** I modelled each claim's status history as an absorbing Markov chain
-with PAID and WRITTEN_OFF as absorbing states and estimated the transition matrix by counting
-transitions per payer, which is the maximum-likelihood estimate. From the matrix I computed the
+**Summary (5 sentences).** Each claim's status history is modelled as an absorbing Markov chain
+with PAID and WRITTEN_OFF as absorbing states, and the transition matrix is estimated by counting
+transitions per payer, which is the maximum-likelihood estimate. From the matrix come the
 fundamental matrix N = (I - Q)^-1, whose entries are expected visits, and B = N R, the
 probability of ending paid or written off from each status. On simulated data the estimates
 recover the planted matrices within 0.06 per cell and the planted paid probability lies inside
 the bootstrap interval for all six payers. An out-of-sample check showed the memoryless model
-badly overstates recovery for claims that have sat in DENIED for a while, so I added a
-time-in-state correction that uses only past visits at least that long. I also tested and
-reported where the Markov assumption fails: denial reason and repeat reviews carry memory.
+badly overstates recovery for claims that have sat in DENIED for a while, so a
+time-in-state correction was added that uses only past visits at least that long. Tests also
+show where the Markov assumption fails: denial reason and repeat reviews carry memory.
 
 ---
 
@@ -166,15 +166,15 @@ balance is not total liquidity; arrivals are Poisson at a trailing rate (no seas
 trend); the lag curve is per payer only; post-payment adjustments and unapplied cash are not
 modelled; parameter uncertainty is only partly propagated.
 
-**Interview (5 sentences).** I estimated how long payers take to pay with a Kaplan-Meier curve
+**Summary (5 sentences).** How long payers take to pay is estimated with a Kaplan-Meier curve
 that treats still-open claims as censored and weights each by its Markov probability of ever
-being paid, and I weighted by dollars because big claims pay later. I then simulated 13 weeks
+being paid, and it is weighted by dollars because big claims pay later. The model then simulates 13 weeks
 of receipts: open claims pay according to the curve conditional on their age, new claims arrive
 as a Poisson process, and amounts are resampled from recent paid claims. Against a stated weekly
-cash need I report the probability of breaching a minimum balance, the CVaR of the shortfall and
-a curve across need assumptions. I backtested at 57 weekly origins using only data available at
+cash need it reports the probability of breaching a minimum balance, the CVaR of the shortfall and
+a curve across need assumptions. The backtest runs at 57 weekly origins using only data available at
 each date, and the 80% and 95% weekly intervals covered 79% and 96% of actual weeks. The first
-backtests failed, which is how I found the size effect, and I report that the 13-week coverage
+backtests failed, which is how the size effect was found, and the notes report that the 13-week coverage
 rests on only five independent windows.
 
 ---
@@ -232,13 +232,13 @@ eligibility criteria are not modelled; NCV uses a payer-level collection ratio; 
 property of the simulation; the facility is assumed fully drawn; the spread and advance rate
 are assumptions, not market quotes.
 
-**Interview (5 sentences).** I built a borrowing-base certificate the way an asset-based lender
+**Summary (5 sentences).** The borrowing-base certificate is built the way an asset-based lender
 does: value each open claim at its expected collectible amount, remove denied, disputed and aged
 receivables, apply a cross-age rule and a 30% payer concentration cap, then advance 85% of what
 is left. The point-in-time balances tie to the reconciliation to the cent, and nothing dated
 after the certificate date can change it, which a test proves. Expected loss is PD x LGD x EAD
 with PD from the Markov chain weighted by dollars, and on a past certificate it predicted
 $662k against $625k realised. The first, count-weighted version predicted less than half of
-that, which taught me that the loss is concentrated in large claims. The stress test reprices
+that, which showed that the loss is concentrated in large claims. The stress test reprices
 the facility at +100 and +200 basis points over SOFR and slows payments by 25%, showing both the
 interest cost and the smaller borrowing base.

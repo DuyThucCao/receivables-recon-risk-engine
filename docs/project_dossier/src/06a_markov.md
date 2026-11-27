@@ -56,12 +56,12 @@ DENIED would be paid; <!--n:markov.denied_observed-->25.2%<!--/n--> were. A time
 claim has already waited, predicts <!--n:markov.denied_pred_duration-->28.1%<!--/n-->. Hold-out Brier scores: constant rate
 <!--n:markov.brier_constant-->0.1073<!--/n-->, plain chain <!--n:markov.brier_memoryless-->0.0855<!--/n-->, corrected chain <!--n:markov.brier_duration-->0.0799<!--/n-->.
 
-I kept the Markov chain even though its main assumption fails, because I know which way it
-fails and I measured by how much. Every number in the chain is a simple count ratio that a
-finance manager can check by hand, which makes it a good baseline for open receivables. It
-breaks for claims that have already sat in DENIED for a long time, so I added a simple
-time-in-state correction and showed its effect on hold-out data. The point I would make in an
-interview is that I tested the assumption instead of taking it for granted.
+The Markov chain stays in even though its main assumption fails, because the direction of the
+failure is known and its size is measured. Every number in the chain is a simple count ratio that
+a finance manager can check by hand, which makes it a good baseline for open receivables. It
+breaks for claims that have already sat in DENIED for a long time, so a simple time-in-state
+correction is added and its effect is shown on hold-out data. The assumption is tested instead of
+taken for granted.
 
 **Limits.** Payer-level matrices pool claims of different sizes and reasons; the dollar-weighted
 version used for expected loss is a separate estimate. Simulated life cycles are cleaner than real

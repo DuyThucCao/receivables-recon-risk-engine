@@ -49,11 +49,11 @@ denied. One payer-level price problem exists: P04's contract rate is below FIFO 
 
 ![Margin per drug, ranked (figure written by models/drug.py).](../../../figures/drug_margin_ranked.png){width=0.78}
 
-I treat the drug headline with care. In my simulator, the chance of denial rises with the
-claim amount, so the most expensive drug is denied most often by design, and purchase prices are
-set as a fixed share of the CMS limit, so the cost side is built in too. What this chapter really
-shows is the method: an exact FIFO cost in SQL that anyone can audit, and a margin breakdown that
-tells the pharmacy manager whether the problem belongs to purchasing, the denial team or
+The drug headline needs care. In the simulator, the chance of denial rises with the claim
+amount, so the most expensive drug is denied most often by design, and purchase prices are set as
+a fixed share of the CMS limit, so the cost side is built in too. What this chapter really shows
+is the method: an exact FIFO cost in SQL that anyone can audit, and a margin breakdown that tells
+the pharmacy manager whether the problem belongs to purchasing, the denial team or
 contracting.
 
 **Limits.** No partial-vial (JW) waste records; patient share treated as not collected; denials in

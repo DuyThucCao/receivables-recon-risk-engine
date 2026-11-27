@@ -54,13 +54,13 @@ denied and appealed claims, which are larger.
 
 ![Bootstrap distribution of the total reserve (figure written by models/reserve.py).](../../../figures/reserve_bootstrap.png){width=0.7}
 
-I know where chain-ladder breaks. The newest month is multiplied by a development factor of
+Chain-ladder has known weak points. The newest month is multiplied by a development factor of
 <!--n:q4.cdf0-->8.62<!--/n-->, so one noisy month moves the whole estimate. A change in payment speed would bias
-every factor, and a few large late claims make the real outcome lumpy. My retrospective test
-showed the first problem directly, so I report Bornhuetter-Ferguson next to it, because it leans
-on exposure for the youngest months. Both methods still come in low at month-end dates, because
-services that were delivered but not yet billed are missing from the data. That is true IBNR,
-and paid-only data cannot see it.
+every factor, and a few large late claims make the real outcome lumpy. The retrospective test
+showed the first problem directly, so Bornhuetter-Ferguson is reported next to it, because it
+leans on exposure for the youngest months. Both methods still come in low at month-end dates,
+because services that were delivered but not yet billed are missing from the data. That is true
+IBNR, and paid-only data cannot see it.
 
 **Limits.** No tail factor; a stationary simulated payment pattern; the triangle can develop only
 what is visible, and a small share of payments reach the bank without a remittance line.
