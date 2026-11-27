@@ -10,7 +10,7 @@
 %% {\normalsize B.S. Data Science, minor in Economics and Statistics, Rutgers University--New Brunswick, 2026\par}
 %% \vspace{1.6cm}
 %% \begin{minipage}{0.8\linewidth}\small
-%% All transactional data in this dossier are \textbf{simulated} for a fictional hospital (``Meridian Health System''), six fictional payers, one bank account and one drug wholesaler. Only labelled calibration figures come from public sources. Results show that the methods work and recover what the simulator planted; they are not findings about any real organisation. Every number is generated from \texttt{results/*.json} through \texttt{docs/\_numbers.md}. \ifdraft Paragraphs marked \thuctag{} are drafts the author must rewrite in his own words before using this document.\fi
+%% All transactional data in this dossier are \textbf{simulated} for a fictional hospital (``Meridian Health System''), six fictional payers, one bank account and one drug wholesaler. Only labelled calibration figures come from public sources. Results show that the methods work and recover what the simulator planted; they are not findings about any real organisation. Every number is generated from \texttt{results/*.json} through \texttt{docs/\_numbers.md}.
 %% \end{minipage}
 %% \vfill
 %% {\small Every number is reproducible with run\_all.py.\par}

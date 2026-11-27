@@ -25,9 +25,7 @@ Tectonic is found via ``$TECTONIC``, then ``PATH``, then known install locations
 downloads the LaTeX packages it needs (internet required once).
 
 Math in the sources uses ``\\( ... \\)`` and ``\\[ ... \\]`` so that a dollar sign is always money.
-The owner's tag ``<!-- [Thuc: rewrite in your own words] -->`` is an HTML comment in the sources
-(hidden on GitHub) and is hidden in the PDF unless ``--draft`` is given, which shows it as an
-orange label. Writes ``project_dossier.pdf`` (or ``project_dossier_draft.pdf`` with ``--draft``).
+HTML comments in the sources are dropped from the PDF. Writes ``project_dossier.pdf``.
 """
 from __future__ import annotations
 
@@ -48,15 +46,12 @@ BUILD = DOSSIER / "build"
 SNAPSHOT = DOSSIER / "schema_snapshot.json"
 PDF_OUT = DOSSIER / "project_dossier.pdf"
 RESULTS = ROOT / "results"
-TAG = "[Thuc: rewrite in your own words]"
-TAG_COMMENT = "<!-- " + TAG + " -->"
-DRAFT = False   # set by --draft: show the owner's rewrite tags in the PDF
 
 TECTONIC_CANDIDATES = [
-    "/Applications/ChatGPT.app/Contents/Resources/tectonic/tectonic",
-    str(Path.home() / ".cache/codex-runtimes/codex-primary-runtime/dependencies/native/tectonic/tectonic"),
     "/opt/homebrew/bin/tectonic",
     "/usr/local/bin/tectonic",
+    str(Path.home() / ".local/bin/tectonic"),
+    str(Path.home() / ".cargo/bin/tectonic"),
 ]
 
 NAVY = "#1F3A68"
@@ -595,9 +590,8 @@ def code_esc(s: str) -> str:
 def inline(s: str) -> str:
     """Inline Markdown to LaTeX, protecting math and code spans."""
     s = re.sub(r"<!--n:[^>]*-->(.*?)<!--/n-->", r"\1", s)
-    s = s.replace(TAG_COMMENT, TAG if DRAFT else "")
     s = re.sub(r"<!--.*?-->", "", s)
-    tokens = re.split(r"(\\\(.*?\\\)|`[^`]+`|\{\{[^}]+\}\}|\[Thuc: rewrite in your own words\])", s)
+    tokens = re.split(r"(\\\(.*?\\\)|`[^`]+`|\{\{[^}]+\}\})", s)
     out = []
     for t in tokens:
         if not t:
@@ -608,8 +602,6 @@ def inline(s: str) -> str:
             out.append(r"\code{" + code_esc(t[1:-1]) + "}")
         elif t.startswith("{{"):
             out.append(r"\placeholder{" + esc(t) + "}")
-        elif t == TAG:
-            out.append(r"\thuctag{}")
         else:
             x = esc(t)
             x = re.sub(r"\[([^\]]+)\]\(([^)]+)\)", lambda m: m.group(1), x)
@@ -672,10 +664,7 @@ def md_to_tex(md: str) -> str:
     def flush():
         if para:
             text = " ".join(x.strip() for x in para)
-            if DRAFT and text.startswith(TAG_COMMENT):
-                out.append(r"\begin{rewrite}" + inline(text) + r"\end{rewrite}")
-            else:
-                out.append(inline(text))
+            out.append(inline(text))
             out.append("")
             para.clear()
 
@@ -791,8 +780,6 @@ PREAMBLE = r"""
 \usepackage[hidelinks]{hyperref}
 \definecolor{navy}{HTML}{1F3A68}
 \definecolor{lightnavy}{HTML}{4A6FA5}
-\definecolor{tagorange}{HTML}{C0602A}
-\definecolor{taglight}{HTML}{FBEFE6}
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{0.45em}
 \linespread{1.04}
@@ -811,10 +798,6 @@ PREAMBLE = r"""
 \captionsetup{font=small,labelfont={bf,color=navy}}
 \newcommand{\code}[1]{\texttt{\small #1}}
 \newcommand{\placeholder}[1]{\textcolor{red}{\texttt{#1}}}
-\newif\ifdraft
-%DRAFTFLAG%
-\newcommand{\thuctag}{\fcolorbox{tagorange}{taglight}{\footnotesize\bfseries\color{tagorange}Thuc: rewrite in your own words}}
-\newenvironment{rewrite}{\par\noindent\begingroup\leftskip=0.9em\rule{0pt}{0pt}}{\par\endgroup}
 \newenvironment{memo}{\par\begingroup\leftskip=1.2em\rightskip=1.2em\small\itshape}{\par\endgroup}
 \setlength{\emergencystretch}{1.5em}\setlength{\LTpre}{4pt}\setlength{\LTpost}{6pt}
 \begin{document}
@@ -826,8 +809,7 @@ def build_tex() -> Path:
     parts = []
     for f in sorted(SRC.glob("*.md")):
         parts.append(f"% ---- {f.name}\n" + md_to_tex(f.read_text()))
-    pre = PREAMBLE.replace("%DRAFTFLAG%", r"\drafttrue" if DRAFT else r"\draftfalse")
-    tex = pre + "\n\n".join(parts) + "\n\\end{document}\n"
+    tex = PREAMBLE + "\n\n".join(parts) + "\n\\end{document}\n"
     p = BUILD / "project_dossier.tex"
     p.write_text(tex)
     return p
@@ -848,7 +830,7 @@ def compile_pdf(tex: Path) -> None:
     if r.returncode != 0:
         print(r.stdout[-3000:], r.stderr[-3000:])
         raise SystemExit("LaTeX build failed; see docs/project_dossier/build/project_dossier.log")
-    out = PDF_OUT.with_name("project_dossier_draft.pdf") if DRAFT else PDF_OUT
+    out = PDF_OUT
     shutil.copy(tex.with_suffix(".pdf"), out)
     try:
         from pypdf import PdfReader
@@ -864,11 +846,7 @@ def main() -> int:
     ap.add_argument("--refresh-schema", action="store_true", help="re-read the schema from the database (read-only)")
     ap.add_argument("--no-numbers", action="store_true", help="do not run build_docs_numbers.py --apply first")
     ap.add_argument("--tex-only", action="store_true", help="write the .tex but do not compile")
-    ap.add_argument("--draft", action="store_true",
-                    help="show the owner's [Thuc: rewrite in your own words] tags (hidden by default)")
     a = ap.parse_args()
-    global DRAFT
-    DRAFT = a.draft
     if not a.no_numbers:
         subprocess.run([sys.executable, str(ROOT / "scripts" / "build_docs_numbers.py"), "--apply"], check=False)
     if a.refresh_schema:
